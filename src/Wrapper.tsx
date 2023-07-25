@@ -9,17 +9,21 @@ export function Wrapper() {
 
     const logout = () => {
         setToken(null);
+        localStorage.removeItem("token");
     };
 
     return (
         <>
-            <h1>Betoniera</h1>
-            <div>
+            <nav>
+                <h1>Betoniera</h1>
                 <Link to="/">Home</Link>
-                <Link to="/calendar">Calendar</Link>
+                <Link to="/calendar">Calendario</Link>
                 <button onClick={logout}>Logout</button>
-            </div>
+            </nav>
             <Outlet />
+            <footer>
+                <label>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</label>
+            </footer>
         </>
     );
 }

@@ -13,13 +13,14 @@ export function LoginForm() {
     const login = async (e: FormEvent) => {
         e.preventDefault();
 
-        axios.post(apiUrl + "/login", {}, {
+        axios.post(new URL("login", apiUrl).toString(), {}, {
             headers: {
                 Authorization: "Basic " + btoa(email + ":" + password)
             }
         }).then((response) => {
             if (response.status === 200) {
                 setToken(response.data.accessToken);
+                localStorage.setItem("token", response.data.accessToken);
             }
             else {
                 alert("Login failed");

@@ -4,7 +4,7 @@ export const TokenContext = createContext({ token: null as string | null, setTok
 
 export function TokenContextProvider({ children }: { children: JSX.Element; }) {
 
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 
     return (
         <TokenContext.Provider value={{ token, setToken }}>
