@@ -1,0 +1,1 @@
+export const apiUrl = new URL("https://calendar.zucchina.org/dev/");
