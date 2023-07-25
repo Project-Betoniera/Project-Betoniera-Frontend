@@ -20,7 +20,9 @@ export function Wrapper() {
                 <Link to="/calendar">Calendario</Link>
                 <button onClick={logout}>Logout</button>
             </nav>
-            <Outlet />
+            <main>
+                <Outlet />
+            </main>
             <footer>
                 <label>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</label>
             </footer>
