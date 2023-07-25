@@ -5,7 +5,8 @@ import { TokenContext } from "./context/TokenContext";
 
 export function Wrapper() {
 
-    const { token, setToken } = useContext(TokenContext);
+    const { setToken } = useContext(TokenContext);
+
     const logout = () => {
         setToken(null);
     };
@@ -17,7 +18,6 @@ export function Wrapper() {
                 <Link to="/">Home</Link>
                 <Link to="/calendar">Calendar</Link>
                 <button onClick={logout}>Logout</button>
-                <label>Token: {token}</label>
             </div>
             <Outlet />
         </>
