@@ -2,14 +2,16 @@ import { useContext } from "react";
 import { Outlet } from "react-router";
 import { Link } from "react-router-dom";
 import { TokenContext } from "./context/TokenContext";
+import { CourseContext } from "./context/CourseContext";
 
 export function Wrapper() {
 
     const { setToken } = useContext(TokenContext);
+    const { setCourse } = useContext(CourseContext);
 
     const logout = () => {
         setToken(null);
-        localStorage.removeItem("token");
+        setCourse(null);
     };
 
     return (

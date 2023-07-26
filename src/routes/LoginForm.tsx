@@ -2,10 +2,13 @@ import { FormEvent, useContext, useState } from "react";
 import { TokenContext } from "../context/TokenContext";
 import axios from "axios";
 import { apiUrl } from "../config";
+import { CourseContext } from "../context/CourseContext";
+import { Course } from "../dto/Course";
 
 export function LoginForm() {
 
     const { setToken } = useContext(TokenContext);
+    const { setCourse } = useContext(CourseContext);
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -20,7 +23,7 @@ export function LoginForm() {
         }).then((response) => {
             if (response.status === 200) {
                 setToken(response.data.token);
-                localStorage.setItem("token", response.data.token);
+                setCourse(response.data.course as Course);
             }
             else {
                 alert("Login failed");
@@ -44,8 +47,8 @@ export function LoginForm() {
                         </form>
                     </div>
                     <div className="container align-left">
-                        <label>Esegui il login con le stesse credenziali che utilizzi per accedere al gestionale JAC.</label>
-                        <label><strong>Le credenziali rimarranno salvate solamente sul tuo dispositivo.</strong></label>
+                        <label>Esegui il login con le stesse credenziali che utilizzi per accedere al <a href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</a>.</label>
+                        <label><strong>Le credenziali verranno inviate al gestionale, verificate, dopodiché rimarranno salvate su questo dispositivo.</strong></label>
                     </div>
                 </div>
             </div>
