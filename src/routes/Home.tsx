@@ -17,7 +17,7 @@ export function Home() {
                 Authorization: "Bearer " + token
             },
             params: {
-                start: '2023-01-20 07:0:0',
+                start: '2023-01-20 0:0:0',
                 end: '2023-01-21 0:0:0'
             }
         }).then(response => { 
@@ -41,8 +41,7 @@ export function Home() {
                 return (
                     <div key={event.id}>
                         <p>{event.subject}</p>
-                        <p>{event.start.toLocaleString()}</p>
-                        <p>{event.end.toLocaleString()}</p>
+                        <p>{event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
                         <p>Aula {event.classroom.name}</p>
                     </div>
                 )
@@ -55,7 +54,8 @@ export function Home() {
     return (
         <>
             <h1>Home</h1>
-            { typeof events[0]?.start}
+            <h2>{course?.code}</h2>
+            <h3>{course?.name}</h3>
             { SUS() }
         </>
     );
