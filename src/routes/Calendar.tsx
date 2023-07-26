@@ -106,15 +106,16 @@ export function Calendar() {
                         <label>Se su Google calendar non visualizzi il calendario sul cellulare, attiva la sincronizzazione del calendario (Impostazioni &gt; [Nome del calendario aggiunto] &gt; Sincronizzazione)</label>
                     </div>
                 </div>
-            </div>
-            <div className="container">
-                <h2>Aggiungi</h2>
-                <div className="container">
-                    <h3>Scansiona codice QR</h3>
-                    <canvas ref={canvasRef}></canvas>
-                    <h3>Oppure</h3>
-                    <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => window.open(calendarUrl, "_blank")}>Aggiungi tramite link</button>
-                    <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "Link copiato!" : "Copia negli appunti"}</button>
+                <div className="flex-h">
+                    <div className="container">
+                        <h3>Scansiona codice QR</h3>
+                        <canvas ref={canvasRef}></canvas>
+                    </div>
+                    <div className="container">
+                        <h3>Oppure</h3>
+                        <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => window.open(calendarUrl, "_blank")}>Aggiungi tramite link</button>
+                        <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "Link copiato!" : "Copia negli appunti"}</button>
+                    </div>
                 </div>
             </div>
         </>
