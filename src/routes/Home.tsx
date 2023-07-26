@@ -12,7 +12,7 @@ export function Home() {
     const [events, setEvents] = useState<Event[]>([]);
 
     useEffect(() => {
-        const start = new Date("2023-05-10T00:00:00"); // Now
+        const start = new Date(); // Now
         start.setMinutes(0, 0, 0); // Now, at the beginning of the current hour
 
         const end = new Date(start); // Tomorrow at 00:00
