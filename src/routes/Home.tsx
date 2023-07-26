@@ -51,6 +51,7 @@ export function Home() {
                             <h3>💼 {event.subject}</h3>
                             <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                             <span>📍 Aula {event.classroom.name}</span>
+                            <span>🧑‍🏫 {event.teacher}</span>
                         </div>
                     ))
                 }
