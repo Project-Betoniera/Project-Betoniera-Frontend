@@ -82,39 +82,41 @@ export function Calendar() {
             <div className="container">
                 <h1>Calendario</h1>
                 <label>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</label>
-                <div className="container align-left">
-                    <div>
-                        <label>Seleziona il tuo corso</label>
-                        <select defaultValue="" onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
-                            <option value="" disabled>Seleziona un corso</option>
-                            {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label>Aggiungi a</label>
-                        <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
-                            <option value="" disabled>Seleziona un calendario</option>
-                            <option value="raw">Link diretto</option>
-                            <option value="google">Google Calendar</option>
-                            <option value="outlook">Outlook (Personale)</option>
-                            <option value="ms365">Outlook (Account aziendale o scolastico)</option>
-                        </select>
-                    </div>
-                    <div className="container align-left">
-                        <h3>Informazioni</h3>
-                        <label>Se hai un dispositivo Apple, e vuoi aggiungere il calendario su Apple Calendar, seleziona <i>Link diretto</i>, poi scansiona il codice QR.</label>
-                        <label>Se su Google calendar non visualizzi il calendario sul cellulare, attiva la sincronizzazione del calendario (Impostazioni &gt; [Nome del calendario aggiunto] &gt; Sincronizzazione)</label>
-                    </div>
-                </div>
                 <div className="flex-h">
-                    <div className="container">
-                        <h3>Scansiona codice QR</h3>
-                        <canvas ref={canvasRef}></canvas>
+                    <div className="container align-left">
+                        <div className="flex-h align-center">
+                            <label>Seleziona il tuo corso</label>
+                            <select defaultValue="" onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
+                                <option value="" disabled>Seleziona un corso</option>
+                                {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
+                            </select>
+                        </div>
+                        <div className="flex-h align-center">
+                            <label>Aggiungi a</label>
+                            <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
+                                <option value="" disabled>Seleziona un calendario</option>
+                                <option value="raw">Link diretto</option>
+                                <option value="google">Google Calendar</option>
+                                <option value="outlook">Outlook (Personale)</option>
+                                <option value="ms365">Outlook (Account aziendale o scolastico)</option>
+                            </select>
+                        </div>
+                        <div className="container align-left">
+                            <h3>Informazioni</h3>
+                            <label>Se hai un dispositivo Apple, e vuoi aggiungere il calendario su Apple Calendar, seleziona <i>Link diretto</i>, poi scansiona il codice QR.</label>
+                            <label>Se su Google calendar non visualizzi il calendario sul cellulare, attiva la sincronizzazione del calendario (Impostazioni &gt; [Nome del calendario aggiunto] &gt; Sincronizzazione)</label>
+                        </div>
                     </div>
-                    <div className="container">
-                        <h3>Oppure</h3>
-                        <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => window.open(calendarUrl, "_blank")}>Aggiungi tramite link</button>
-                        <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "Link copiato!" : "Copia negli appunti"}</button>
+                    <div className="flex-v">
+                        <div className="container">
+                            <h3>Scansiona codice QR</h3>
+                            <canvas ref={canvasRef}></canvas>
+                        </div>
+                        <div className="container">
+                            <h3>Oppure</h3>
+                            <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => window.open(calendarUrl, "_blank")}>Aggiungi tramite link</button>
+                            <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "Link copiato!" : "Copia negli appunti"}</button>
+                        </div>
                     </div>
                 </div>
             </div>
