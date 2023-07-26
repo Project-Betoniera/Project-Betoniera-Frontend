@@ -23,8 +23,12 @@ export function Home() {
         }).then(response => { 
             let result: Event[] = [];
 
+            console.log(response.data);
+
             (response.data as any[]).forEach(element => {
-                result.push(JSON.parse(element));
+                element.start = new Date(element.start);
+                element.end = new Date(element.end);
+                result.push(element as Event);
             });
             
             setEvents(result);
@@ -37,6 +41,8 @@ export function Home() {
                 return (
                     <div key={event.id}>
                         <p>{event.subject}</p>
+                        <p>{event.start.toLocaleString()}</p>
+                        <p>{event.end.toLocaleString()}</p>
                         <p>Aula {event.classroom.name}</p>
                     </div>
                 )
