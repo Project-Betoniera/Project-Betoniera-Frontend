@@ -39,9 +39,21 @@ main {
     flex-grow: 1;
 }
 
+p, span, h1, h2, h3, h4, h5, h6 {
+    cursor: default;
+}
+
+h1 {
+    margin: 0.5rem 0;
+}
+
+h2, h3, h4, h5, h6 {
+    margin-top: 0.1rem;
+}
+
 canvas {
-    width: 25rem;
-    height: 25rem;
+    width: 21rem;
+    height: 21rem;
     background-color: var(--semi-transparent);
     border-radius: 1rem;
 }
@@ -83,4 +95,16 @@ canvas {
 .flex-grow {
     flex-grow: 1;
     justify-content: center;
+}
+
+.wide {
+    align-self: stretch;
+}
+
+.container-warning {
+    background-color: var(--semi-transparent-warning);
+}
+
+.container-info {
+    background-color: var(--semi-transparent-info);
 }
