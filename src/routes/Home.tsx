@@ -12,19 +12,22 @@ export function Home() {
     const [events, setEvents] = useState<Event[]>([]);
 
     useEffect(() => {
-        const start = new Date().toISOString();
-        const tomorrow = new Date(new Date().setDate(new Date().getDate() + 1));
-        const end = tomorrow.getFullYear() + "-" + (tomorrow.getMonth() + 1) + "-" + tomorrow.getDate() + "T00:00:00.000Z";
+        const start = new Date("2023-05-10T00:00:00"); // Now
+        start.setMinutes(0, 0, 0); // Now, at the beginning of the current hour
+
+        const end = new Date(start); // Tomorrow at 00:00
+        end.setDate(end.getDate() + 1);
+        end.setHours(0, 0, 0, 0);
 
         axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + token
             },
             params: {
-                start: start,
-                end: end
+                start: start.toISOString(),
+                end: end.toISOString()
             }
-        }).then(response => { 
+        }).then(response => {
             let result: Event[] = [];
 
             console.log(response.data);
@@ -34,32 +37,39 @@ export function Home() {
                 element.end = new Date(element.end);
                 result.push(element as Event);
             });
-            
+
             setEvents(result);
         });
     }, [token]);
 
-    const dayEvents = () => {
-        if (events.length > 0) {
-            return events.map((event) => {
-                return (
-                    <div key={event.id}>
-                        <p>{event.subject}</p>
-                        <p>{event.start.toLocaleTimeString([], { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</p>
-                        <p>Aula {event.classroom.name}</p>
-                    </div>
-                )
-            });
-        } else {
-            return (<p>NESSUNA Lezione!</p>)
-        }
-    }
+    const remainingEvents = () => events.length > 0 ?
+        (
+            <>
+                {
+                    events.map((event) => (
+                        <div key={event.id} className="container align-left">
+                            <h3>💼 {event.subject}</h3>
+                            <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                            <span>📍 Aula {event.classroom.name}</span>
+                        </div>
+                    ))
+                }
+            </>
+        ) : (
+            <div className="container">
+                <p>Nessuna lezione rimasta per oggi 😊</p>
+            </div>
+        );
 
     return (
-        <>
-            <h2>{course?.code}</h2>
-            <h3>{course?.name}</h3>
-            { dayEvents() }
-        </>
+        <div className="container align-left">
+            <div className="container wide align-left">
+                <h1>📚 {course?.code} - Lezioni rimanenti</h1>
+                <h3>{course?.name}</h3>
+            </div>
+            <div className="flex-h wide align-left">
+                {remainingEvents()}
+            </div>
+        </div>
     );
 }

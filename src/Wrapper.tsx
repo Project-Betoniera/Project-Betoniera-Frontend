@@ -20,13 +20,13 @@ export function Wrapper() {
                 <h1>Betoniera</h1>
                 <Link to="/">Home</Link>
                 <Link to="/calendar">Calendario</Link>
-                <button onClick={logout}>Logout</button>
+                <button onClick={logout}>👋 Logout</button>
             </nav>
             <main>
                 <Outlet />
             </main>
             <footer>
-                <label>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</label>
+                <span>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
             </footer>
         </>
     );
