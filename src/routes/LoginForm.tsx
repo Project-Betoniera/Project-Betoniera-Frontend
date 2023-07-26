@@ -19,8 +19,8 @@ export function LoginForm() {
             }
         }).then((response) => {
             if (response.status === 200) {
-                setToken(response.data.accessToken);
-                localStorage.setItem("token", response.data.accessToken);
+                setToken(response.data.token);
+                localStorage.setItem("token", response.data.token);
             }
             else {
                 alert("Login failed");
