@@ -18,14 +18,13 @@ button:hover {
 }
 
 button:active {
-    background-color: green;
+    background-color: var(--button-ok);
     scale: 0.9;
 }
 
 button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    
 }
 
 button:disabled:hover {
@@ -33,7 +32,7 @@ button:disabled:hover {
 }
 
 button:disabled:active {
-    background-color: red;
+    background-color: var(--button-error);
     scale: 1;
     animation: shake 0.2s;
     animation-iteration-count: infinite;

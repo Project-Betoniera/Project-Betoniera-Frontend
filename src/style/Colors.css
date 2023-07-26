@@ -7,12 +7,18 @@
         --primary: #555555;
         --secondary: #444444;
         --background: #222222;
+
         --text: #ffffff;
+        
         --link: #00aaff;
         --link-focused: #77ffe8;
+        
         --semi-transparent: #FFFFFF15;
         --semi-transparent-focused: #FFFFFF30; 
-        --disabled: #888888;
+        
+        --button-error: red;
+        --button-ok: green;
+        --button-disabled: #888888;
     }
 }
 
@@ -21,11 +27,18 @@
         --primary: #555555;
         --secondary: #444444;
         --background: #d5ccbc;
+        
         --text: #000000;
+        
         --link: #007ab7;
         --link-focused: #316e63;
+        
         --semi-transparent: #00000015;
         --semi-transparent-focused: #00000030; 
-        --disabled: #888888;
+        
+        --button-error: red;
+        --button-ok: green;
+
+        --button-disabled: #888888;
     }
 }

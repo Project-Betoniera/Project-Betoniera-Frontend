@@ -6,6 +6,13 @@ select {
     border-radius: 1rem;
     padding: 0.5rem;
     margin: 0.5rem;
+
+    /* Disabled because this transition breaks combo boxes with many elements for some reason */
+    /* transition: background-color 200ms; */
+}
+
+select:hover {
+    background-color: var(--semi-transparent-focused);
 }
 
 option {
