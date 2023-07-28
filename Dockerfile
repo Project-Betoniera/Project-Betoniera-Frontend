@@ -18,4 +18,4 @@ WORKDIR /app
 COPY --from=development /app/dist /usr/share/nginx/html
 
 # Espongo la porta
-EXPOSE 80
+EXPOSE 443
