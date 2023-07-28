@@ -10,7 +10,7 @@ npm install
 ```
 Before starting the development server, you need to create a `.env` file in the root of the project, with the following content:
 ```bash
-VITE_API_URL = http://localhost:3000
+VITE_API_URL = http://localhost:4000
 ```
 Note:
 - You can also make a copy of the `.env.example` file and rename it to `.env`.
