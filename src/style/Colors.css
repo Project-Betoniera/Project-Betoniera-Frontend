@@ -1,0 +1,49 @@
+:root {
+    font-family: "Nunito";
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #555555;
+        --secondary: #444444;
+        --background: #222222;
+
+        --text: #ffffff;
+        
+        --link: #00aaff;
+        --link-focused: #77ffe8;
+        
+        --semi-transparent: #FFFFFF15;
+        --semi-transparent-focused: #FFFFFF30; 
+        --semi-transparent-warning: #e7aa0060;
+        --semi-transparent-info: #00aaff46;
+        
+        --error: red;
+        --ok: green;
+
+        --disabled: #888888;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --primary: #555555;
+        --secondary: #444444;
+        --background: #d4cec4;
+        
+        --text: #000000;
+        
+        --link: #007ab7;
+        --link-focused: #316e63;
+        
+        --semi-transparent: #00000015;
+        --semi-transparent-focused: #00000030; 
+        --semi-transparent-warning: #e7a90069;
+        --semi-transparent-info: #007ab72a;
+        
+        --error: red;
+        --ok: green;
+
+        --disabled: #888888;
+    }
+}

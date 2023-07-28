@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap");
+
+@import url("Colors.css");
+
+@import url("Button.css");
+@import url("ComboBox.css");
+@import url("Input.css");
+@import url("Link.css");
+
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    background: var(--background);
+    color: var(--text);
+}
+
+html, body {
+    height: 100%;
+}
+
+nav, footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 1rem;
+    margin: 0.5rem;
+    padding: 1rem;
+    
+    background-color: var(--semi-transparent);
+}
+
+main {
+    margin: 0 5rem auto;
+    flex-grow: 1;
+}
+
+p, span, h1, h2, h3, h4, h5, h6 {
+    cursor: default;
+}
+
+h1 {
+    margin: 0.5rem 0;
+}
+
+h2, h3, h4, h5, h6 {
+    margin-top: 0.1rem;
+}
+
+canvas {
+    width: 21rem;
+    height: 21rem;
+    background-color: var(--semi-transparent);
+    border-radius: 1rem;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var(--semi-transparent);
+}
+
+.align-left {
+    align-items: flex-start;
+}
+
+.align-center {
+    align-items: center;
+}
+
+.align-right {
+    align-items: flex-end;
+}
+
+.flex-v {
+    display: flex;
+    flex-direction: column;
+}
+
+.flex-h {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-grow {
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.wide {
+    align-self: stretch;
+}
+
+.container-warning {
+    background-color: var(--semi-transparent-warning);
+}
+
+.container-info {
+    background-color: var(--semi-transparent-info);
+}
