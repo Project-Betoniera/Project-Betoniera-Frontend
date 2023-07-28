@@ -14,7 +14,7 @@ VITE_API_URL = http://localhost:4000
 ```
 Note:
 - You can also make a copy of the `.env.example` file and rename it to `.env`.
-- The `VITE_API_URL` variable is the url of the backend server, which is not included in this repository.
+- The `VITE_API_URL` variable is the url of the [backend server](https://github.com/Genio2003/Project-Betoniera-Backend), which is not included in this repository.
 
 Then, you can start the development server with:
 ```bash
