@@ -15,10 +15,13 @@
         
         --semi-transparent: #FFFFFF15;
         --semi-transparent-focused: #FFFFFF30; 
+        --semi-transparent-warning: #e7aa0060;
+        --semi-transparent-info: #00aaff46;
         
-        --button-error: red;
-        --button-ok: green;
-        --button-disabled: #888888;
+        --error: red;
+        --ok: green;
+
+        --disabled: #888888;
     }
 }
 
@@ -26,7 +29,7 @@
     :root {
         --primary: #555555;
         --secondary: #444444;
-        --background: #d5ccbc;
+        --background: #d4cec4;
         
         --text: #000000;
         
@@ -35,10 +38,12 @@
         
         --semi-transparent: #00000015;
         --semi-transparent-focused: #00000030; 
+        --semi-transparent-warning: #e7a90069;
+        --semi-transparent-info: #007ab72a;
         
-        --button-error: red;
-        --button-ok: green;
+        --error: red;
+        --ok: green;
 
-        --button-disabled: #888888;
+        --disabled: #888888;
     }
 }
