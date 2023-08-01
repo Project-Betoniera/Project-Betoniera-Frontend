@@ -1,4 +1,4 @@
-export type Course = {
+export type CourseDto = {
     id: number;
     code: string;
     name: string;

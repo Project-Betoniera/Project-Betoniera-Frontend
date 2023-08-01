@@ -2,14 +2,14 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useState } from "react";
-import { Event } from "../dto/Event";
+import { EventDto } from "../dto/Event";
 import { CourseContext } from "../context/CourseContext";
 export function Home() {
 
     const { token } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
-    const [events, setEvents] = useState<Event[]>([]);
+    const [events, setEvents] = useState<EventDto[]>([]);
 
     useEffect(() => {
         const start = new Date(); // Now
@@ -29,14 +29,14 @@ export function Home() {
                 includeOngoing: true
             }
         }).then(response => {
-            let result: Event[] = [];
+            let result: EventDto[] = [];
 
             console.log(response.data);
 
             (response.data as any[]).forEach(element => {
                 element.start = new Date(element.start);
                 element.end = new Date(element.end);
-                result.push(element as Event);
+                result.push(element as EventDto);
             });
 
             setEvents(result);

@@ -3,7 +3,7 @@ import { TokenContext } from "../context/TokenContext";
 import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
-import { Course } from "../dto/Course";
+import { CourseDto } from "../dto/Course";
 
 export function LoginForm() {
 
@@ -23,7 +23,7 @@ export function LoginForm() {
         }).then((response) => {
             if (response.status === 200) {
                 setToken(response.data.token);
-                setCourse(response.data.course as Course);
+                setCourse(response.data.course as CourseDto);
             }
             else {
                 alert("Login failed");

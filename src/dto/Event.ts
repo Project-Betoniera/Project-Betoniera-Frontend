@@ -1,12 +1,12 @@
-import { Classroom } from "./Classroom";
-import { Course } from "./Course";
+import { ClassroomDto } from "./Classroom";
+import { CourseDto } from "./Course";
 
-export type Event = {
+export type EventDto = {
     id: number,
     start: Date,
     end: Date,
     teacher: string;
-    classroom: Classroom,
-    course: Course,
+    classroom: ClassroomDto,
+    course: CourseDto,
     subject: string,
 }

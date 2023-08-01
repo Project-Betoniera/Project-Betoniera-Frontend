@@ -19,6 +19,7 @@ export function Wrapper() {
             <nav>
                 <h1>Betoniera</h1>
                 <Link to="/">Home</Link>
+                <Link to="/classroom">Aule</Link>
                 <Link to="/calendar">Calendario</Link>
                 <button onClick={logout}>👋 Logout</button>
             </nav>

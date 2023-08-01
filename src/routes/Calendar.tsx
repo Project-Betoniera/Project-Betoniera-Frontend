@@ -2,7 +2,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Course } from "../dto/Course";
+import { CourseDto } from "../dto/Course";
 import QRCode from 'qrcode';
 import { CourseContext } from "../context/CourseContext";
 
@@ -11,7 +11,7 @@ export function Calendar() {
     const { token } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
-    const [courses, setCourses] = useState<Course[]>([]);
+    const [courses, setCourses] = useState<CourseDto[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<string>("");
     const [calendarUrl, setCalendarUrl] = useState<string>("");
     const [calendarProvider, setCalendarProvider] = useState<string>("");

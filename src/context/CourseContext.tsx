@@ -1,11 +1,11 @@
 import { createContext, useEffect, useState } from "react";
-import { Course } from "../dto/Course";
+import { CourseDto } from "../dto/Course";
 
-export const CourseContext = createContext({ course: null as Course | null, setCourse: (data: Course | null) => { console.log(data); } });
+export const CourseContext = createContext({ course: null as CourseDto | null, setCourse: (data: CourseDto | null) => { console.log(data); } });
 
 export function CourseContextProvider({ children }: { children: JSX.Element; }) {
 
-    const [course, setCourse] = useState<Course | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
+    const [course, setCourse] = useState<CourseDto | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
 
     useEffect(() => {
         if (course !== null)

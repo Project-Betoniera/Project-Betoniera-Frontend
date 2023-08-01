@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
+import { Classroom } from "./routes/Classroom";
 
 function App() {
   const { token } = useContext(TokenContext);
@@ -19,6 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Wrapper />}>
               <Route path="/" element={<Home />} />
+              <Route path="/classroom" element={<Classroom />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path='*' element={<NotFound />} />
             </Route>
