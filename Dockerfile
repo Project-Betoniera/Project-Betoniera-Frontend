@@ -1,16 +1,18 @@
 # Compila il progetto e crea un'immagine di produzione
-FROM node:20-alpine as development
+FROM node:alpine as development
 WORKDIR /app
 COPY package*.json /app/
-RUN npm install
+RUN npm ci
 
 # Copio i file & compilo
 COPY . /app
 RUN npm run build
 
-
 # Creo Immagine di produzione
 FROM nginx:alpine
+
+# Copio la configurazione di nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 WORKDIR /app
 
@@ -18,4 +20,4 @@ WORKDIR /app
 COPY --from=development /app/dist /usr/share/nginx/html
 
 # Espongo la porta
-EXPOSE 443
+EXPOSE 80
