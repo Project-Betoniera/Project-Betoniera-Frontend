@@ -4,17 +4,18 @@ import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useRef, useState } from "react";
 import { Course } from "../dto/Course";
 import QRCode from 'qrcode';
+import { CourseContext } from "../context/CourseContext";
 
 export function Calendar() {
 
     const { token } = useContext(TokenContext);
+    const { course } = useContext(CourseContext);
 
     const [courses, setCourses] = useState<Course[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<string>("");
     const [calendarUrl, setCalendarUrl] = useState<string>("");
     const [calendarProvider, setCalendarProvider] = useState<string>("");
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     // Get course list
@@ -77,6 +78,13 @@ export function Calendar() {
         QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { console.error(error); });
     }, [calendarUrl]);
 
+    // Try to set selected course
+    useEffect(() => {
+        if (course?.id) {
+            setSelectedCourse(course.id.toString());
+        }
+    }, [course])
+
     return (
         <>
             <div className="container align-left flex-grow">
@@ -89,7 +97,7 @@ export function Calendar() {
                             <h3>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</h3>
                             <div className="flex-h align-center">
                                 <span>Seleziona il tuo corso</span>
-                                <select defaultValue="" onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
+                                <select defaultValue={selectedCourse} value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un corso</option>
                                     {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
