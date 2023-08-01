@@ -27,6 +27,7 @@ export function Wrapper() {
             </main>
             <footer>
                 <span>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
+                <Link to="/about">About</Link>
             </footer>
         </>
     );
