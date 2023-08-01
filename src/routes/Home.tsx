@@ -25,7 +25,8 @@ export function Home() {
             },
             params: {
                 start: start.toISOString(),
-                end: end.toISOString()
+                end: end.toISOString(),
+                includeOngoing: true
             }
         }).then(response => {
             let result: Event[] = [];
