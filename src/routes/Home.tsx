@@ -31,8 +31,6 @@ export function Home() {
         }).then(response => {
             let result: Event[] = [];
 
-            console.log(response.data);
-
             (response.data as any[]).forEach(element => {
                 element.start = new Date(element.start);
                 element.end = new Date(element.end);
