@@ -75,7 +75,7 @@ export function Calendar() {
             return;
         }
 
-        QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { console.error(error); });
+        QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { if (error) console.error(error); });
     }, [calendarUrl]);
 
     // Try to set selected course
@@ -83,7 +83,7 @@ export function Calendar() {
         if (course?.id) {
             setSelectedCourse(course.id.toString());
         }
-    }, [course])
+    }, [course]);
 
     return (
         <>
@@ -97,7 +97,7 @@ export function Calendar() {
                             <h3>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</h3>
                             <div className="flex-h align-center">
                                 <span>Seleziona il tuo corso</span>
-                                <select defaultValue={selectedCourse} value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
+                                <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un corso</option>
                                     {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
