@@ -8,11 +8,11 @@ import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
 
 function App() {
-  const { token } = useContext(TokenContext);
+  const { tokenData } = useContext(TokenContext);
 
   let content: JSX.Element;
 
-  if (token) {
+  if (tokenData.token) {
     content = (
       <>
         <BrowserRouter>

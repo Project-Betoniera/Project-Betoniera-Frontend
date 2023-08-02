@@ -8,7 +8,7 @@ import { CourseContext } from "../context/CourseContext";
 
 export function Calendar() {
 
-    const { token } = useContext(TokenContext);
+    const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
     const [courses, setCourses] = useState<Course[]>([]);
@@ -22,10 +22,10 @@ export function Calendar() {
     useEffect(() => {
         axios.get(new URL("course", apiUrl).toString(), {
             headers: {
-                Authorization: "Bearer " + token
+                Authorization: "Bearer " + tokenData.token
             }
         }).then(response => { setCourses(response.data); });
-    }, [token]);
+    }, [tokenData]);
 
     // Update calendar url
     useEffect(() => {
@@ -37,7 +37,7 @@ export function Calendar() {
 
             const url = new URL(`event/${encodeURIComponent(selectedCourse)}/ics`, apiUrl);
             url.protocol = "webcal";
-            url.searchParams.append("authorization", `Bearer ${token}`);
+            url.searchParams.append("authorization", `Bearer ${tokenData.token}`);
 
             switch (calendarProvider) {
                 case "google":
@@ -65,7 +65,7 @@ export function Calendar() {
             setCalendarUrl(result.toString());
         }
 
-    }, [selectedCourse, calendarProvider, token]);
+    }, [selectedCourse, calendarProvider, tokenData]);
 
     // Update QR code
     useEffect(() => {

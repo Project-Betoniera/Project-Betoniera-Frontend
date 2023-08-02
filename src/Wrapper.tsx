@@ -6,11 +6,11 @@ import { CourseContext } from "./context/CourseContext";
 
 export function Wrapper() {
 
-    const { setToken } = useContext(TokenContext);
+    const { setTokenData } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
 
     const logout = () => {
-        setToken(null);
+        setTokenData({ token: null, remember: false });
         setCourse(null);
     };
 

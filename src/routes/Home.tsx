@@ -6,7 +6,7 @@ import { Event } from "../dto/Event";
 import { CourseContext } from "../context/CourseContext";
 export function Home() {
 
-    const { token } = useContext(TokenContext);
+    const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
     const [events, setEvents] = useState<Event[]>([]);
@@ -21,7 +21,7 @@ export function Home() {
 
         axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
             headers: {
-                Authorization: "Bearer " + token
+                Authorization: "Bearer " + tokenData.token
             },
             params: {
                 start: start.toISOString(),
@@ -41,7 +41,7 @@ export function Home() {
 
             setEvents(result);
         });
-    }, [token]);
+    }, [tokenData]);
 
     const remainingEvents = () => events.length > 0 ?
         (
