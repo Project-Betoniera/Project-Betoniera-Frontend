@@ -33,7 +33,7 @@ export function Classroom() {
         });
     }, [token]);
 
-    const freeClassrooms = () => classrooms.length > 0 ?
+    const classroomsStatus = () => classrooms.length > 0 ?
         (
             <>
                 {
@@ -57,7 +57,7 @@ export function Classroom() {
                 <h1>🏫 Aule libere</h1>
             </div>
             <div className="flex-h wide align-left">
-                {freeClassrooms()}
+                {classroomsStatus()}
             </div>
         </div>
     );
