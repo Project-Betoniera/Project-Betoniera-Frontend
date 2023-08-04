@@ -67,6 +67,9 @@ export function Home() {
         }).then(response => {
             let result: ClassroomDto[] = response.data;
 
+            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33];
+            result = result.filter((classroom) => !exclude.includes(classroom.id));
+
             setClassrooms(result);
         });
     }, []);
@@ -75,8 +78,9 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <div key={event.id} className="container align-left">
+                    <div key={event.id} className="container align-left" style={event.start < new Date() ? { backgroundColor: "#00FF0030" } : {}}>
                         <h3>💼 {event.subject}</h3>
+                        {event.start < new Date() ? <span>🔴 <strong>In corso</strong></span> : ""}
                         <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                         <span>📍 Aula {event.classroom.name}</span>
                         <span>🧑‍🏫 {event.teacher}</span>
@@ -94,9 +98,9 @@ export function Home() {
         <>
             {
                 classrooms.map((classroom) => (
-                    <div key={classroom.id} className="container align-left" style={{ backgroundColor: classroom.color.substring(0, 7) + "20" }}>
+                    <div key={classroom.id} className="container align-left" style={{ backgroundColor: classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
                         <h3>🏫 {classroom.name}</h3>
-                        <span>Libera fino alle [ora]?</span>
+                        <span>Fino alle XX:XX</span>
                     </div>
                 ))
             }
