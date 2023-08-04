@@ -1,5 +1,5 @@
 import { ClassroomDto } from "./Classroom";
-import { CourseDto } from "./Course";
+import { CourseDto } from "./CourseDto";
 
 export type EventDto = {
     id: number,
@@ -9,4 +9,4 @@ export type EventDto = {
     classroom: ClassroomDto,
     course: CourseDto,
     subject: string,
-}
+};

@@ -108,3 +108,7 @@ canvas {
 .container-info {
     background-color: var(--semi-transparent-info);
 }
+
+.wrap {
+    flex-wrap: wrap;
+}

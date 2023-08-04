@@ -9,11 +9,11 @@ import { NotFound } from "./routes/NotFound";
 import { Classroom } from "./routes/Classroom";
 
 function App() {
-  const { token } = useContext(TokenContext);
+  const { tokenData } = useContext(TokenContext);
 
   let content: JSX.Element;
 
-  if (token) {
+  if (tokenData.token) {
     content = (
       <>
         <BrowserRouter>
