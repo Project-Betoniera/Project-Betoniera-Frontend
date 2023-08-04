@@ -1,4 +1,4 @@
-import { ClassroomDto } from "./Classroom";
+import { ClassroomDto } from "./ClassroomDto";
 import { CourseDto } from "./CourseDto";
 
 export type EventDto = {

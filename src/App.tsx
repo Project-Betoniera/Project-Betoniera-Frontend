@@ -7,6 +7,7 @@ import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
 import { Classroom } from "./routes/Classroom";
+import { About } from "./routes/About";
 
 function App() {
   const { tokenData } = useContext(TokenContext);
@@ -22,6 +23,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/classroom" element={<Classroom />} />
               <Route path="/calendar" element={<Calendar />} />
+              <Route path="/about" element={<About />} />
               <Route path='*' element={<NotFound />} />
             </Route>
           </Routes>
