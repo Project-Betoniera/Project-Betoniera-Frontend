@@ -9,4 +9,4 @@ export type Event = {
     classroom: Classroom,
     course: Course,
     subject: string,
-}
+};
