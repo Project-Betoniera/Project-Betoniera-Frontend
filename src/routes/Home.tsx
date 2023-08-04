@@ -46,7 +46,7 @@ export function Home() {
     }, [token]);
 
     useEffect(() => {
-        const start = new Date("2023-05-10T13:20");
+        const start = new Date();
         start.setHours(start.getHours() - 1, 0, 0, 0); // Now, minus 1 hour at XX:00:00 (Eg: 14:15 => 13:00)
 
         const end = new Date(start);
