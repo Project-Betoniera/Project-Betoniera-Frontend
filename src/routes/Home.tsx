@@ -7,7 +7,6 @@ import { CourseContext } from "../context/CourseContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 
 export function Home() {
-
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
@@ -20,9 +19,6 @@ export function Home() {
         const end = new Date(start); // Tomorrow at 00:00
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
-
-        console.log("Events");
-        console.log(start, end);
 
         axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
             headers: {
@@ -52,9 +48,6 @@ export function Home() {
 
         const end = new Date(start);
         end.setHours(end.getHours() + 2); // (Eg: 14:15 => 15:00)
-
-        console.log("Free classrooms");
-        console.log(start, end);
 
         axios.get(new URL(`classroom/free`, apiUrl).toString(), {
             headers: {
