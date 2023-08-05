@@ -4,4 +4,4 @@ export type ClassroomStatus = {
     classroom: ClassroomDto;
     free: boolean;
     statusChangedAt: Date;
-}
+};
