@@ -4,14 +4,14 @@ import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
-import { ClassroomDto } from "../dto/ClassroomDto";
+import { ClassroomStatus } from "../dto/ClassroomStatus";
 
 export function Home() {
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
     const [events, setEvents] = useState<EventDto[]>([]);
-    const [classrooms, setClassrooms] = useState<ClassroomDto[]>([]);
+    const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
     const [now] = useState(new Date());
 
@@ -50,19 +50,23 @@ export function Home() {
         const end = new Date(start);
         end.setHours(end.getHours() + 2); // (Eg: 14:15 => 15:00)
 
-        axios.get(new URL(`classroom/free`, apiUrl).toString(), {
+        axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
             },
             params: {
-                start: start.toISOString(),
-                end: end.toISOString()
+                time: start.toISOString(),
             }
         }).then(response => {
-            let result: ClassroomDto[] = response.data;
+            let result: ClassroomStatus[] = response.data;
 
             const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33];
-            result = result.filter((classroom) => !exclude.includes(classroom.id));
+            result = result.filter((element) => !exclude.includes(element.classroom.id) && element.status.isFree !== false);
+
+            result = result.map((item) => {
+                item.status.statusChangeAt = item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null;
+                return item;
+            });
 
             setClassrooms(result);
         });
@@ -91,19 +95,29 @@ export function Home() {
     const freeClassrooms = () => classrooms.length > 0 ? (
         <>
             {
-                classrooms.map((classroom) => (
-                    <div key={classroom.id} className="container align-left" style={{ backgroundColor: classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
-                        <h3>🏫 {classroom.name}</h3>
-                        <span>Fino alle XX:XX</span>
-                    </div>
-                ))
+                classrooms.map((element) => {
+                    let changeTime = "Fino alle ";
+
+                    if (element.status.statusChangeAt && element.status.statusChangeAt.getDay() == now.getDay())
+                        changeTime += element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                    else
+                        changeTime += "18:00";
+
+                    return (
+                        <div key={element.classroom.id} className="container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
+                            <h3>🏫 Aula {element.classroom.name}</h3>
+                            <span>{changeTime}</span>
+
+                        </div>
+                    );
+                })
             }
         </>
     ) : (
         <div className="container">
             <p>Nessuna aula libera al momento 😒</p>
         </div>
-    );
+    )
 
     return (
         <>
