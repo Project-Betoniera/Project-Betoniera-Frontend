@@ -17,7 +17,7 @@ export function Wrapper() {
     return (
         <>
             <nav>
-                <h1>Betoniera</h1>
+                <h1>Project Betoniera</h1>
                 <Link to="/">Home</Link>
                 <Link to="/classroom">Stato Aule</Link>
                 <Link to="/calendar">Calendario</Link>

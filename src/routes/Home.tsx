@@ -13,9 +13,10 @@ export function Home() {
     const [events, setEvents] = useState<EventDto[]>([]);
     const [classrooms, setClassrooms] = useState<ClassroomDto[]>([]);
 
-    useEffect(() => {
-        const start = new Date(); // Now
+    const [now] = useState(new Date());
 
+    useEffect(() => {
+        const start = new Date(now); // Now
         const end = new Date(start); // Tomorrow at 00:00
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
@@ -43,7 +44,7 @@ export function Home() {
     }, []);
 
     useEffect(() => {
-        const start = new Date(); // Now
+        const start = new Date(now); // Now
         start.setHours(start.getHours() - 1, 0, 0, 0); // Now, minus 1 hour at XX:00:00 (Eg: 14:15 => 13:00)
 
         const end = new Date(start);
@@ -71,9 +72,9 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <div key={event.id} className="container align-left" style={event.start < new Date() ? { backgroundColor: "#00FF0030" } : {}}>
+                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030" } : {}}>
                         <h3>💼 {event.subject}</h3>
-                        {event.start < new Date() ? <span>🔴 <strong>In corso</strong></span> : ""}
+                        {event.start < now ? <span>🔴 <strong>In corso</strong></span> : ""}
                         <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                         <span>📍 Aula {event.classroom.name}</span>
                         <span>🧑‍🏫 {event.teacher}</span>

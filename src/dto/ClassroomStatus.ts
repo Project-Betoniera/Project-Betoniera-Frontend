@@ -2,6 +2,8 @@ import { ClassroomDto } from "./ClassroomDto";
 
 export type ClassroomStatus = {
     classroom: ClassroomDto;
-    free: boolean;
-    statusChangedAt: Date;
+    status: {
+        isFree: boolean;
+        statusChangeAt: Date | null;
+    };
 };
