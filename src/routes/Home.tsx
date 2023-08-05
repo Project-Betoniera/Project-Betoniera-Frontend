@@ -2,7 +2,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useState } from "react";
-import { EventDto } from "../dto/Event";
+import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 
