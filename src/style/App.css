@@ -35,7 +35,8 @@ nav, footer {
 }
 
 main {
-    margin: 0 5rem auto;
+    margin: 0 auto;
+    max-width: 100rem;
     flex-grow: 1;
 }
 
@@ -59,6 +60,10 @@ canvas {
     width: 21rem;
     height: 21rem;
     background-color: var(--semi-transparent);
+    border-radius: 1rem;
+}
+
+img {
     border-radius: 1rem;
 }
 

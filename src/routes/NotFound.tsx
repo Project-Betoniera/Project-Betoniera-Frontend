@@ -1,6 +1,8 @@
+import { Link } from "react-router-dom";
+
 export function NotFound() {
     function randomImage() {
-        const num = Math.round(Math.random() * 4) + 1; // 1-5
+        const num = Math.round(Math.random() * 5) + 1; // 1-5
 
         return (
             <>
@@ -13,11 +15,10 @@ export function NotFound() {
         <div className="container">
             <div className="container wide">
                 <h1>404 Not Found</h1>
-                <p>The page you are looking for does not exist.</p>
+                <p>La pagina che stai cercando non esiste.</p>
+                <p>Ti sei perso? <Link to="/">Torna alla home</Link></p>
             </div>
-            <div className="container">
-                {randomImage()}
-            </div>
+            {randomImage()}
         </div>
     );
 }
