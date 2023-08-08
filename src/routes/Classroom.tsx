@@ -43,12 +43,10 @@ export function Classroom() {
         <div className="container align-left">
             <div className="container wide align-left">
                 <h1>🏫 Stato aule</h1>
-                <DateTimePicker onChange={(value: any) => setDateTime(value)} value={dateTime} locale='it-IT' disableClock={true} autoFocus={true} />
+                <DateTimePicker onChange={(value: any) => setDateTime(value)} value={dateTime} locale='it-IT' disableClock={true} autoFocus={true} minDate={new Date("2018-10-01")} />
             </div>
             <div className="flex-h align-left wrap">
                 {
-                    // Possibile problema: Se l'utente seleziona una data MOLTO, MOLTO PASSATA, tutte le aule si visualizzeranno come "Libere, fino alle 18:00".
-                    // Non è possibile mettere un controllo per verificare se la data è passata, perchè il Backend ritorna indietro sempre qualcosa... (Si potrebbe verificare se la data di cambio dello stato è avanti di due/tre/quattro giorni rispetto alla data selezionata dall'utente, ma non è una soluzione molto elegante... e può dare fastidio alle feste e ai weekend...)
                     classrooms.map((item) => {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
                         let changeTime = "⌚ Fino alle ";
