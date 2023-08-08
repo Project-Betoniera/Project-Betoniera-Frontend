@@ -4,12 +4,16 @@ import axios from "axios";
 import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 
+import DateTimePicker from 'react-datetime-picker'
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+
 export function Classroom() {
     const { tokenData } = useContext(TokenContext);
 
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
-    const [now] = useState(new Date());
+    const [dateTime, setDateTime] = useState(new Date());
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -17,7 +21,7 @@ export function Classroom() {
                 Authorization: "Bearer " + tokenData.token
             },
             params: {
-                time: now.toISOString(),
+                time: dateTime.toISOString(),
             }
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
@@ -32,12 +36,13 @@ export function Classroom() {
 
             setClassrooms(result);
         });
-    }, []);
+    }, [dateTime]);
 
     return (
         <div className="container align-left">
             <div className="container wide align-left">
                 <h1>🏫 Stato aule</h1>
+                <DateTimePicker onChange={(value: any) => setDateTime(value)} value={dateTime} locale='it-IT' disableClock={true} autoFocus={true} />
             </div>
             <div className="flex-h align-left wrap">
                 {
@@ -45,7 +50,7 @@ export function Classroom() {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
                         let changeTime = "⌚ Fino alle ";
 
-                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == now.getDay())
+                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == dateTime.getDay())
                             changeTime += item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
                         else
                             changeTime += "18:00";
