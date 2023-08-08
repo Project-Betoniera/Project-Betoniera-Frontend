@@ -16,7 +16,6 @@ export function Classroom() {
     const [dateTime, setDateTime] = useState(new Date());
 
     useEffect(() => {
-        if (!dateTime) return; // dateTime è null se l'utente preme sulla X per cancellare la data. Soluzione migliore??
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
@@ -47,14 +46,11 @@ export function Classroom() {
             </div>
             <div className="flex-h align-left wrap">
                 {
-                    // Possibile problema: Se l'utente seleziona una data MOLTO, MOLTO PASSATA, tutte le aule si visualizzeranno come "Libere, fino alle 18:00".
-                    // Non è possibile mettere un controllo per verificare se la data è passata, perchè il Backend ritorna indietro sempre qualcosa... (Si potrebbe verificare se la data di cambio dello stato è avanti di due/tre/quattro giorni rispetto alla data selezionata dall'utente, ma non è una soluzione molto elegante... e può dare fastidio alle feste e ai weekend...)
                     classrooms.map((item) => {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
                         let changeTime = "⌚ Fino alle ";
 
-                        // Anche qui messo "... && dateTime" per evitare che dia errore se dateTime è null. Vedere commento linea 19...
-                        if (item.status.statusChangeAt && dateTime && item.status.statusChangeAt.getDay() == dateTime.getDay())
+                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == dateTime.getDay())
                             changeTime += item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
                         else
                             changeTime += "18:00";
