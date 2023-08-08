@@ -5,8 +5,8 @@ import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 
 import DateTimePicker from 'react-datetime-picker'
-import 'react-datetime-picker/dist/DateTimePicker.css';
-import 'react-calendar/dist/Calendar.css';
+import '../style/DateTimePicker.css';
+import '../style/Calendar.css';
 
 export function Classroom() {
     const { tokenData } = useContext(TokenContext);
