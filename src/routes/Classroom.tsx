@@ -9,7 +9,7 @@ export function Classroom() {
 
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
-    const [now] = useState(new Date());
+    const [dateTime, setDateTime] = useState(new Date());
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -17,7 +17,7 @@ export function Classroom() {
                 Authorization: "Bearer " + tokenData.token
             },
             params: {
-                time: now.toISOString(),
+                time: dateTime.toISOString(),
             }
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
@@ -32,12 +32,13 @@ export function Classroom() {
 
             setClassrooms(result);
         });
-    }, []);
+    }, [dateTime]);
 
     return (
         <div className="container align-left">
             <div className="container wide align-left">
                 <h1>🏫 Stato aule</h1>
+                <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
             </div>
             <div className="flex-h align-left wrap">
                 {
@@ -45,7 +46,7 @@ export function Classroom() {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
                         let changeTime = "⌚ Fino alle ";
 
-                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == now.getDay())
+                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == dateTime.getDay())
                             changeTime += item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
                         else
                             changeTime += "18:00";
