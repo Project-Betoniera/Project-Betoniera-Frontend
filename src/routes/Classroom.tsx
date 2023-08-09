@@ -37,7 +37,8 @@ export function Classroom() {
     return (
         <div className="container align-left">
             <div className="container wide align-left">
-                <h1>🏫 Stato aule</h1>
+                <h1>🏫 Stato Aule</h1>
+                <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"})}</h3>
                 <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
             </div>
             <div className="flex-h align-left wrap">
