@@ -47,7 +47,7 @@ export function Classroom() {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
                         let changeTime = "⌚ Fino alle ";
 
-                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDay() == dateTime.getDay())
+                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDate() == dateTime.getDate())
                             changeTime += item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
                         else
                             changeTime += "18:00";
