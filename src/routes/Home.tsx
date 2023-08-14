@@ -90,12 +90,16 @@ export function Home() {
         <>
             {
                 classrooms.map((element) => {
-                    let changeTime = "Fino alle ";
+                    let changeTime = "";
 
-                    if (element.status.statusChangeAt && element.status.statusChangeAt.getDay() == now.getDay())
-                        changeTime += element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                    if (!element.status.statusChangeAt)
+                        changeTime = "Fino a fine giornata.";
+                    else if (element.status.statusChangeAt.getDate() == now.getDate())
+                        changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                    else if (element.status.statusChangeAt.getDate() == now.getDate() + 1)
+                        changeTime = "Fino alle 18:00";
                     else
-                        changeTime += "18:00";
+                        changeTime = element.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                     return (
                         <div key={element.classroom.id} className="container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
