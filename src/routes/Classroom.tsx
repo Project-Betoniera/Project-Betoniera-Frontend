@@ -45,12 +45,16 @@ export function Classroom() {
                 {
                     classrooms.map((item) => {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
-                        let changeTime = "⌚ Fino alle ";
+                        let changeTime = "";
 
-                        if (item.status.statusChangeAt && item.status.statusChangeAt.getDate() == dateTime.getDate())
-                            changeTime += item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                        if (!item.status.statusChangeAt)
+                            changeTime = "⌚ Fino a fine giornata.";
+                        else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
+                            changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                        else if (item.status.statusChangeAt.getDate() == dateTime.getDate() + 1)
+                            changeTime = "⌚ Fino alle 18:00";
                         else
-                            changeTime += "18:00";
+                            changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                         return (
                             <div key={item.classroom.id} className="container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030" }}>
