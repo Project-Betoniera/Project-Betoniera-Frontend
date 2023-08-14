@@ -44,18 +44,12 @@ export function Home() {
     }, []);
 
     useEffect(() => {
-        const start = new Date(now); // Now
-        start.setHours(start.getHours() - 1, 0, 0, 0); // Now, minus 1 hour at XX:00:00 (Eg: 14:15 => 13:00)
-
-        const end = new Date(start);
-        end.setHours(end.getHours() + 2); // (Eg: 14:15 => 15:00)
-
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
             },
             params: {
-                time: start.toISOString(),
+                time: now.toISOString(),
             }
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
@@ -134,7 +128,6 @@ export function Home() {
             <div className="container align-left">
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
-                    <h3>Queste aule non hanno nessuna lezione da almeno un'ora</h3>
                 </div>
                 <div className="flex-h wide align-left wrap">
                     {freeClassrooms()}
