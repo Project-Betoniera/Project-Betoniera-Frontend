@@ -6,7 +6,9 @@ export function NotFound() {
 
         return (
             <>
-                <img src={`404gifs/cement_mixer_${num}.gif`} alt="Not Found" />
+                <video autoPlay loop muted playsInline>
+                    <source src={`404gifs/cement_mixer_${num}.webm`} type="video/webm"/>
+                </video>
             </>
         );
     }
