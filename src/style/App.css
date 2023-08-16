@@ -79,6 +79,29 @@ video {
     background-color: var(--semi-transparent);
 }
 
+.main-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var(--semi-transparent);
+}
+
+.element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: var(--semi-transparent);
+}
+
 .align-left {
     align-items: flex-start;
 }
@@ -97,6 +120,11 @@ video {
 }
 
 .flex-h {
+    display: flex;
+    flex-direction: row;
+}
+
+.element-container {
     display: flex;
     flex-direction: row;
 }
@@ -120,4 +148,35 @@ video {
 
 .wrap {
     flex-wrap: wrap;
+}
+
+@media screen and (max-width: 600px) {
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        margin: 1rem;
+        padding: 0rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
+    }
+
+    .element-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .element {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
+    }
 }

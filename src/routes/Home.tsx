@@ -13,7 +13,7 @@ export function Home() {
     const [events, setEvents] = useState<EventDto[]>([]);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
-    const [now] = useState(new Date());
+    const [now] = useState(new Date("2023-01-20T09:10"));
 
     useEffect(() => {
         const start = new Date(now); // Now
@@ -102,7 +102,7 @@ export function Home() {
                         changeTime = element.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                     return (
-                        <div key={element.classroom.id} className="container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
+                        <div key={element.classroom.id} className="element align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */}}>
                             <h3>🏫 Aula {element.classroom.name}</h3>
                             <span>{changeTime}</span>
 
@@ -119,21 +119,21 @@ export function Home() {
 
     return (
         <>
-            <div className="container align-left">
+            <div className="main-container align-left">
                 <div className="container wide align-left">
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
                 </div>
-                <div className="flex-h wide align-left wrap">
+                <div className="element-container wide align-left wrap">
                     {remainingEvents()}
                 </div>
             </div>
 
-            <div className="container align-left">
+            <div className="main-container align-left">
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
                 </div>
-                <div className="flex-h wide align-left wrap">
+                <div className="element-container wide align-left wrap">
                     {freeClassrooms()}
                 </div>
             </div>

@@ -35,13 +35,13 @@ export function Classroom() {
     }, [dateTime]);
 
     return (
-        <div className="container align-left">
+        <div className="main-container align-left">
             <div className="container wide align-left">
                 <h1>🏫 Stato Aule</h1>
                 <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit"})}</h3>
                 <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
             </div>
-            <div className="flex-h align-left wrap">
+            <div className="element-container wide align-left wrap">
                 {
                     classrooms.map((item) => {
                         const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
@@ -57,7 +57,7 @@ export function Classroom() {
                             changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                         return (
-                            <div key={item.classroom.id} className="container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030" }}>
+                            <div key={item.classroom.id} className="element align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", margin: "0.5rem", padding: "0.6rem" }}>
                                 <h3>🏫 Aula {item.classroom.name}</h3>
                                 <span>{status}</span>
                                 <span>{changeTime}</span>
