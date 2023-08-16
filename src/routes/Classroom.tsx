@@ -57,7 +57,7 @@ export function Classroom() {
                             changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                         return (
-                            <div key={item.classroom.id} className="element align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", margin: "0.5rem", padding: "0.6rem" }}>
+                            <div key={item.classroom.id} className="element align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", display: "block", width: "100%"}}>
                                 <h3>🏫 Aula {item.classroom.name}</h3>
                                 <span>{status}</span>
                                 <span>{changeTime}</span>
