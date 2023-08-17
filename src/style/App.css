@@ -126,6 +126,34 @@ video {
 
     main {
         margin: 0;
+        padding-bottom: 4rem;
+    }
+
+    nav {
+        position: fixed;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        bottom: 0rem;
+        left: 0;
+
+        height: 4rem;
+        width: 100%;
+
+        border-radius: 1rem;
+        margin: 0;
+        padding: 0;
+    
+        background: var(--primary);
+    }
+
+    nav > h1 {
+        display: none;
+        font-size: 1rem;
+    }
+
+    footer {
+        display: none;
     }
 
     canvas {

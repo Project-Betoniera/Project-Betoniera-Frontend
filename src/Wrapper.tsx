@@ -19,8 +19,9 @@ export function Wrapper() {
             <nav>
                 <h1>Project Betoniera</h1>
                 <Link to="/">Home</Link>
-                <Link to="/classroom">Stato Aule</Link>
+                <Link to="/classroom">Aule</Link>
                 <Link to="/calendar">Calendario</Link>
+                <Link to="/about">About</Link>
                 <button onClick={logout}>👋 Logout</button>
             </nav>
             <main>
