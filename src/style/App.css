@@ -79,40 +79,6 @@ video {
     background-color: var(--semi-transparent);
 }
 
-.main-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    margin: 1rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    background-color: var(--semi-transparent);
-}
-
-.element {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    margin: 1rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    background-color: var(--semi-transparent);
-}
-
-.class-element {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    margin: 1rem;
-    padding: 1rem;
-    border-radius: 1rem;
-    background-color: var(--semi-transparent);
-}
-
 .align-left {
     align-items: flex-start;
 }
@@ -131,11 +97,6 @@ video {
 }
 
 .flex-h {
-    display: flex;
-    flex-direction: row;
-}
-
-.element-container {
     display: flex;
     flex-direction: row;
 }
@@ -210,6 +171,11 @@ video {
     .class-element {
         display: block;
         width: 100%;
+
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
     }
 
     .display-block {
