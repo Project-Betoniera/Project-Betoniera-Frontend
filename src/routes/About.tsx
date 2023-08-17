@@ -1,8 +1,8 @@
 export function About() {
     return (
-        <div className="container align-left">
+        <div className="main-container container align-left">
             <div className="container align-left wide">
-                <h1>About</h1>
+                <h1>🧐 About</h1>
             </div>
 
             <div className="container align-left">
