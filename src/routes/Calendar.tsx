@@ -91,18 +91,18 @@ export function Calendar() {
                 <div className="container wide align-left">
                     <h1>📆 Calendario</h1>
                 </div>
-                <div className="flex-h">
+                <div className="display-block flex-h">
                     <div className="flex-v">
                         <div className="container align-left">
                             <h3>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</h3>
-                            <div className="flex-h align-center">
+                            <div className="display-block flex-h align-center">
                                 <span>Seleziona il tuo corso</span>
                                 <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un corso</option>
                                     {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
                             </div>
-                            <div className="flex-h align-center">
+                            <div className="display-block flex-h align-center">
                                 <span>Aggiungi a</span>
                                 <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un calendario</option>

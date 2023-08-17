@@ -162,6 +162,22 @@ video {
 }
 
 @media screen and (max-width: 600px) {
+
+    main {
+        margin: 0;
+    }
+
+    canvas {
+        width: 15rem;
+        height: 15rem;
+    }
+
+    select {
+        margin-left: 0;
+        width: 100%;
+        font-size: 0.7rem;
+    }
+
     .main-container {
         display: flex;
         flex-direction: column;
@@ -192,6 +208,11 @@ video {
     }
 
     .class-element {
+        display: block;
+        width: 100%;
+    }
+
+    .display-block {
         display: block;
         width: 100%;
     }
