@@ -87,7 +87,7 @@ export function Calendar() {
 
     return (
         <>
-            <div className="container align-left flex-grow">
+            <div className="main-container container align-left flex-grow">
                 <div className="container wide align-left">
                     <h1>📆 Calendario</h1>
                 </div>

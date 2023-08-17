@@ -102,7 +102,7 @@ export function Home() {
                         changeTime = element.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
                     return (
-                        <div key={element.classroom.id} className="element align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */}}>
+                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */}}>
                             <h3>🏫 Aula {element.classroom.name}</h3>
                             <span>{changeTime}</span>
 
@@ -119,21 +119,21 @@ export function Home() {
 
     return (
         <>
-            <div className="main-container align-left">
+            <div className="main-container container align-left">
                 <div className="container wide align-left">
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
                 </div>
-                <div className="element-container wide align-left wrap">
+                <div className="element-container flex-h wide align-left wrap">
                     {remainingEvents()}
                 </div>
             </div>
 
-            <div className="main-container align-left">
+            <div className="main-container container align-left">
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
                 </div>
-                <div className="element-container wide align-left wrap">
+                <div className="element-container flex-h wide align-left wrap">
                     {freeClassrooms()}
                 </div>
             </div>
