@@ -17,6 +17,8 @@ export function Calendar() {
     const [calendarProvider, setCalendarProvider] = useState<string>("");
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const qrCodeRef = useRef<HTMLDivElement>(null);
+    const windowWidth = useRef(window.innerWidth);
 
     // Get course list
     useEffect(() => {
@@ -76,6 +78,12 @@ export function Calendar() {
         }
 
         QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { if (error) console.error(error); });
+
+        // Scroll to QR code if on mobile
+        if (windowWidth.current <= 600) {
+            qrCodeRef.current?.style.setProperty("display", "flex");
+            canvasRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        }
     }, [calendarUrl]);
 
     // Try to set selected course
@@ -123,7 +131,7 @@ export function Calendar() {
                             <span><strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong></span>
                         </div>
                     </div>
-                    <div className="flex-v">
+                    <div id="qrCodeContainer" ref={qrCodeRef} className="flex-v">
                         <div className="container">
                             <h3>Scansiona codice QR</h3>
                             <canvas ref={canvasRef}></canvas>
