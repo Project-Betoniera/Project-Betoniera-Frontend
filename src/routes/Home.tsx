@@ -72,7 +72,7 @@ export function Home() {
                 events.map((event) => (
                     <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030" } : {}}>
                         <h3>💼 {event.subject}</h3>
-                        {event.start < now ? <span>🔴 <strong>In corso</strong></span> : ""}
+                        {event.start < now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
                         <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                         <span>📍 Aula {event.classroom.name}</span>
                         <span>🧑‍🏫 {event.teacher}</span>
