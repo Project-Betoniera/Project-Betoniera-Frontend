@@ -251,6 +251,10 @@ video {
         width: 100%;
     }
 
+    #loginPageTitle {
+        font-size: 1.8rem;
+    }
+
     #qrCodeContainer {
         display: none;
     }

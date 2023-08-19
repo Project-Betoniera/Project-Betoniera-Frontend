@@ -38,7 +38,7 @@ export function LoginForm() {
         <>
             <div className="flex-v flex-grow align-center">
                 <div className="container">
-                    <h1>Project Betoniera<sup>BETA</sup></h1>
+                    <h1 id="loginPageTitle">Project Betoniera<sup>BETA</sup></h1>
                     <div className="container">
                         <h2>🚀 Login</h2>
                         <form onSubmit={login} className="flex-v">
