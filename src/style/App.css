@@ -207,6 +207,10 @@ video {
         font-size: 0.7rem;
     }
 
+    input {
+        font-size: 16px;
+    }
+
     .main-container {
         display: flex;
         flex-direction: column;
