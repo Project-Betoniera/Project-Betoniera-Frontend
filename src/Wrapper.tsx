@@ -18,10 +18,22 @@ export function Wrapper() {
         <>
             <nav>
                 <h1>Project Betoniera</h1>
-                <Link to="/">Home</Link>
-                <Link to="/classroom">Aule</Link>
-                <Link to="/calendar">Calendario</Link>
-                <Link to="/about">About</Link>
+                <Link to="/">
+                    <img src="Home.svg" alt="Home.svg"></img>
+                    <span>Home</span>
+                </Link>
+                <Link to="/classroom">
+                    <img src="School.svg" alt="School.svg"></img>
+                    <span>Aule</span>
+                </Link>
+                <Link to="/calendar">
+                    <img src="Calendar.svg" alt="Calendar.svg"></img>
+                    <span>Calendario</span>
+                </Link>
+                <Link to="/about">
+                    <img src="Info.svg" alt="Info.svg"></img>
+                    <span>About</span>
+                </Link>
                 <button onClick={logout}>👋 Logout</button>
             </nav>
             <main>
