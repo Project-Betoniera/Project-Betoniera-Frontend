@@ -17,7 +17,7 @@ export function Wrapper() {
     return (
         <>
             <nav>
-                <h1>Project Betoniera</h1>
+                <h1>Project Betoniera<sup>BETA</sup></h1>
                 <Link to="/">
                     <img src="Home.svg" alt="Home.svg"></img>
                     <span>Home</span>
