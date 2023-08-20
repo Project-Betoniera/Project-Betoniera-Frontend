@@ -18,11 +18,8 @@ export function About() {
                 <h2>Come funziona?</h2>
                 <p>Estraiamo i dati del calendario dal Gestionale ufficiale, li parsiamo, li salviamo in una cache e li serviamo pronti per essere utilizzati!</p>
 
-                <h2>Chi c'è dietro?</h2>
-                <p>Il progetto è stato creato da <b>Michelangelo Camaioni</b> e da <b>Manuel Doneda</b>, due studenti della JAC.</p>
-
-                <h2>Posso contattarvi?</h2>
-                <p>Assolutamente! Scrivici su Telegram <a href="https://t.me/genio2003" target="_blank">Michelangelo Camaioni</a> o <a href="" target="_blank">Manuel Doneda</a>!</p>
+                <h2>Posso contattare l'autore?</h2>
+                <p>Assolutamente! Puoi contattarmi su <a href="https://t.me/genio2003" target="_blank">Telegram</a>!</p>
             </div>
         </div>
     );
