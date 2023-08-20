@@ -3,15 +3,16 @@ import { TokenContext } from "../context/TokenContext";
 import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
-import { Course } from "../dto/Course";
+import { CourseDto } from "../dto/CourseDto";
 
 export function LoginForm() {
 
-    const { setToken } = useContext(TokenContext);
+    const { setTokenData } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [remember, setRemember] = useState<boolean>(false);
 
     const login = async (e: FormEvent) => {
         e.preventDefault();
@@ -22,8 +23,8 @@ export function LoginForm() {
             }
         }).then((response) => {
             if (response.status === 200) {
-                setToken(response.data.token);
-                setCourse(response.data.course as Course);
+                setTokenData({ token: response.data.token, remember: remember });
+                setCourse(response.data.course as CourseDto);
             }
             else {
                 alert("Login failed");
@@ -37,12 +38,16 @@ export function LoginForm() {
         <>
             <div className="flex-v flex-grow align-center">
                 <div className="container">
-                    <h1>Project Betoniera</h1>
+                    <h1 id="loginPageTitle">Project Betoniera<sup>BETA</sup></h1>
                     <div className="container">
                         <h2>🚀 Login</h2>
                         <form onSubmit={login} className="flex-v">
                             <input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
                             <input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            <label>
+                                <input type="checkbox" checked={remember} onChange={() => setRemember(!remember)} />
+                                Ricordami
+                            </label>
                             <button type="submit">Login</button>
                         </form>
                     </div>
