@@ -7,10 +7,12 @@
 @import url("Input.css");
 @import url("Link.css");
 
-html, body, #root {
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
-    
+
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -19,22 +21,35 @@ html, body, #root {
     color: var(--text);
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
-nav, footer {
+header,
+footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 1rem;
     margin: 0.5rem;
     padding: 1rem;
-    
+
     background-color: var(--semi-transparent);
 }
 
-nav > a {
+header>h1 {
+    padding-right: 4rem;
+}
+
+nav {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav>a {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
@@ -46,7 +61,14 @@ main {
     flex-grow: 1;
 }
 
-p, span, h1, h2, h3, h4, h5, h6 {
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     cursor: default;
 }
 
@@ -58,7 +80,11 @@ h1 {
     margin: 0.5rem 0;
 }
 
-h2, h3, h4, h5, h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-top: 0.1rem;
 }
 
@@ -133,14 +159,28 @@ video {
 }
 
 @keyframes blink {
-    0% { opacity: 0; }
-    25% { opacity: .5; }
-    50% { opacity: 1; }
-    75% { opacity: .5; }
-    100% { opacity: 0; }
+    0% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: .5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 0;
+    }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 700px) {
 
     main {
         margin: 0;
@@ -163,32 +203,35 @@ video {
         box-shadow: var(--semi-transparent) 0px 8px 24px;
         /*box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;*/
         margin: 0;
-        padding: 0;
-    
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+
         background: var(--navbar);
     }
 
-    nav > h1 {
+    header>h1 {
         display: none;
         font-size: 1rem;
     }
 
-    nav > a {
+    nav>a {
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    nav > a > img {
+    nav>a>img {
         width: 1.5rem;
         height: 1.5rem;
     }
 
-    nav > a > span {
+    nav>a>span {
         font-size: 0.8rem;
     }
 
-    nav > button {
+    nav>button {
         margin: 0;
     }
 
