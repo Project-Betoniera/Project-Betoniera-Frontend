@@ -13,7 +13,7 @@ export function Home() {
     const [events, setEvents] = useState<EventDto[]>([]);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
-    const [now] = useState(new Date("2023-01-20T09:10"));
+    const [now] = useState(new Date());
 
     useEffect(() => {
         const start = new Date(now); // Now
@@ -92,17 +92,13 @@ export function Home() {
                 classrooms.map((element) => {
                     let changeTime = "";
 
-                    if (!element.status.statusChangeAt)
-                        changeTime = "Fino a fine giornata.";
-                    else if (element.status.statusChangeAt.getDate() == now.getDate())
-                        changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
-                    else if (element.status.statusChangeAt.getDate() == now.getDate() + 1)
+                    if (!element.status.statusChangeAt || element.status.statusChangeAt.getDate() != now.getDate())
                         changeTime = "Fino alle 18:00";
                     else
-                        changeTime = element.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+                        changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
 
                     return (
-                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */}}>
+                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
                             <h3>🏫 Aula {element.classroom.name}</h3>
                             <span>{changeTime}</span>
 
@@ -115,7 +111,7 @@ export function Home() {
         <div className="container">
             <p>Nessuna aula libera al momento 😒</p>
         </div>
-    )
+    );
 
     return (
         <>
