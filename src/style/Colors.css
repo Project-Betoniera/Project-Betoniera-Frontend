@@ -7,6 +7,7 @@
         --primary: #555555;
         --secondary: #444444;
         --background: #222222;
+        --navbar: #343434;
 
         --text: #ffffff;
         
@@ -23,6 +24,10 @@
 
         --disabled: #888888;
     }
+
+    nav > a > img {
+        filter: brightness(0) saturate(100%) invert(65%) sepia(0%) saturate(1833%) hue-rotate(136deg) brightness(83%) contrast(79%);
+    }
 }
 
 @media (prefers-color-scheme: light) {
@@ -30,6 +35,7 @@
         --primary: #555555;
         --secondary: #444444;
         --background: #d4cec4;
+        --navbar: #c3bdb4;
         
         --text: #000000;
         
@@ -45,5 +51,9 @@
         --ok: green;
 
         --disabled: #888888;
+    }
+
+    nav > a > img {
+        filter: brightness(0) saturate(100%);
     }
 }

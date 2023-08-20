@@ -1,22 +1,26 @@
+import { Link } from "react-router-dom";
+
 export function NotFound() {
-
     function randomImage() {
-
-        const images = ["cement_mixer.gif", "eddsworld_cement.gif", "spinning_1.gif", "spinning_2.gif", "what_cement_mixer_are_you.gif"]
-        const num = Math.floor(Math.random() * images.length);
+        const num = Math.round(Math.random() * 5) + 1; // 1-5
 
         return (
             <>
-                <img src={images[num]} alt="logo" />
+                <video autoPlay loop muted playsInline>
+                    <source src={`404gifs/cement_mixer_${num}.webm`} type="video/webm"/>
+                </video>
             </>
-        )
+        );
     }
 
     return (
         <div className="container">
+            <div className="container wide">
+                <h1>404 Not Found</h1>
+                <p>La pagina che stai cercando non esiste.</p>
+                <p>Ti sei perso? <Link to="/">Torna alla home</Link></p>
+            </div>
             {randomImage()}
-            <h1>404 Not Found</h1>
-            <p>The page you are looking for does not exist.</p>
         </div>
     );
 }

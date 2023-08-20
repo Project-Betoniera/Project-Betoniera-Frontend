@@ -7,10 +7,12 @@
 @import url("Input.css");
 @import url("Link.css");
 
-html, body, #root {
+html,
+body,
+#root {
     margin: 0;
     padding: 0;
-    
+
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -19,35 +21,66 @@ html, body, #root {
     color: var(--text);
 }
 
-html, body {
+html,
+body {
     height: 100%;
 }
 
-nav, footer {
+header,
+footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-radius: 1rem;
     margin: 0.5rem;
     padding: 1rem;
-    
+
     background-color: var(--semi-transparent);
 }
 
+nav {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-around;
+    align-items: center;
+}
+
+nav>a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
 main {
-    margin: 0 5rem auto;
+    margin: 0 auto;
+    max-width: 100rem;
     flex-grow: 1;
 }
 
-p, span, h1, h2, h3, h4, h5, h6 {
+p,
+span,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     cursor: default;
+}
+
+p {
+    margin-top: 0;
 }
 
 h1 {
     margin: 0.5rem 0;
 }
 
-h2, h3, h4, h5, h6 {
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-top: 0.1rem;
 }
 
@@ -55,6 +88,10 @@ canvas {
     width: 21rem;
     height: 21rem;
     background-color: var(--semi-transparent);
+    border-radius: 1rem;
+}
+
+video {
     border-radius: 1rem;
 }
 
@@ -107,4 +144,170 @@ canvas {
 
 .container-info {
     background-color: var(--semi-transparent-info);
+}
+
+.wrap {
+    flex-wrap: wrap;
+}
+
+#inProgressIndicator {
+    animation: blink 3s linear infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: .5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    75% {
+        opacity: .5;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@media screen and (max-width: 700px) {
+
+    main {
+        margin: 0;
+        padding-bottom: 4rem;
+    }
+
+
+    header,
+    nav {
+        position: fixed;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        bottom: 0rem;
+        left: 0;
+
+        height: 4rem;
+        width: 100%;
+
+        margin: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-top: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    header {
+        background-color: transparent;
+    }
+
+    nav {
+        background-color: var(--navbar);
+        border-radius: 1rem;
+        /*box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;*/
+        box-shadow: var(--semi-transparent) 0 -0.5rem 1rem;
+        /*box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;*/
+    }
+
+
+    header>h1 {
+        display: none;
+        font-size: 1rem;
+    }
+
+    nav>a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav>a>img {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    nav>a>span {
+        font-size: 0.8rem;
+    }
+
+    nav>button {
+        margin: 0;
+    }
+
+    footer {
+        display: none;
+    }
+
+    canvas {
+        width: 15rem;
+        height: 15rem;
+    }
+
+    select {
+        margin-left: 0;
+        width: 100%;
+        font-size: 0.7rem;
+    }
+
+    input {
+        font-size: 1rem;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        margin: 1rem;
+        padding: 0rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
+    }
+
+    .element-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .element {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        margin: 0.5rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
+    }
+
+    .class-element {
+        display: block;
+        width: 100%;
+
+        margin: 1rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background-color: var(--semi-transparent);
+    }
+
+    .display-block {
+        display: block;
+        width: 100%;
+    }
+
+    #loginPageTitle {
+        font-size: 1.8rem;
+    }
+
+    #qrCodeContainer {
+        display: none;
+    }
 }

@@ -2,30 +2,32 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useRef, useState } from "react";
-import { Course } from "../dto/Course";
+import { CourseDto } from "../dto/CourseDto";
 import QRCode from 'qrcode';
 import { CourseContext } from "../context/CourseContext";
 
 export function Calendar() {
 
-    const { token } = useContext(TokenContext);
+    const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
-    const [courses, setCourses] = useState<Course[]>([]);
+    const [courses, setCourses] = useState<CourseDto[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<string>("");
     const [calendarUrl, setCalendarUrl] = useState<string>("");
     const [calendarProvider, setCalendarProvider] = useState<string>("");
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const qrCodeRef = useRef<HTMLDivElement>(null);
+    const windowWidth = useRef(window.innerWidth);
 
     // Get course list
     useEffect(() => {
         axios.get(new URL("course", apiUrl).toString(), {
             headers: {
-                Authorization: "Bearer " + token
+                Authorization: "Bearer " + tokenData.token
             }
         }).then(response => { setCourses(response.data); });
-    }, [token]);
+    }, [tokenData]);
 
     // Update calendar url
     useEffect(() => {
@@ -37,7 +39,7 @@ export function Calendar() {
 
             const url = new URL(`event/${encodeURIComponent(selectedCourse)}/ics`, apiUrl);
             url.protocol = "webcal";
-            url.searchParams.append("authorization", `Bearer ${token}`);
+            url.searchParams.append("authorization", `Bearer ${tokenData.token}`);
 
             switch (calendarProvider) {
                 case "google":
@@ -65,7 +67,7 @@ export function Calendar() {
             setCalendarUrl(result.toString());
         }
 
-    }, [selectedCourse, calendarProvider, token]);
+    }, [selectedCourse, calendarProvider, tokenData]);
 
     // Update QR code
     useEffect(() => {
@@ -75,7 +77,13 @@ export function Calendar() {
             return;
         }
 
-        QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { console.error(error); });
+        QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { if (error) console.error(error); });
+
+        // Scroll to QR code if on mobile
+        if (windowWidth.current <= 600) {
+            qrCodeRef.current?.style.setProperty("display", "flex");
+            canvasRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+        }
     }, [calendarUrl]);
 
     // Try to set selected course
@@ -83,26 +91,26 @@ export function Calendar() {
         if (course?.id) {
             setSelectedCourse(course.id.toString());
         }
-    }, [course])
+    }, [course]);
 
     return (
         <>
-            <div className="container align-left flex-grow">
+            <div className="main-container container align-left flex-grow">
                 <div className="container wide align-left">
                     <h1>📆 Calendario</h1>
                 </div>
-                <div className="flex-h">
+                <div className="display-block flex-h">
                     <div className="flex-v">
                         <div className="container align-left">
                             <h3>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</h3>
-                            <div className="flex-h align-center">
+                            <div className="display-block flex-h align-center">
                                 <span>Seleziona il tuo corso</span>
-                                <select defaultValue={selectedCourse} value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
+                                <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un corso</option>
                                     {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
                             </div>
-                            <div className="flex-h align-center">
+                            <div className="display-block flex-h align-center">
                                 <span>Aggiungi a</span>
                                 <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>Seleziona un calendario</option>
@@ -123,7 +131,7 @@ export function Calendar() {
                             <span><strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong></span>
                         </div>
                     </div>
-                    <div className="flex-v">
+                    <div id="qrCodeContainer" ref={qrCodeRef} className="flex-v">
                         <div className="container">
                             <h3>Scansiona codice QR</h3>
                             <canvas ref={canvasRef}></canvas>

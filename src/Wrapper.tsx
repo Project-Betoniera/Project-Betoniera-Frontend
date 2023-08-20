@@ -6,27 +6,44 @@ import { CourseContext } from "./context/CourseContext";
 
 export function Wrapper() {
 
-    const { setToken } = useContext(TokenContext);
+    const { setTokenData } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
 
     const logout = () => {
-        setToken(null);
+        setTokenData({ token: null, remember: false });
         setCourse(null);
     };
 
     return (
         <>
-            <nav>
-                <h1>Betoniera</h1>
-                <Link to="/">Home</Link>
-                <Link to="/calendar">Calendario</Link>
-                <button onClick={logout}>👋 Logout</button>
-            </nav>
+            <header>
+                <h1>Project Betoniera<sup>BETA</sup></h1>
+                <nav>
+                    <Link to="/">
+                        <img src="Home.svg" alt="Home.svg"></img>
+                        <span>Home</span>
+                    </Link>
+                    <Link to="/classroom">
+                        <img src="School.svg" alt="School.svg"></img>
+                        <span>Aule</span>
+                    </Link>
+                    <Link to="/calendar">
+                        <img src="Calendar.svg" alt="Calendar.svg"></img>
+                        <span>Calendario</span>
+                    </Link>
+                    <Link to="/about">
+                        <img src="Info.svg" alt="Info.svg"></img>
+                        <span>About</span>
+                    </Link>
+                    <button onClick={logout}>👋 Logout</button>
+                </nav>
+            </header>
             <main>
                 <Outlet />
             </main>
             <footer>
                 <span>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
+                <Link to="/about">About</Link>
             </footer>
         </>
     );
