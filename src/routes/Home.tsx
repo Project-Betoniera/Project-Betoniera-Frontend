@@ -93,7 +93,7 @@ export function Home() {
                     let changeTime = "";
 
                     if (!element.status.statusChangeAt || element.status.statusChangeAt.getDate() != now.getDate())
-                        changeTime = "Fino alle 18:00";
+                        changeTime = "Fino a domani.";
                     else
                         changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
 
