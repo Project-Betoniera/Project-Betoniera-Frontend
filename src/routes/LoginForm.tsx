@@ -25,12 +25,15 @@ export function LoginForm() {
             if (response.status === 200) {
                 setTokenData({ token: response.data.token, remember: remember });
                 setCourse(response.data.course as CourseDto);
-            }
-            else {
-                alert("Login failed");
+            } else {
+                alert("Login Failed");
             }
         }).catch((error) => {
-            alert("Login failed: " + error.message);
+            if (error.response.status === 401) {
+                alert("Login Failed: Credenziali Errate!");
+            } else {
+                alert("Login Failed: " + error.message);
+            }
         });
     };
 
