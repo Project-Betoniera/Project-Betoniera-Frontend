@@ -154,6 +154,10 @@ video {
     animation: blink 3s linear infinite;
 }
 
+#loadingIndicator {
+    animation: blink 3s linear infinite;
+}
+
 @keyframes blink {
     0% {
         opacity: 0;

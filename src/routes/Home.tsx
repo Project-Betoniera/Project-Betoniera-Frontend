@@ -15,6 +15,10 @@ export function Home() {
 
     const [now] = useState(new Date());
 
+    //const [loading, setLoading] = useState(true);
+    const [eventLoading, setEventLoading] = useState(true);
+    const [classroomsLoading, setClassroomsLoading] = useState(true);
+
     useEffect(() => {
         const start = new Date(now); // Now
         const end = new Date(start); // Tomorrow at 00:00
@@ -40,6 +44,7 @@ export function Home() {
             });
 
             setEvents(result);
+            setEventLoading(false);
         });
     }, []);
 
@@ -63,6 +68,7 @@ export function Home() {
             });
 
             setClassrooms(result);
+            setClassroomsLoading(false);
         });
     }, []);
 
@@ -115,7 +121,12 @@ export function Home() {
 
     return (
         <>
-            <div className="main-container container align-left">
+            <div className="main-container container" style={{ display: eventLoading || classroomsLoading ? "flex" : "none"}}>
+                <img id="loadingIndicator" src="/logo.svg" alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
+                <span>Loading...</span>
+            </div>
+
+            <div className="main-container container align-left" style={{ display: eventLoading || classroomsLoading ? "none" : "flex"}}>
                 <div className="container wide align-left">
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
@@ -125,7 +136,7 @@ export function Home() {
                 </div>
             </div>
 
-            <div className="main-container container align-left">
+            <div className="main-container container align-left" style={{ display: eventLoading || classroomsLoading ? "none" : "flex"}}>
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
                 </div>
