@@ -19,6 +19,8 @@ export function Home() {
     //const [eventLoading, setEventLoading] = useState(true);
     //const [classroomsLoading, setClassroomsLoading] = useState(true);
 
+    const [error, setError] = useState(false);
+
     useEffect(() => {
         const start = new Date(now); // Now
         const end = new Date(start); // Tomorrow at 00:00
@@ -45,6 +47,8 @@ export function Home() {
 
             setEvents(result);
             //setEventLoading(false);
+        }).catch(() => {
+            setError(true);
         });
     }, []);
 
@@ -69,6 +73,8 @@ export function Home() {
 
             setClassrooms(result);
             //setClassroomsLoading(false);
+        }).catch(() => {
+            setError(true);
         });
     }, []);
 
@@ -122,8 +128,9 @@ export function Home() {
     return (
         <>
             <div className="main-container container" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "none" : "flex"}}>
-                <img id="loadingIndicator" src="/logo.svg" alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
-                <span>Loading...</span>
+                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
+                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
+                {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
             </div>
 
             <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none"}}>

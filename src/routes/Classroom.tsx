@@ -13,6 +13,8 @@ export function Classroom() {
 
     //const [loading, setLoading] = useState(true);
 
+    const [error, setError] = useState(false);
+
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: {
@@ -34,15 +36,19 @@ export function Classroom() {
 
             setClassrooms(result);
             //setLoading(false);
+        }).catch(() => {
+            setError(true);
         });
     }, [dateTime]);
 
     return (
         <>
             <div className="main-container container" style={{ display: classrooms[0]?.classroom ? "none" : "flex"}}>
-                    <img id="loadingIndicator" src="/logo.svg" alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
-                    <span>Loading...</span>
+                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
+                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
+                {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
             </div>
+
             <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom ? "flex" : "none"}}>
                 <div className="container wide align-left">
                     <h1>🏫 Stato Aule</h1>
