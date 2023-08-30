@@ -11,7 +11,7 @@ export function Classroom() {
 
     const [dateTime, setDateTime] = useState(new Date());
 
-    const [loading, setLoading] = useState(true);
+    //const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -33,17 +33,17 @@ export function Classroom() {
             });
 
             setClassrooms(result);
-            setLoading(false);
+            //setLoading(false);
         });
     }, [dateTime]);
 
     return (
         <>
-            <div className="main-container container" style={{ display: loading ? "flex" : "none"}}>
+            <div className="main-container container" style={{ display: classrooms[0]?.classroom ? "none" : "flex"}}>
                     <img id="loadingIndicator" src="/logo.svg" alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
                     <span>Loading...</span>
             </div>
-            <div className="main-container container align-left" style={{ display: loading ? "none" : "flex"}}>
+            <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom ? "flex" : "none"}}>
                 <div className="container wide align-left">
                     <h1>🏫 Stato Aule</h1>
                     <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</h3>
