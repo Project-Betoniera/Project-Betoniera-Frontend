@@ -11,8 +11,6 @@ export function Classroom() {
 
     const [dateTime, setDateTime] = useState(new Date());
 
-    //const [loading, setLoading] = useState(true);
-
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -35,7 +33,6 @@ export function Classroom() {
             });
 
             setClassrooms(result);
-            //setLoading(false);
         }).catch(() => {
             setError(true);
         });

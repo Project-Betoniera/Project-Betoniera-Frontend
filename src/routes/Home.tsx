@@ -15,10 +15,6 @@ export function Home() {
 
     const [now] = useState(new Date());
 
-    //const [loading, setLoading] = useState(true);
-    //const [eventLoading, setEventLoading] = useState(true);
-    //const [classroomsLoading, setClassroomsLoading] = useState(true);
-
     const [error, setError] = useState(false);
 
     useEffect(() => {
@@ -46,7 +42,6 @@ export function Home() {
             });
 
             setEvents(result);
-            //setEventLoading(false);
         }).catch(() => {
             setError(true);
         });
@@ -72,7 +67,6 @@ export function Home() {
             });
 
             setClassrooms(result);
-            //setClassroomsLoading(false);
         }).catch(() => {
             setError(true);
         });
