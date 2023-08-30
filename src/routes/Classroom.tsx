@@ -11,6 +11,8 @@ export function Classroom() {
 
     const [dateTime, setDateTime] = useState(new Date());
 
+    const [error, setError] = useState(false);
+
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: {
@@ -31,40 +33,50 @@ export function Classroom() {
             });
 
             setClassrooms(result);
+        }).catch(() => {
+            setError(true);
         });
     }, [dateTime]);
 
     return (
-        <div className="main-container container align-left">
-            <div className="container wide align-left">
-                <h1>🏫 Stato Aule</h1>
-                <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</h3>
-                <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
+        <>
+            <div className="main-container container" style={{ display: classrooms[0]?.classroom ? "none" : "flex"}}>
+                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
+                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
+                {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
             </div>
-            <div className="element-container flex-h wide align-left wrap">
-                {
-                    classrooms.map((item) => {
-                        const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
-                        let changeTime = "";
 
-                        if (!item.status.statusChangeAt)
-                            changeTime = "⌚ Nessun evento programmato.";
-                        else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                            changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
-                        else
-                            changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
+            <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom ? "flex" : "none"}}>
+                <div className="container wide align-left">
+                    <h1>🏫 Stato Aule</h1>
+                    <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</h3>
+                    <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
+                </div>
+                <div className="element-container flex-h wide align-left wrap">
+                    {
+                        classrooms.map((item) => {
+                            const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
+                            let changeTime = "";
 
-                        return (
-                            <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030" }}>
-                                <h3>🏫 Aula {item.classroom.name}</h3>
-                                <span>{status}</span>
-                                <span>{changeTime}</span>
+                            if (!item.status.statusChangeAt)
+                                changeTime = "⌚ Nessun evento programmato.";
+                            else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
+                                changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
+                            else
+                                changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
-                            </div>
-                        );
-                    })
-                }
+                            return (
+                                <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030" }}>
+                                    <h3>🏫 Aula {item.classroom.name}</h3>
+                                    <span>{status}</span>
+                                    <span>{changeTime}</span>
+
+                                </div>
+                            );
+                        })
+                    }
+                </div>
             </div>
-        </div>
+        </>
     );
 }

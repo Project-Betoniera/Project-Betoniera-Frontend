@@ -15,6 +15,8 @@ export function Home() {
 
     const [now] = useState(new Date());
 
+    const [error, setError] = useState(false);
+
     useEffect(() => {
         const start = new Date(now); // Now
         const end = new Date(start); // Tomorrow at 00:00
@@ -40,6 +42,8 @@ export function Home() {
             });
 
             setEvents(result);
+        }).catch(() => {
+            setError(true);
         });
     }, []);
 
@@ -63,6 +67,8 @@ export function Home() {
             });
 
             setClassrooms(result);
+        }).catch(() => {
+            setError(true);
         });
     }, []);
 
@@ -115,7 +121,13 @@ export function Home() {
 
     return (
         <>
-            <div className="main-container container align-left">
+            <div className="main-container container" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "none" : "flex"}}>
+                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
+                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
+                {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
+            </div>
+
+            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none"}}>
                 <div className="container wide align-left">
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
@@ -125,7 +137,7 @@ export function Home() {
                 </div>
             </div>
 
-            <div className="main-container container align-left">
+            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none"}}>
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
                 </div>

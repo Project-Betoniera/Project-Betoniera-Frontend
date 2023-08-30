@@ -20,13 +20,19 @@ export function Calendar() {
     const qrCodeRef = useRef<HTMLDivElement>(null);
     const windowWidth = useRef(window.innerWidth);
 
+    const [error, setError] = useState(false);
+
     // Get course list
     useEffect(() => {
         axios.get(new URL("course", apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
             }
-        }).then(response => { setCourses(response.data); });
+        }).then(response => {
+             setCourses(response.data); 
+        }).catch(() => {
+            setError(true);
+        });
     }, [tokenData]);
 
     // Update calendar url
@@ -106,18 +112,24 @@ export function Calendar() {
                             <div className="display-block flex-h align-center">
                                 <span>Seleziona il tuo corso</span>
                                 <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
-                                    <option value="" disabled>Seleziona un corso</option>
+                                    <option value="" disabled>{ courses[0]?.id ? "Seleziona un corso" : error ? "ERROR - Ricarica la pagina..." : "Loading..."}</option>
                                     {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
                             </div>
                             <div className="display-block flex-h align-center">
                                 <span>Aggiungi a</span>
                                 <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
-                                    <option value="" disabled>Seleziona un calendario</option>
-                                    <option value="raw">Link diretto</option>
-                                    <option value="google">Google Calendar</option>
-                                    <option value="outlook">Outlook (Personale)</option>
-                                    <option value="ms365">Outlook (Account aziendale o scolastico)</option>
+                                    { error || !courses[0]?.id ? (
+                                        <option value="" disabled>↑ LOOK UP FOR STATUS ↑</option>
+                                    ) : (
+                                        <>
+                                            <option value="" disabled>Seleziona un calendario</option>
+                                            <option value="raw">Link diretto</option>
+                                            <option value="google">Google Calendar</option>
+                                            <option value="outlook">Outlook (Personale)</option>
+                                            <option value="ms365">Outlook (Account aziendale o scolastico)</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                         </div>
