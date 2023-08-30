@@ -86,7 +86,7 @@ export function Calendar() {
         QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { if (error) console.error(error); });
 
         // Scroll to QR code if on mobile
-        if (windowWidth.current <= 600) {
+        if (windowWidth.current <= 700) {
             qrCodeRef.current?.style.setProperty("display", "flex");
             canvasRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
         }
