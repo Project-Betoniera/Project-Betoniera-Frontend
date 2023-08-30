@@ -119,11 +119,17 @@ export function Calendar() {
                             <div className="display-block flex-h align-center">
                                 <span>Aggiungi a</span>
                                 <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
-                                    <option value="" disabled>Seleziona un calendario</option>
-                                    <option value="raw">Link diretto</option>
-                                    <option value="google">Google Calendar</option>
-                                    <option value="outlook">Outlook (Personale)</option>
-                                    <option value="ms365">Outlook (Account aziendale o scolastico)</option>
+                                    { error || !courses[0]?.id ? (
+                                        <option value="" disabled>↑ LOOK UP FOR STATUS ↑</option>
+                                    ) : (
+                                        <>
+                                            <option value="" disabled>Seleziona un calendario</option>
+                                            <option value="raw">Link diretto</option>
+                                            <option value="google">Google Calendar</option>
+                                            <option value="outlook">Outlook (Personale)</option>
+                                            <option value="ms365">Outlook (Account aziendale o scolastico)</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                         </div>
