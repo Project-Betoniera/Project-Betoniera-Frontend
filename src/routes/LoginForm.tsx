@@ -24,7 +24,7 @@ export function LoginForm() {
         }).then((response) => {
             if (response.status === 200) {
                 setTokenData({ token: response.data.token, remember: remember });
-                setCourse(response.data.course as CourseDto);
+                setCourse(response.data.course[0] as CourseDto);
             } else {
                 alert("Login Failed");
             }
