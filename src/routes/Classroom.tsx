@@ -141,16 +141,17 @@ export function Classroom() {
                 </div>
                 <div className="pop-up-backdrop" style={{ display: popUp ? "flex" : "none" }}>
                     <div className="pop-up-container scroll-component" style={{ display: popUp ? "flex" : "none", justifyContent: "flex-start" }}>
+                    <span>Lezioni Aula {events[0]?.classroom.name}</span>
                     {
                         events.map((event) => {
                             return (
-                                <div className="container align-left" style={ event.start < dateTime && event.end > dateTime ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : {}}>
+                                <div className="container align-left" style={ event.start < dateTime && event.end > dateTime ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px", width: "100%", marginRight: "0", marginLeft: "0" } : { width: "100%", marginRight: "0", marginLeft: "0" }}>
                                     <h3>💼 {event.subject}</h3>
                                     {event?.start < now && event.end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
                                         <span>⌚ {event?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                                         <span>📍 Aula {event?.classroom.name}</span>
                                         <span>🎒 {event?.course.code} - {event?.course.name} ({event?.course.startYear}/{event?.course.endYear})</span>
-                                        <span>🧑‍🏫 {event?.teacher}</span>
+                                        {event?.teacher ? <span>🧑‍🏫 {event?.teacher}</span> : ""}
                                 </div>
                             )
                         })

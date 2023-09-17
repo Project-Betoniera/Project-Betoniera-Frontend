@@ -7,6 +7,13 @@
 @import url("Input.css");
 @import url("Link.css");
 
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 html,
 body,
 #root {
