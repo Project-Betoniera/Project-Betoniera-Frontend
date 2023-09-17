@@ -116,9 +116,9 @@ export function Classroom() {
                             );
                             */
 
-                            if (item.status.isFree) {
+                            if (item.status.statusChangeAt && item.status.statusChangeAt.getDate() !== dateTime.getDate()) {
                                 return (
-                                    <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
+                                    <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                                         <h3>🏫 {item.classroom.name}</h3>
                                         <span>{status}</span>
                                         <span>{changeTime}</span>
@@ -128,7 +128,7 @@ export function Classroom() {
                             else {
                                 return (
                                     <a onClick={() => {displayPopUp(item.classroom.id)}} style={{ color: "var(--text)", cursor: "pointer", display: "contents"}}>
-                                        <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
+                                        <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                                             <h3>🏫 {item.classroom.name}</h3>
                                             <span>{status}</span>
                                             <span>{changeTime}</span>
