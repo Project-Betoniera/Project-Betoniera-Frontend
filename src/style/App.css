@@ -158,6 +158,9 @@ video {
     bottom: 0;
     background-color: rgba(0, 0, 0, .7);
     z-index: 1000;
+
+    height: 100%;
+    width: 100%;
 }
 
 .pop-up-container {
@@ -175,6 +178,12 @@ video {
     margin: 1rem;
     padding: 1rem;
     border-radius: 1rem;
+}
+
+.scroll-component {
+    width: auto;
+    height: 80%;
+    overflow-y: auto;
 }
 
 #inProgressIndicator {

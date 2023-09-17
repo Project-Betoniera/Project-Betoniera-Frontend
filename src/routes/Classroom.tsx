@@ -140,7 +140,7 @@ export function Classroom() {
                     }
                 </div>
                 <div className="pop-up-backdrop" style={{ display: popUp ? "flex" : "none" }}>
-                    <div className="pop-up-container" style={{ display: popUp ? "flex" : "none" }}>
+                    <div className="pop-up-container scroll-component" style={{ display: popUp ? "flex" : "none", justifyContent: "flex-start" }}>
                     {
                         events.map((event) => {
                             return (
