@@ -10,12 +10,13 @@ export function Classroom() {
 
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
+    const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date());
 
     const [error, setError] = useState(false);
 
     const [popUp, setPopUp] = useState(false);
-    const [events, setEvents] = useState<EventDto[]>([]);
+    const [event, setEvent] = useState<EventDto[]>([]);
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -42,8 +43,8 @@ export function Classroom() {
         });
     }, [dateTime]);
 
-    function fetchEvent(start: Date, end: Date) {
-        axios.get(new URL(`event/`, apiUrl).toString(), {
+    function fetchEvent(start: Date, end: Date, classroomID: number) {
+        axios.get(new URL(`/event/classroom/${encodeURIComponent(classroomID)}`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
             },
@@ -61,27 +62,27 @@ export function Classroom() {
                 result.push(element as EventDto);
             });
     
-            setEvents(result);
+            setEvent(result);
         }).catch(() => {
-          console.log("Error");
+            setError(true);
         });
     }
 
-    async function displayPopUp(end: Date, classroomID: number) {
-        //await fetchEvent(dateTime, end); TO-FIX IN THE BACKEND!
+    function displayPopUp(end: Date, classroomID: number) {
+        fetchEvent(dateTime, end, classroomID);
         setPopUp(true);
         console.log(classroomID, end);
     }
 
     return (
         <>
-            <div className="main-container container" style={{ display: classrooms[0]?.classroom ? "none" : "flex"}}>
+            <div className="main-container container" style={{ display: classrooms[0]?.classroom && !error ? "none" : "flex"}}>
                 <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
                 {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
                 {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
             </div>
 
-            <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom ? "flex" : "none"}}>
+            <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom && !error ? "flex" : "none"}}>
                 <div className="container wide align-left">
                     <h1>🏫 Stato Aule</h1>
                     <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</h3>
@@ -112,7 +113,7 @@ export function Classroom() {
 
                             if (item.status.isFree) {
                                 return (
-                                    <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#00FF0030" }}>
+                                    <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                                         <h3>🏫 {item.classroom.name}</h3>
                                         <span>{status}</span>
                                         <span>{changeTime}</span>
@@ -122,7 +123,7 @@ export function Classroom() {
                             else {
                                 return (
                                     <a onClick={() => {displayPopUp(item.status.statusChangeAt as Date,item.classroom.id)}} style={{ color: "var(--text)", cursor: "pointer", display: "contents"}}>
-                                        <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#FF000030" }}>
+                                        <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                                             <h3>🏫 {item.classroom.name}</h3>
                                             <span>{status}</span>
                                             <span>{changeTime}</span>
@@ -133,24 +134,26 @@ export function Classroom() {
                         })
                     }
                 </div>
-                <div style={{ display: popUp ? "flex" : "none", position: "fixed", top: "0", left: "0", right: "0", bottom: "0", backgroundColor: "rgba(0, 0, 0, .7)", zIndex: "1000" }}>
-                    <div className="container" style={{ display: popUp ? "flex" : "none", position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", padding: "1rem", zIndex: "1000", backgroundColor: "var(--navbar)"}}>
+                <div className="pop-up-backdrop" style={{ display: popUp ? "flex" : "none" }}>
+                    <div className="pop-up-container" style={{ display: popUp ? "flex" : "none" }}>
                         <div className="container align-left">
-                            {/*
-                            <h3>💼 {event.subject}</h3>
-                            <span id="inProgressIndicator">🔴 <strong>In corso</strong></span>
-                            <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                            <span>📍 Aula {event.classroom.name}</span>
-                            <span>🧑‍🏫 {event.teacher}</span>
-                            */}
 
+                            <h3>💼 {event[0]?.subject}</h3>
+                            {event[0]?.start < now && event[0].end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
+                            <span>⌚ {event[0]?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event[0]?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                            <span>📍 Aula {event[0]?.classroom.name}</span>
+                            <span>🎒 {event[0]?.course.code} - {event[0]?.course.name} ({event[0]?.course.startYear}/{event[0]?.course.endYear})</span>
+                            <span>🧑‍🏫 {event[0]?.teacher}</span>
+
+                            {/*
                             <h3>💼 M4 TEST TESTTESTTEST</h3>
                             <span id="inProgressIndicator">🔴 <strong>In corso</strong></span>
                             <span>⌚ 09:00 - 13:00</span>
                             <span>📍 Aula 305</span>
                             <span>🧑‍🏫 Mario Rossi</span>
+                            */}
                         </div>
-                        <button onClick={() => setPopUp(false)}>Chiudi</button>
+                        <button onClick={() => setPopUp(false)} style={{fontSize: "1rem"}}>Chiudi</button>
                     </div>
                 </div>
             </div>

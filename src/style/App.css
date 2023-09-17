@@ -150,6 +150,33 @@ video {
     flex-wrap: wrap;
 }
 
+.pop-up-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .7);
+    z-index: 1000;
+}
+
+.pop-up-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50.1%, -50.1%); /* 0.1% to avoid weird text blur (CSS Bug in some Browsers...) [https://github.com/reactjs/react-modal/issues/188] */
+    background-color: var(--navbar);
+    z-index: 1000;
+
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
 #inProgressIndicator {
     animation: blink 3s linear infinite;
 }
@@ -305,6 +332,11 @@ video {
     .display-block {
         display: block;
         width: 100%;
+    }
+
+    .fullscreen-pop-up {
+        width: 100%;
+        height: 100%;
     }
 
     #loginPageTitle {
