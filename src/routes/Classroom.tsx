@@ -16,7 +16,7 @@ export function Classroom() {
     const [error, setError] = useState(false);
 
     const [popUp, setPopUp] = useState(false);
-    const [event, setEvent] = useState<EventDto[]>([]);
+    const [events, setEvents] = useState<EventDto[]>([]);
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -43,8 +43,14 @@ export function Classroom() {
         });
     }, [dateTime]);
 
-    function fetchEvent(start: Date, end: Date, classroomID: number) {
-        axios.get(new URL(`/event/classroom/${encodeURIComponent(classroomID)}`, apiUrl).toString(), {
+    async function fetchEvent(dateTime: Date, classroomID: number) {
+        const start = new Date(dateTime);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(dateTime);
+        end.setDate(end.getDate() + 1);
+        end.setHours(0, 0, 0, 0);
+
+        await axios.get(new URL(`/event/classroom/${encodeURIComponent(classroomID)}`, apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
             },
@@ -62,16 +68,15 @@ export function Classroom() {
                 result.push(element as EventDto);
             });
     
-            setEvent(result);
+            setEvents(result);
         }).catch(() => {
             setError(true);
         });
     }
 
-    function displayPopUp(end: Date, classroomID: number) {
-        fetchEvent(dateTime, end, classroomID);
+    function displayPopUp(classroomID: number) {
+        fetchEvent(dateTime, classroomID);
         setPopUp(true);
-        console.log(classroomID, end);
     }
 
     return (
@@ -122,7 +127,7 @@ export function Classroom() {
                             }
                             else {
                                 return (
-                                    <a onClick={() => {displayPopUp(item.status.statusChangeAt as Date,item.classroom.id)}} style={{ color: "var(--text)", cursor: "pointer", display: "contents"}}>
+                                    <a onClick={() => {displayPopUp(item.classroom.id)}} style={{ color: "var(--text)", cursor: "pointer", display: "contents"}}>
                                         <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                                             <h3>🏫 {item.classroom.name}</h3>
                                             <span>{status}</span>
@@ -136,24 +141,21 @@ export function Classroom() {
                 </div>
                 <div className="pop-up-backdrop" style={{ display: popUp ? "flex" : "none" }}>
                     <div className="pop-up-container" style={{ display: popUp ? "flex" : "none" }}>
-                        <div className="container align-left">
-
-                            <h3>💼 {event[0]?.subject}</h3>
-                            {event[0]?.start < now && event[0].end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
-                            <span>⌚ {event[0]?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event[0]?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                            <span>📍 Aula {event[0]?.classroom.name}</span>
-                            <span>🎒 {event[0]?.course.code} - {event[0]?.course.name} ({event[0]?.course.startYear}/{event[0]?.course.endYear})</span>
-                            <span>🧑‍🏫 {event[0]?.teacher}</span>
-
-                            {/*
-                            <h3>💼 M4 TEST TESTTESTTEST</h3>
-                            <span id="inProgressIndicator">🔴 <strong>In corso</strong></span>
-                            <span>⌚ 09:00 - 13:00</span>
-                            <span>📍 Aula 305</span>
-                            <span>🧑‍🏫 Mario Rossi</span>
-                            */}
-                        </div>
-                        <button onClick={() => setPopUp(false)} style={{fontSize: "1rem"}}>Chiudi</button>
+                    {
+                        events.map((event) => {
+                            return (
+                                <div className="container align-left" style={ event.start < dateTime && event.end > dateTime ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : {}}>
+                                    <h3>💼 {event.subject}</h3>
+                                    {event?.start < now && event.end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
+                                        <span>⌚ {event?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                                        <span>📍 Aula {event?.classroom.name}</span>
+                                        <span>🎒 {event?.course.code} - {event?.course.name} ({event?.course.startYear}/{event?.course.endYear})</span>
+                                        <span>🧑‍🏫 {event?.teacher}</span>
+                                </div>
+                            )
+                        })
+                    }
+                    <button onClick={() => setPopUp(false)} style={{fontSize: "1rem"}}>Chiudi</button>
                     </div>
                 </div>
             </div>
