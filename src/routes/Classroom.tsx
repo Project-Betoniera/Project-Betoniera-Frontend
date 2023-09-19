@@ -88,12 +88,12 @@ export function Classroom() {
             </div>
 
             <div className="main-container container align-left" style={{ display: classrooms[0]?.classroom && !error ? "flex" : "none"}}>
-                <div className="container wide align-left">
+                <div className="container wide align-left" style={{ display: popUp && (window.innerWidth <= 700) ? "none" : "flex"}}>
                     <h1>🏫 Stato Aule</h1>
                     <h3>📅 {new Date().toLocaleDateString([], { year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" })}</h3>
                     <input type="datetime-local" defaultValue={dateTime.toLocaleString()} min="2018-10-01T00:00" onChange={(e) => setDateTime(new Date(e.target.value))} />
                 </div>
-                <div className="element-container flex-h wide align-left wrap">
+                <div className="element-container flex-h wide align-left wrap" style={{ display: popUp && (window.innerWidth <= 700) ? "none" : "flex"}}>
                     {
                         classrooms.map((item) => {
                             const status = item.status.isFree ? "🟢 Libera" : "🔴 Occupata";
@@ -140,7 +140,7 @@ export function Classroom() {
                     }
                 </div>
                 <div className="pop-up-backdrop" style={{ display: popUp ? "flex" : "none" }}>
-                    <div className="pop-up-container scroll-component" style={{ display: popUp ? "flex" : "none", justifyContent: "flex-start" }}>
+                    <div className="pop-up-container scroll-component" style={{ display: popUp ? "flex" : "none" }}>
                     <h1>Lezioni Aula {events[0]?.classroom.name}</h1>
                     {
                         events.map((event) => {
@@ -148,10 +148,10 @@ export function Classroom() {
                                 <div className="container align-left" style={ event.start < dateTime && event.end > dateTime ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px", width: "100%", marginRight: "0", marginLeft: "0" } : { width: "100%", marginRight: "0", marginLeft: "0" }}>
                                     <h3>💼 {event.subject}</h3>
                                     {event?.start < now && event.end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
-                                        <span>⌚ {event?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                                        <span>📍 Aula {event?.classroom.name}</span>
-                                        <span>🎒 {event?.course.code} - {event?.course.name} ({event?.course.startYear}/{event?.course.endYear})</span>
-                                        {event?.teacher ? <span>🧑‍🏫 {event?.teacher}</span> : ""}
+                                    <span>⌚ {event?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                                    <span>📍 Aula {event?.classroom.name}</span>
+                                    <span>🎒 {event?.course.code} - {event?.course.name} ({event?.course.startYear}/{event?.course.endYear})</span>
+                                    {event?.teacher ? <span>🧑‍🏫 {event?.teacher}</span> : ""}
                                 </div>
                             )
                         })
