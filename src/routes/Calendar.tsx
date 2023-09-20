@@ -113,7 +113,18 @@ export function Calendar() {
                                 <span>Seleziona il tuo corso</span>
                                 <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>{ courses[0]?.id ? "Seleziona un corso" : error ? "ERROR - Ricarica la pagina..." : "Loading..."}</option>
-                                    {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name} ({course.startYear}/{course.endYear})</option>)}
+                                    {courses.sort((a, b) => {
+                                        // Sort by course code (BSD22 - BSD22)
+                                        if (a.code === b.code) {
+                                            return 0;
+                                        } else if (a.code < b.code) {
+                                            return -1;
+                                        } else {
+                                            return 1;
+                                        }
+                                    }).map(course =>
+                                        <option key={course.id} value={course.id}>{course.code} - {course.name} ({course.startYear}/{course.endYear})</option>
+                                    )}
                                 </select>
                             </div>
                             <div className="display-block flex-h align-center">
