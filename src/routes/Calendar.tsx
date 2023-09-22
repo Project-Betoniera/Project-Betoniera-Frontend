@@ -27,6 +27,9 @@ export function Calendar() {
         axios.get(new URL("course", apiUrl).toString(), {
             headers: {
                 Authorization: "Bearer " + tokenData.token
+            },
+            params: {
+                distinct: true
             }
         }).then(response => {
              setCourses(response.data); 
@@ -113,7 +116,7 @@ export function Calendar() {
                                 <span>Seleziona il tuo corso</span>
                                 <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
                                     <option value="" disabled>{ courses[0]?.id ? "Seleziona un corso" : error ? "ERROR - Ricarica la pagina..." : "Loading..."}</option>
-                                    {courses.sort((a, b) => a.startYear > b.startYear ? 0 : 1).map(course => <option key={course.id} value={course.id}>{course.code} - {course.name} ({course.startYear}/{course.endYear})</option>)}
+                                    {courses.map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
                                 </select>
                             </div>
                             <div className="display-block flex-h align-center">
