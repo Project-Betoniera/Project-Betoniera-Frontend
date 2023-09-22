@@ -105,17 +105,18 @@ export function Classroom() {
                                 changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
                             else
                                 changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
-                            /*
+                            
                             return (
-                                <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030" }}>
-                                    <h3>🏫 Aula {item.classroom.name}</h3>
-                                    <span>{status}</span>
-                                    <span>{changeTime}</span>
-    
-                                </div>
-                            );
-                            */
-
+                                <a onClick={() => {displayPopUp(item.classroom.id)}} style={{ color: "var(--text)", cursor: "pointer", display: "contents"}}>
+                                    <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
+                                        <h3>🏫 {item.classroom.name}</h3>
+                                        <span>{status}</span>
+                                        <span>{changeTime}</span>
+                                    </div>
+                                </a>
+                            )
+                            
+                            /*
                             if (item.status.statusChangeAt == null || item.status.statusChangeAt.getDate() !== dateTime.getDate()) {
                                 return (
                                     <div key={item.classroom.id} className="class-element container align-left" style={{ backgroundColor: item.status.isFree ? "#00FF0030" : "#FF000030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
@@ -136,6 +137,7 @@ export function Classroom() {
                                     </a>
                                 )
                             }
+                            */
                         })
                     }
                 </div>
@@ -143,7 +145,7 @@ export function Classroom() {
                     <div className="pop-up-container scroll-component" style={{ display: popUp ? "flex" : "none" }}>
                     <h1>Lezioni Aula {events[0]?.classroom.name}</h1>
                     {
-                        events.map((event) => {
+                        events.length > 0 ? events.map((event) => {
                             return (
                                 <div className="container align-left" style={ event.start < dateTime && event.end > dateTime ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px", width: "100%", marginRight: "0", marginLeft: "0" } : { width: "100%", marginRight: "0", marginLeft: "0" }}>
                                     <h3>💼 {event.subject}</h3>
@@ -154,7 +156,12 @@ export function Classroom() {
                                     {event?.teacher ? <span>🧑‍🏫 {event?.teacher}</span> : ""}
                                 </div>
                             )
-                        })
+                        }) : (
+                            <div className="container">
+                                <p>Nessuna lezione per oggi!</p>
+                            </div>
+                        )
+
                     }
                     <button onClick={() => setPopUp(false)} style={{fontSize: "1rem"}}>Chiudi</button>
                     </div>
