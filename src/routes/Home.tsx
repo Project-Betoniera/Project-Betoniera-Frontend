@@ -76,7 +76,7 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030" } : {}}>
+                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : {boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px"}}>
                         <h3>💼 {event.subject}</h3>
                         {event.start < now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
                         <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
@@ -104,7 +104,7 @@ export function Home() {
                         changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
 
                     return (
-                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */ }}>
+                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */, boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                             <h3>🏫 Aula {element.classroom.name}</h3>
                             <span>{changeTime}</span>
 
