@@ -17,7 +17,7 @@ export function Wrapper() {
     return (
         <>
             <header>
-                <h1>Project Betoniera<sup>BETA</sup></h1>
+                <h1>Calendar Exporter<sup>BETA</sup></h1>
                 <nav>
                     <Link to="/">
                         <img src="Home.svg" alt="Home.svg"></img>
@@ -42,7 +42,7 @@ export function Wrapper() {
                 <Outlet />
             </main>
             <footer>
-                <span>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
+                <span>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
                 <Link to="/about">About</Link>
             </footer>
         </>

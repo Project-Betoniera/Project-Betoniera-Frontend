@@ -41,7 +41,7 @@ export function LoginForm() {
         <>
             <div className="flex-v flex-grow align-center">
                 <div className="container">
-                    <h1 id="loginPageTitle">Project Betoniera<sup>BETA</sup></h1>
+                    <h1 id="loginPageTitle">Calendar Exporter<sup>BETA</sup></h1>
                     <div className="container">
                         <h2>🚀 Login</h2>
                         <form onSubmit={login} className="flex-v">
@@ -62,7 +62,7 @@ export function LoginForm() {
                 </div>
             </div>
             <footer>
-                <span>Project Betoniera non è sponsorizzato e/o approvato da Fondazione JobsAcademy</span>
+                <span>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</span>
             </footer>
         </>
     );
