@@ -158,7 +158,7 @@ export function Classroom() {
                                 );
                             }) : (
                                 <div className="container">
-                                    <p>Nessuna lezione per oggi!</p>
+                                    <p>Nessuna Lezione!</p>
                                 </div>
                             )
 
