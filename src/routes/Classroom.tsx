@@ -151,8 +151,7 @@ export function Classroom() {
                                         <h3>💼 {event.subject}</h3>
                                         {event?.start < now && event.end > now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
                                         <span>⌚ {event?.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event?.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                                        <span>📍 Aula {event?.classroom.name}</span>
-                                        <span>🎒 {event?.course.code} - {event?.course.name} ({event?.course.startYear}/{event?.course.endYear})</span>
+                                        <span>🎒 {event?.course.code} - {event?.course.name}</span>
                                         {event?.teacher ? <span>🧑‍🏫 {event?.teacher}</span> : ""}
                                     </div>
                                 );
