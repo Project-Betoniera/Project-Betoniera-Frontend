@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import { Link } from "react-router-dom";
 import { TokenContext } from "./context/TokenContext";
 import { CourseContext } from "./context/CourseContext";
+import { Button } from "@fluentui/react-components";
 
 export function Wrapper() {
 
@@ -35,7 +36,7 @@ export function Wrapper() {
                         <img src="Info.svg" alt="Info.svg"></img>
                         <span>About</span>
                     </Link>
-                    <button onClick={logout}>👋 Logout</button>
+                    <Button appearance="primary" onClick={logout}>👋 Logout</Button>
                 </nav>
             </header>
             <main>

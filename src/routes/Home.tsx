@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
+import { Button } from "@fluentui/react-components";
 
 export function Home() {
     const { tokenData } = useContext(TokenContext);
@@ -76,7 +77,7 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : {boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px"}}>
+                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : { boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                         <h3>💼 {event.subject}</h3>
                         {event.start < now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
                         <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
@@ -121,13 +122,13 @@ export function Home() {
 
     return (
         <>
-            <div className="main-container container" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "none" : "flex"}}>
-                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem"}}/>
-                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red"}}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
-                {error ? <button onClick={() => window.location.reload()}>Ricarica</button> : ""}
+            <div className="main-container container" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "none" : "flex" }}>
+                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem" }} />
+                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red" }}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
+                {error ? <Button onClick={() => window.location.reload()}>Ricarica</Button> : ""}
             </div>
 
-            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none"}}>
+            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
                 <div className="container wide align-left">
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
@@ -137,7 +138,7 @@ export function Home() {
                 </div>
             </div>
 
-            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none"}}>
+            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
                 <div className="container wide align-left">
                     <h1>🏫 Aule Libere</h1>
                 </div>
