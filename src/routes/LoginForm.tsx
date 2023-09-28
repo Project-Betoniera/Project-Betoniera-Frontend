@@ -4,34 +4,12 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Button, Checkbox, Input, Link, tokens } from "@fluentui/react-components";
+import { Button, Checkbox, Input, Label, Link, tokens } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
+import { useGlobalStyles } from "../globalStyle";
 
 const useStyles = makeStyles({
-    main: {
-        alignItems: "center",
-        display: "flex",
-        flexGrow: 1,
-    },
-    container: {
-        display: "flex",
-        flexGrow: 1,
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        ...shorthands.margin("1rem"),
-        ...shorthands.padding("1rem"),
-    },
-    footer: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        ...shorthands.margin("1rem"),
-        ...shorthands.padding("1rem"),
-        color: tokens.colorNeutralForeground2,
-        backgroundColor: tokens.colorNeutralBackground2
-    },
     infoCard: {
         display: "flex",
         flexDirection: "column",
@@ -59,7 +37,8 @@ const useStyles = makeStyles({
 });
 
 export function LoginForm() {
-    const style = useStyles();
+    const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
     const { setTokenData } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
@@ -93,10 +72,10 @@ export function LoginForm() {
 
     return (
         <>
-            <main className={style.main}>
-                <div className={style.container}>
+            <main className={globalStyles.main}>
+                <div className={globalStyles.container}>
                     <h1>Calendar Exporter<sup>BETA</sup></h1>
-                    <form onSubmit={login} className={style.loginForm}>
+                    <form onSubmit={login} className={styles.loginForm}>
                         <h2>🚀 Login</h2>
                         <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
                         <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
@@ -106,14 +85,14 @@ export function LoginForm() {
                         </label>
                         <Button appearance="primary" type="submit">Login</Button>
                     </form>
-                    <div className={style.infoCard}>
+                    <div className={styles.infoCard}>
                         <h3>ℹ️ Informazioni</h3>
-                        <span>Esegui il login con le stesse credenziali che utilizzi per accedere al <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</Link>.</span>
-                        <span><strong>Le credenziali verranno inviate al gestionale (passando per <Link>calendar.zucchina.org</Link>), verificate, dopodiché rimarranno salvate su questo dispositivo.</strong></span>
+                        <Label>Esegui il login con le stesse credenziali che utilizzi per accedere al <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</Link>.</Label>
+                        <Label><strong>Le credenziali verranno inviate al gestionale (passando per <Link>calendar.zucchina.org</Link>), verificate, dopodiché rimarranno salvate su questo dispositivo.</strong></Label>
                     </div>
                 </div>
             </main>
-            <footer className={style.footer}>
+            <footer className={globalStyles.footer}>
                 <span>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</span>
             </footer>
         </>
