@@ -5,9 +5,35 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Button } from "@fluentui/react-components";
+import { Caption1, Card, CardHeader, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { useGlobalStyles } from "../globalStyle";
+
+const useStyles = makeStyles({
+    titleBar: {
+        display: "flex",
+        flexDirection: "column",
+        alignSelf: "stretch",
+        ...shorthands.padding("1.5rem"),
+        ...shorthands.borderRadius("1rem"),
+        ...shorthands.gap("1rem"),
+        backgroundColor: tokens.colorNeutralBackground2,
+        "& h1, h3": {
+            ...shorthands.margin("0"),
+            ...shorthands.padding("0"),
+        }
+    },
+    grid: {
+        display: "flex",
+
+        ...shorthands.gap("1rem"),
+        ...shorthands.margin("1rem"),
+    }
+});
 
 export function Home() {
+    const styles = useStyles();
+    const globalStyles = useGlobalStyles();
+
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
@@ -15,8 +41,6 @@ export function Home() {
     const [classrooms, setClassrooms] = useState<ClassroomStatus[]>([]);
 
     const [now] = useState(new Date());
-
-    const [error, setError] = useState(false);
 
     useEffect(() => {
         const start = new Date(now); // Now
@@ -43,9 +67,7 @@ export function Home() {
             });
 
             setEvents(result);
-        }).catch(() => {
-            setError(true);
-        });
+        }).catch(() => { });
     }, []);
 
     useEffect(() => {
@@ -68,27 +90,36 @@ export function Home() {
             });
 
             setClassrooms(result);
-        }).catch(() => {
-            setError(true);
-        });
+        }).catch(() => { });
     }, []);
 
     const remainingEvents = () => events.length > 0 ? (
         <>
             {
                 events.map((event) => (
-                    <div key={event.id} className="container align-left" style={event.start < now ? { backgroundColor: "#00FF0030", boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" } : { boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
-                        <h3>💼 {event.subject}</h3>
-                        {event.start < now ? <span id="inProgressIndicator">🔴 <strong>In corso</strong></span> : ""}
-                        <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                        <span>📍 Aula {event.classroom.name}</span>
-                        <span>🧑‍🏫 {event.teacher}</span>
-                    </div>
+                    <Card className={globalStyles.card}>
+                        <CardHeader
+                            header={
+                                <h3>💼 {event.subject}</h3>
+
+                            }
+                            description={
+                                <Caption1>
+                                    {event.start < now ? <span>🔴 <strong>In corso</strong></span> : ""}
+                                </Caption1>
+                            }
+                        />
+                        <>
+                            <span>⌚ {event.start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - {event.end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                            <span>📍 Aula {event.classroom.name}</span>
+                            <span>🧑‍🏫 {event.teacher}</span>
+                        </>
+                    </Card>
                 ))
             }
         </>
     ) : (
-        <div className="container">
+        <div className={globalStyles.card}>
             <p>Nessuna lezione rimasta per oggi 😊</p>
         </div>
     );
@@ -105,7 +136,7 @@ export function Home() {
                         changeTime = "Fino alle " + element.status.statusChangeAt.toLocaleString([], { hour: "2-digit", minute: "2-digit" });
 
                     return (
-                        <div key={element.classroom.id} className="element container align-left" style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */, boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
+                        <div key={element.classroom.id} className={globalStyles.card} style={{ backgroundColor: element.classroom.color.substring(0, 7) + "20" /* Override transparency */, boxShadow: "rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px" }}>
                             <h3>🏫 Aula {element.classroom.name}</h3>
                             <span>{changeTime}</span>
 
@@ -122,27 +153,21 @@ export function Home() {
 
     return (
         <>
-            <div className="main-container container" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "none" : "flex" }}>
-                <img id="loadingIndicator" src={error ? "/errorLogo.svg" : "./logo.svg"} alt="Loading..." style={{ width: "15rem", height: "15rem" }} />
-                {error ? (<><span style={{ fontSize: "2rem", fontWeight: "bold", color: "red" }}>ERROR</span><span>Ricarica la pagina!</span></>) : (<span>Loading...</span>)}
-                {error ? <Button onClick={() => window.location.reload()}>Ricarica</Button> : ""}
-            </div>
-
-            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
-                <div className="container wide align-left">
+            <div className={globalStyles.container} style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
+                <div className={styles.titleBar}>
                     <h1>📚 {course?.code} - Lezioni Rimanenti</h1>
                     <h3>{course?.name}</h3>
                 </div>
-                <div className="element-container flex-h wide align-left wrap">
+                <div className={styles.grid}>
                     {remainingEvents()}
                 </div>
             </div>
 
-            <div className="main-container container align-left" style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
-                <div className="container wide align-left">
+            <div className={globalStyles.container} style={{ display: events[0]?.id || classrooms[0]?.classroom ? "flex" : "none" }}>
+                <div className={styles.titleBar}>
                     <h1>🏫 Aule Libere</h1>
                 </div>
-                <div className="element-container flex-h wide align-left wrap">
+                <div className={styles.grid}>
                     {freeClassrooms()}
                 </div>
             </div>

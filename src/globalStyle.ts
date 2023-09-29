@@ -1,14 +1,17 @@
 import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 
 export const useGlobalStyles = makeStyles({
+    card: {
+        backgroundColor: tokens.colorNeutralBackground2,
+    },
     main: {
-        alignItems: "center",
         display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
         flexGrow: 1,
     },
     container: {
         display: "flex",
-        flexGrow: 1,
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
@@ -18,7 +21,7 @@ export const useGlobalStyles = makeStyles({
     footer: {
         display: "flex",
         justifyContent: "space-between",
-        ...shorthands.margin("1rem"),
+        ...shorthands.margin("0.5rem"),
         ...shorthands.padding("1rem"),
         ...shorthands.borderRadius("1rem"),
         color: tokens.colorNeutralForeground2,
