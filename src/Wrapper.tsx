@@ -11,8 +11,8 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        ...shorthands.margin("1rem"),
-        ...shorthands.padding("0.5rem", "1rem"),
+        ...shorthands.margin("0.5rem"),
+        ...shorthands.padding("1rem", "1rem"),
         ...shorthands.borderRadius("1rem"),
         backgroundColor: tokens.colorNeutralBackground2
     },
@@ -46,18 +46,18 @@ export function Wrapper() {
             <header className={styles.header}>
                 <h1 className={styles.title}>Calendar Exporter<sup>BETA</sup></h1>
                 <nav className={styles.nav}>
-                    <CompoundButton icon={<Home20Filled />} appearance="subtle" size="small" as="a" href="/">
+                    <Button icon={<Home20Filled />} appearance="subtle" as="a" href="/">
                         Home
-                    </CompoundButton>
-                    <CompoundButton icon={<ConferenceRoom20Filled />} appearance="subtle" size="small" as="a" href="/classroom">
+                    </Button>
+                    <Button icon={<ConferenceRoom20Filled />} appearance="subtle" as="a" href="/classroom">
                         Aule
-                    </CompoundButton>
-                    <CompoundButton icon={<Calendar20Filled />} appearance="subtle" size="small" as="a" href="/calendar">
+                    </Button>
+                    <Button icon={<Calendar20Filled />} appearance="subtle" as="a" href="/calendar">
                         Calendario
-                    </CompoundButton>
-                    <CompoundButton icon={<Info20Filled />} appearance="subtle" size="small" as="a" href="/about">
+                    </Button>
+                    <Button icon={<Info20Filled />} appearance="subtle" as="a" href="/about">
                         About
-                    </CompoundButton>
+                    </Button>
                 </nav>
                 <Button appearance="primary" onClick={logout}>👋 Logout</Button>
             </header>
