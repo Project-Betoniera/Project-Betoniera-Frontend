@@ -4,7 +4,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Button, Checkbox, Input, Label, Link, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, tokens } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 import { useGlobalStyles } from "../globalStyle";
@@ -17,22 +17,23 @@ const useStyles = makeStyles({
         alignItems: "left",
         ...shorthands.margin("1rem"),
         ...shorthands.padding("1rem"),
-        ...shorthands.borderRadius("1rem"),
-        color: tokens.colorNeutralForeground2,
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+        ...shorthands.gap("0.5rem"),
         backgroundColor: tokens.colorNeutralBackground2,
     },
     loginForm: {
         display: "flex",
         flexDirection: "column",
         rowGap: "1rem",
-        ...shorthands.margin("1rem"),
-        ...shorthands.padding("1rem"),
-        ...shorthands.borderRadius("1rem"),
-        color: tokens.colorNeutralForeground2,
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         backgroundColor: tokens.colorNeutralBackground2,
         "& h2": {
             textAlign: "center",
         }
+    },
+    mainContainer: {
+        ...shorthands.gap("1rem"),
+        flexGrow: 1
     }
 });
 
@@ -73,27 +74,40 @@ export function LoginForm() {
     return (
         <>
             <main className={globalStyles.main}>
-                <div className={globalStyles.container}>
-                    <h1>Calendar Exporter<sup>BETA</sup></h1>
-                    <form onSubmit={login} className={styles.loginForm}>
-                        <h2>🚀 Login</h2>
-                        <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
-                        <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
-                        <label>
-                            <Checkbox checked={remember} onChange={() => setRemember(!remember)} />
-                            Ricordami
-                        </label>
-                        <Button appearance="primary" type="submit">Login</Button>
-                    </form>
-                    <div className={styles.infoCard}>
-                        <h3>ℹ️ Informazioni</h3>
-                        <Label>Esegui il login con le stesse credenziali che utilizzi per accedere al <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</Link>.</Label>
-                        <Label><strong>Le credenziali verranno inviate al gestionale (passando per <Link>calendar.zucchina.org</Link>), verificate, dopodiché rimarranno salvate su questo dispositivo.</strong></Label>
-                    </div>
+                <div className={globalStyles.container + styles.mainContainer}>
+                    <LargeTitle>Calendar Exporter<sup>BETA</sup></LargeTitle>
+                    <Card className={styles.loginForm}>
+                        <form onSubmit={login} className={styles.loginForm}>
+                            <h2>🚀 Login</h2>
+                            <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
+                            <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            <Label>
+                                <Checkbox checked={remember} onChange={() => setRemember(!remember)} />
+                                Ricordami
+                            </Label>
+                            <Button appearance="primary" type="submit">Login</Button>
+                        </form>
+                    </Card>
+                    <Card className={styles.infoCard}>
+                        <CardHeader
+                            header={
+                                <Subtitle2>ℹ️ Informazioni</Subtitle2>
+                            }
+                            description={
+                                <Body1>
+                                    Esegui il login con le stesse credenziali che utilizzi per accedere al <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</Link>.
+                                    <br />
+                                    Le credenziali verranno inviate al gestionale (passando per <Link href={window.location.toString()}>calendar.zucchina.org</Link>), verificate, dopodiché <strong>rimarranno salvate su questo dispositivo</strong>.
+                                </Body1>
+                            }
+                        />
+                    </Card>
                 </div>
             </main>
-            <footer className={globalStyles.footer}>
-                <span>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</span>
+            <footer>
+                <Card className={globalStyles.footer}>
+                    <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</Body1>
+                </Card>
             </footer>
         </>
     );

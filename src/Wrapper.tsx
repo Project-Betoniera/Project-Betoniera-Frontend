@@ -2,9 +2,9 @@ import { useContext } from "react";
 import { Outlet } from "react-router";
 import { TokenContext } from "./context/TokenContext";
 import { CourseContext } from "./context/CourseContext";
-import { Button, CompoundButton, Label, Link, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { Home20Filled, ConferenceRoom20Filled, Calendar20Filled, Info20Filled } from "@fluentui/react-icons";
+import { Body1, Button, Card, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { useGlobalStyles } from "./globalStyle";
+import RouterMenu from "./components/RouterMenu";
 
 const useStyles = makeStyles({
     header: {
@@ -19,7 +19,7 @@ const useStyles = makeStyles({
     nav: {
         display: "flex",
         flexGrow: "1",
-        justifyContent: "space-around",
+        justifyContent: "space-evenly",
         alignItems: "center",
     },
     title: {
@@ -27,7 +27,6 @@ const useStyles = makeStyles({
         ...shorthands.padding("0"),
     }
 });
-
 
 export function Wrapper() {
     const styles = useStyles();
@@ -46,27 +45,17 @@ export function Wrapper() {
             <header className={styles.header}>
                 <h1 className={styles.title}>Calendar Exporter<sup>BETA</sup></h1>
                 <nav className={styles.nav}>
-                    <Button icon={<Home20Filled />} appearance="subtle" as="a" href="/">
-                        Home
-                    </Button>
-                    <Button icon={<ConferenceRoom20Filled />} appearance="subtle" as="a" href="/classroom">
-                        Aule
-                    </Button>
-                    <Button icon={<Calendar20Filled />} appearance="subtle" as="a" href="/calendar">
-                        Calendario
-                    </Button>
-                    <Button icon={<Info20Filled />} appearance="subtle" as="a" href="/about">
-                        About
-                    </Button>
+                    <RouterMenu className={styles.nav} />
+                    <Button appearance="primary" onClick={logout}>👋 Logout</Button>
                 </nav>
-                <Button appearance="primary" onClick={logout}>👋 Logout</Button>
             </header>
             <main className={globalStyles.main}>
                 <Outlet />
             </main>
-            <footer className={globalStyles.footer}>
-                <Label>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy. </Label>
-                <Link href="/about">About</Link>
+            <footer>
+                <Card className={globalStyles.footer}>
+                    <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</Body1>
+                </Card>
             </footer>
         </>
     );

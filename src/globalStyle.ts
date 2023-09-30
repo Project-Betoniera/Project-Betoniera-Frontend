@@ -3,6 +3,7 @@ import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 export const useGlobalStyles = makeStyles({
     card: {
         backgroundColor: tokens.colorNeutralBackground2,
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     },
     main: {
         display: "flex",
@@ -20,11 +21,11 @@ export const useGlobalStyles = makeStyles({
     },
     footer: {
         display: "flex",
+        flexDirection: "row",
         justifyContent: "space-between",
         ...shorthands.margin("0.5rem"),
         ...shorthands.padding("1rem"),
-        ...shorthands.borderRadius("1rem"),
-        color: tokens.colorNeutralForeground2,
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         backgroundColor: tokens.colorNeutralBackground2
     },
 });
