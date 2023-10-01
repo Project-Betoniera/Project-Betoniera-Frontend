@@ -7,7 +7,7 @@ import { CourseDto } from "../dto/CourseDto";
 import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, tokens } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
-import { useGlobalStyles } from "../globalStyle";
+import { useGlobalStyles } from "../globalStyles";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -19,21 +19,29 @@ const useStyles = makeStyles({
         ...shorthands.padding("1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         ...shorthands.gap("0.5rem"),
-        backgroundColor: tokens.colorNeutralBackground2,
     },
     loginForm: {
         display: "flex",
         flexDirection: "column",
         rowGap: "1rem",
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-        backgroundColor: tokens.colorNeutralBackground2,
+
         "& h2": {
             textAlign: "center",
         }
     },
-    mainContainer: {
-        ...shorthands.gap("1rem"),
-        flexGrow: 1
+    loginMain: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
+        justifyContent: "center",
+        flexGrow: 1,
+    },
+    loginContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        ...shorthands.gap("2rem"),
     }
 });
 
@@ -73,8 +81,8 @@ export function LoginForm() {
 
     return (
         <>
-            <main className={globalStyles.main}>
-                <div className={globalStyles.container + styles.mainContainer}>
+            <main className={styles.loginMain}>
+                <div className={styles.loginContainer}>
                     <LargeTitle>Calendar Exporter<sup>BETA</sup></LargeTitle>
                     <Card className={styles.loginForm}>
                         <form onSubmit={login} className={styles.loginForm}>

@@ -8,13 +8,13 @@ import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
 import { Classroom } from "./routes/Classroom";
 import { About } from "./routes/About";
-import { FluentProvider, Theme, makeStyles, webDarkTheme, webLightTheme } from "@fluentui/react-components";
+import { FluentProvider, Theme, makeStyles, tokens, webDarkTheme, webLightTheme } from "@fluentui/react-components";
 
 const useStyles = makeStyles({
   root: {
     display: "flex",
     flexDirection: "column",
-    minHeight: "100vh",
+    backgroundColor: tokens.colorNeutralBackground3,
   }
 });
 

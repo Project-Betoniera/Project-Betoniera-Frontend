@@ -2,25 +2,27 @@ import { useContext } from "react";
 import { Outlet } from "react-router";
 import { TokenContext } from "./context/TokenContext";
 import { CourseContext } from "./context/CourseContext";
-import { Body1, Button, Card, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { useGlobalStyles } from "./globalStyle";
+import { Body1, Button, Card, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { useGlobalStyles } from "./globalStyles";
 import RouterMenu from "./components/RouterMenu";
 
 const useStyles = makeStyles({
     header: {
         display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+        flexDirection: "row",
         ...shorthands.margin("0.5rem"),
         ...shorthands.padding("1rem", "1rem"),
-        ...shorthands.borderRadius("1rem"),
-        backgroundColor: tokens.colorNeutralBackground2
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     },
     nav: {
         display: "flex",
+        alignItems: "center",
+    },
+    routerMenu: {
+        display: "flex",
         flexGrow: "1",
         justifyContent: "space-evenly",
-        alignItems: "center",
+
     },
     title: {
         ...shorthands.margin("0"),
@@ -42,12 +44,14 @@ export function Wrapper() {
 
     return (
         <>
-            <header className={styles.header}>
-                <h1 className={styles.title}>Calendar Exporter<sup>BETA</sup></h1>
-                <nav className={styles.nav}>
-                    <RouterMenu className={styles.nav} />
-                    <Button appearance="primary" onClick={logout}>👋 Logout</Button>
-                </nav>
+            <header>
+                <Card className={styles.header}>
+                    <nav className={styles.nav}>
+                        <Title1 className={styles.title}>Calendar Exporter<sup>BETA</sup></Title1>
+                        <RouterMenu className={styles.routerMenu} />
+                        <Button appearance="primary" onClick={logout}>👋 Logout</Button>
+                    </nav>
+                </Card>
             </header>
             <main className={globalStyles.main}>
                 <Outlet />
