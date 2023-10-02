@@ -73,10 +73,10 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <Card className={globalStyles.card} key={event.id} style={event.start < now ? { backgroundColor: tokens.colorPaletteLightGreenBackground2 } : {}}>
+                    <Card className={globalStyles.card} key={event.id} style={event.start <= now ? { backgroundColor: tokens.colorPaletteLightGreenBackground2 } : {}}>
                         <CardHeader
                             header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                            description={event.start < now ? <Body2>🔴 <strong>In corso</strong></Body2> : ""}
+                            description={event.start <= now && event.end > now ? <Body2>🔴 <strong>In corso</strong></Body2> : ""}
                         />
                         <div>
                             <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
