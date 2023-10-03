@@ -62,7 +62,7 @@ export function Classroom() {
         });
     }, [dateTime]);
 
-    function renderClassrooms() {
+    const renderClassrooms = () => {
         return classrooms?.map((item) => {
             const getEvents = (isOpen: boolean) => {
                 if (!isOpen) {
@@ -75,7 +75,7 @@ export function Classroom() {
                 const end = new Date(start);
                 end.setDate(end.getDate() + 1);
 
-                axios.get(new URL(`event/classroom/${item.classroom.id}`, apiUrl).toString(), {
+                axios.get(new URL(`event/classroom/${encodeURIComponent(item.classroom.id)}`, apiUrl).toString(), {
                     headers: { Authorization: "Bearer " + tokenData.token },
                     params: {
                         start: start.toISOString(),
@@ -154,7 +154,7 @@ export function Classroom() {
                 </Dialog>
             );
         });
-    }
+    };
 
     return (
         <div className={globalStyles.container}>
