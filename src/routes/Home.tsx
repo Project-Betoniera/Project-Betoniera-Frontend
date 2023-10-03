@@ -101,7 +101,7 @@ export function Home() {
             changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
 
         return (
-            <Popover inline key={item.classroom.id}>
+            <Popover key={item.classroom.id}>
                 <PopoverTrigger>
                     <Card className={globalStyles.card}>
                         <CardHeader header={<Subtitle2>🏫 Aula {item.classroom.name}</Subtitle2>} />
