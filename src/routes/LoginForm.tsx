@@ -105,7 +105,7 @@ export function LoginForm() {
                                 <Body1>
                                     Esegui il login con le stesse credenziali che utilizzi per accedere al <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">Gestionale JAC</Link>.
                                     <br />
-                                    Le credenziali verranno inviate al gestionale (passando per <Link href={window.location.toString()}>calendar.zucchina.org</Link>), verificate, dopodiché <strong>rimarranno salvate su questo dispositivo</strong>.
+                                    Le credenziali verranno inviate al gestionale (passando per <Link href={window.location.toString()}>betoniera.org</Link>), verificate, dopodiché <strong>rimarranno salvate su questo dispositivo</strong>.
                                 </Body1>
                             }
                         />
