@@ -14,6 +14,11 @@ const useStyles = makeStyles({
         ...shorthands.padding("1rem", "1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     },
+    sticky: {
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+    },
     nav: {
         display: "flex",
         alignItems: "center",
@@ -44,7 +49,7 @@ export function Wrapper() {
 
     return (
         <>
-            <header>
+            <header className={styles.sticky}>
                 <Card className={styles.header}>
                     <nav className={styles.nav}>
                         <Title1 className={styles.title}>Calendar Exporter<sup>BETA</sup></Title1>
