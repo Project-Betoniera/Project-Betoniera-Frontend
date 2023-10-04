@@ -1,26 +1,37 @@
-import { Link } from "react-router-dom";
+import { RouterButton } from "../components/RouterButton";
+import { Card, CardHeader, Display, Subtitle2, Title1, makeStyles, shorthands } from "@fluentui/react-components";
+
+const useStyles = makeStyles({
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        flexGrow: 1,
+    },
+    card: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        textAlign: "center",
+        ...shorthands.gap("1rem"),
+    }
+});
 
 export function NotFound() {
-    function randomImage() {
-        const num = Math.round(Math.random() * 5) + 1; // 1-5
-
-        return (
-            <>
-                <video autoPlay loop muted playsInline>
-                    <source src={`404gifs/cement_mixer_${num}.webm`} type="video/webm"/>
-                </video>
-            </>
-        );
-    }
+    const styles = useStyles();
 
     return (
-        <div className="container">
-            <div className="container wide">
-                <h1>404 Not Found</h1>
-                <p>La pagina che stai cercando non esiste.</p>
-                <p>Ti sei perso? <Link to="/">Torna alla home</Link></p>
-            </div>
-            {randomImage()}
+        <div className={styles.container}>
+            <Card className={styles.card}>
+                <CardHeader
+                    className={styles.card}
+                    header={<Display>404</Display>}
+                    description={<Title1>Not Found</Title1>}
+                />
+                <Subtitle2>La pagina che stai cercando non esiste.</Subtitle2>
+                <RouterButton as="a" appearance="primary" href="/">Torna alla home</RouterButton>
+            </Card>
         </div>
     );
 }
