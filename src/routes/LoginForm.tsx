@@ -7,7 +7,6 @@ import { CourseDto } from "../dto/CourseDto";
 import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, tokens } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
-import { useGlobalStyles } from "../globalStyles";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -19,6 +18,9 @@ const useStyles = makeStyles({
         ...shorthands.padding("1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         ...shorthands.gap("0.5rem"),
+    },
+    title: {
+        textAlign: "center",
     },
     loginForm: {
         display: "flex",
@@ -42,12 +44,19 @@ const useStyles = makeStyles({
         flexDirection: "column",
         alignItems: "center",
         ...shorthands.gap("2rem"),
+    },
+    footer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        ...shorthands.margin("0.5rem"),
+        ...shorthands.padding("1rem"),
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     }
 });
 
 export function LoginForm() {
     const styles = useStyles();
-    const globalStyles = useGlobalStyles();
 
     const { setTokenData } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
@@ -83,7 +92,7 @@ export function LoginForm() {
         <>
             <main className={styles.loginMain}>
                 <div className={styles.loginContainer}>
-                    <LargeTitle>Calendar Exporter<sup>BETA</sup></LargeTitle>
+                    <LargeTitle className={styles.title}>Calendar Exporter<sup>BETA</sup></LargeTitle>
                     <Card className={styles.loginForm}>
                         <form onSubmit={login} className={styles.loginForm}>
                             <h2>🚀 Login</h2>
@@ -113,7 +122,7 @@ export function LoginForm() {
                 </div>
             </main>
             <footer>
-                <Card className={globalStyles.footer}>
+                <Card className={styles.footer}>
                     <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</Body1>
                 </Card>
             </footer>

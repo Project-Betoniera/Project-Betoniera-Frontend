@@ -18,6 +18,9 @@ export const useGlobalStyles = makeStyles({
         alignItems: "stretch",
         ...shorthands.margin("1rem"),
         ...shorthands.padding("1rem"),
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.margin("0"),
+        }
     },
     titleBar: {
         display: "flex",
@@ -33,9 +36,11 @@ export const useGlobalStyles = makeStyles({
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))",
-
         ...shorthands.gap("1rem"),
         ...shorthands.margin("1rem"),
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.margin("1rem", "0"),
+        }
     },
     list: {
         display: "flex",
@@ -43,10 +48,10 @@ export const useGlobalStyles = makeStyles({
         marginBottom: "1rem",
         ...shorthands.gap("1rem"),
     },
-    ongoing:{
+    ongoing: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
     },
-    blink:{
+    blink: {
         animationDuration: "1s",
         animationIterationCount: "infinite",
         animationDirection: "alternate",
@@ -60,13 +65,5 @@ export const useGlobalStyles = makeStyles({
                 },
             }
         ],
-    },
-    footer: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        ...shorthands.margin("0.5rem"),
-        ...shorthands.padding("1rem"),
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     }
 });

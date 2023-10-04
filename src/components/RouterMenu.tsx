@@ -1,7 +1,9 @@
-import { Tab, TabList, TabListProps } from '@fluentui/react-components';
-import { FunctionComponent } from 'react';
+import { Button, Tab, TabList, TabListProps } from '@fluentui/react-components';
+import { FunctionComponent, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled } from "@fluentui/react-icons";
+import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled } from "@fluentui/react-icons";
+import { TokenContext } from '../context/TokenContext';
+import { CourseContext } from '../context/CourseContext';
 
 const menuItems = [
     {
@@ -26,7 +28,16 @@ const menuItems = [
     }
 ];
 
-const RouterMenu: FunctionComponent<TabListProps> = (props) => {
+const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
+    const { setTokenData } = useContext(TokenContext);
+    const { setCourse } = useContext(CourseContext);
+
+
+    const logout = () => {
+        setTokenData({ token: null, remember: false });
+        setCourse(null);
+    };
+
     useLocation();
     const url = new URL(window.location.href);
     const path = url.href.substring(url.origin.length);
@@ -53,9 +64,11 @@ const RouterMenu: FunctionComponent<TabListProps> = (props) => {
         >
             {menuItems.map((item, i) => {
                 return (
-                    <Tab key={i} value={item.path} icon={item.icon}>{item.displayName}</Tab>
+                    <Tab key={i} value={item.path} icon={item.icon}>{!iconsOnly ? item.displayName : ""}</Tab>
                 );
             })}
+
+            <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<ArrowExitFilled />} onClick={logout}>{!iconsOnly ? "Logout" : ""}</Button>
         </TabList>
     );
 };

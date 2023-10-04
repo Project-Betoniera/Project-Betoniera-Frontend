@@ -89,7 +89,7 @@ export function Home() {
                 ))
             }
         </>
-    ) : (<Subtitle2>Nessuna lezione rimasta per oggi 😊</Subtitle2>);
+    ) : (<Card className={globalStyles.card}><Subtitle2>Nessuna lezione rimasta per oggi 😊</Subtitle2></Card>);
 
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.map((item) => {
         const nextEvent = item.status.currentOrNextEvent;
@@ -126,7 +126,7 @@ export function Home() {
                 </PopoverSurface>
             </Popover>
         );
-    }) : (<Subtitle2>Nessuna aula libera al momento 😒</Subtitle2>);
+    }) : (<Card className={globalStyles.card}><Subtitle2>Nessuna aula libera al momento 😒</Subtitle2></Card>);
 
     return (
         <>
