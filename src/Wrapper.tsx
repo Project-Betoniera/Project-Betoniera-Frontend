@@ -10,6 +10,9 @@ const useStyles = makeStyles({
         ...shorthands.margin("0.5rem"),
         ...shorthands.padding("1rem", "1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.padding("0.5rem"),
+        }
     },
     sticky: {
         position: "sticky",
@@ -45,7 +48,7 @@ const useStyles = makeStyles({
         ...shorthands.padding("1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         "@media screen and (max-width: 578px)": {
-            marginBottom: "7rem",
+            marginBottom: "6rem",
         }
     }
 });
