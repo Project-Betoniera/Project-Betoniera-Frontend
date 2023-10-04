@@ -1,4 +1,4 @@
-import { Body1, Card, CardHeader, Link, Subtitle1, Title2, mergeClasses } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Link, Subtitle1, Title2 } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 
 export function About() {
@@ -11,7 +11,7 @@ export function About() {
                     header={<Title2>🧐 Informazioni sul progetto</Title2>}
                 />
             </Card>
-            <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+            <div className={globalStyles.list}>
                 <Card className={globalStyles.card}>
                     <Subtitle1>Come è nato?</Subtitle1>
                     <Body1>
