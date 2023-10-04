@@ -5,31 +5,40 @@ import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Body2, Button, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Input, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { Body1, Body2, Button, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Input, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { ThemeContext } from "../context/ThemeContext";
 
-const useStyles = makeStyles({
+const useLightStyles = makeStyles({
     cardFree: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
-        ":hover": {
-            backgroundColor: tokens.colorPaletteLightGreenBackground3
-        },
-        ":active": {
-            backgroundColor: tokens.colorPaletteLightGreenBackground1
-        }
+        ":hover": { backgroundColor: tokens.colorPaletteLightGreenBackground1 },
+        ":active": { backgroundColor: tokens.colorPaletteGreenBackground2 },
+
     },
     cardBusy: {
         backgroundColor: tokens.colorPaletteRedBackground2,
-        ":hover": {
-            backgroundColor: tokens.colorPaletteRedBackground3
-        },
-        ":active": {
-            backgroundColor: tokens.colorPaletteRedBackground1
-        }
+        ":hover": { backgroundColor: tokens.colorPaletteRedBackground1 },
+        ":active": { backgroundColor: tokens.colorPaletteDarkRedBackground2 },
+    }
+});
+
+const useDarkStyles = makeStyles({
+    cardFree: {
+        backgroundColor: tokens.colorPaletteLightGreenBackground2,
+        ":hover": { backgroundColor: tokens.colorPaletteLightGreenBackground3 },
+        ":active": { backgroundColor: tokens.colorPaletteLightGreenBackground1 },
+    },
+    cardBusy: {
+        backgroundColor: tokens.colorPaletteRedBackground2,
+        ":hover": { backgroundColor: tokens.colorPaletteRedBackground3 },
+        ":active": { backgroundColor: tokens.colorPaletteRedBackground1 },
     }
 });
 
 export function Classroom() {
-    const styles = useStyles();
+    const { theme } = useContext(ThemeContext);
+
+    const styles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const globalStyles = useGlobalStyles();
     const { tokenData } = useContext(TokenContext);
 
