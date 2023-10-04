@@ -5,7 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, tokens } from "@fluentui/react-components";
+import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 
 export function Home() {
@@ -73,10 +73,10 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <Card className={globalStyles.card} key={event.id} style={event.start <= now ? { backgroundColor: tokens.colorPaletteLightGreenBackground2 } : {}}>
+                    <Card className={mergeClasses(globalStyles.card, event.start <= now ? globalStyles.ongoing : "")} key={event.id}>
                         <CardHeader
                             header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                            description={event.start <= now && event.end > now ? <Body2>🔴 <strong>In corso</strong></Body2> : ""}
+                            description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
                         />
                         <div>
                             <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>

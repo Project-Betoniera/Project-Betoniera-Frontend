@@ -25,9 +25,6 @@ const useStyles = makeStyles({
         ":active": {
             backgroundColor: tokens.colorPaletteRedBackground1
         }
-    },
-    lessonOngoing: {
-        backgroundColor: tokens.colorPaletteLightGreenBackground2
     }
 });
 
@@ -97,10 +94,10 @@ export function Classroom() {
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? styles.lessonOngoing : undefined)}>
+                <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
                     <CardHeader
                         header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                        description={event.start <= now && event.end > now ? <Body2>🔴 <strong>In corso</strong></Body2> : ""}
+                        description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
                     />
                     <div>
                         <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>

@@ -43,6 +43,24 @@ export const useGlobalStyles = makeStyles({
         marginBottom: "1rem",
         ...shorthands.gap("1rem"),
     },
+    ongoing:{
+        backgroundColor: tokens.colorPaletteLightGreenBackground2,
+    },
+    blink:{
+        animationDuration: "1s",
+        animationIterationCount: "infinite",
+        animationDirection: "alternate",
+        animationName: [
+            {
+                from: {
+                    opacity: 0,
+                },
+                to: {
+                    opacity: 1,
+                },
+            }
+        ],
+    },
     footer: {
         display: "flex",
         flexDirection: "row",
