@@ -2,13 +2,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./routes/Home";
 import { Wrapper } from "./Wrapper";
 import { Calendar } from "./routes/Calendar";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
 import { Classroom } from "./routes/Classroom";
 import { About } from "./routes/About";
-import { FluentProvider, Theme, makeStyles, tokens, webDarkTheme, webLightTheme } from "@fluentui/react-components";
+import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
+import { ThemeContext } from "./context/ThemeContext";
 
 const useStyles = makeStyles({
   root: {
@@ -21,21 +22,7 @@ const useStyles = makeStyles({
 function App() {
   const style = useStyles();
   const { tokenData } = useContext(TokenContext);
-  const [theme, setTheme] = useState<Theme>(webLightTheme);
-
-  useEffect(() => {
-    if (window.matchMedia) {
-      const darkThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const updateTheme = () => {
-        setTheme(darkThemeQuery.matches ? webDarkTheme : webLightTheme);
-      };
-      darkThemeQuery.addEventListener('change', updateTheme);
-      updateTheme();
-      return () => {
-        darkThemeQuery.removeEventListener('change', updateTheme);
-      };
-    }
-  }, []);
+  const { theme } = useContext(ThemeContext);
 
   let content: JSX.Element;
 
