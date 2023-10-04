@@ -2,6 +2,8 @@ import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 
 export const useGlobalStyles = makeStyles({
     card: {
+        display: "flex",
+        flexShrink: "0",
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     },
     main: {
@@ -19,7 +21,7 @@ export const useGlobalStyles = makeStyles({
         ...shorthands.margin("1rem"),
         ...shorthands.padding("1rem"),
         "@media screen and (max-width: 578px)": {
-            ...shorthands.margin("0"),
+            ...shorthands.margin("1rem", "0"),
         }
     },
     titleBar: {
@@ -45,8 +47,12 @@ export const useGlobalStyles = makeStyles({
     list: {
         display: "flex",
         flexDirection: "column",
-        marginBottom: "1rem",
         ...shorthands.gap("1rem"),
+        ...shorthands.margin("1rem"),
+
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.margin("1rem", "0"),
+        },
     },
     ongoing: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
