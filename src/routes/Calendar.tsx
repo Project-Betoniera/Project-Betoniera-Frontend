@@ -12,7 +12,12 @@ const useStyles = makeStyles({
     horizontalList: {
         display: "flex",
         alignItems: "center",
-        ...shorthands.gap("1rem")
+        ...shorthands.gap("1rem"),
+
+        "@media screen and (max-width: 514px)": {
+            flexDirection: "column",
+            alignItems: "flex-start",
+        },
     },
     qrCode: {
         ...shorthands.borderRadius(tokens.borderRadiusXLarge)
