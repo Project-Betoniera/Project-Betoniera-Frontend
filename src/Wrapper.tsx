@@ -1,49 +1,97 @@
-import { useContext } from "react";
 import { Outlet } from "react-router";
-import { Link } from "react-router-dom";
-import { TokenContext } from "./context/TokenContext";
-import { CourseContext } from "./context/CourseContext";
+import { Body1, Card, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { useGlobalStyles } from "./globalStyles";
+import RouterMenu from "./components/RouterMenu";
+import { useEffect, useState } from "react";
+
+const useStyles = makeStyles({
+    header: {
+        display: "flex",
+        ...shorthands.margin("0.5rem"),
+        ...shorthands.padding("1rem", "1rem"),
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.padding("0.5rem"),
+        }
+    },
+    sticky: {
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
+        "@media screen and (max-width: 578px)": {
+            position: "fixed",
+            top: "unset",
+            bottom: 0,
+            left: 0,
+            right: 0,
+        }
+    },
+    nav: {
+        display: "flex",
+        justifyContent: "space-between",
+        "@media screen and (min-width: 579px)": { ...shorthands.gap("2rem") },
+    },
+    routerMenu: {
+        display: "flex",
+        flexGrow: "1",
+        justifyContent: "space-between",
+    },
+    title: {
+        "@media screen and (max-width: 958px)": { display: "none" },
+        ...shorthands.padding("0"),
+    },
+    footer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        ...shorthands.margin("0.5rem"),
+        ...shorthands.padding("1rem"),
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+        "@media screen and (max-width: 578px)": {
+            marginBottom: "6rem",
+        }
+    }
+});
 
 export function Wrapper() {
+    const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
-    const { setTokenData } = useContext(TokenContext);
-    const { setCourse } = useContext(CourseContext);
+    const [iconsOnly, setIconsOnly] = useState(false);
 
-    const logout = () => {
-        setTokenData({ token: null, remember: false });
-        setCourse(null);
-    };
+    useEffect(() => {
+        if (!window.matchMedia) return;
+        const darkThemeQuery = window.matchMedia('(max-width: 578px)');
+
+        const updateIconsOnly = () => {
+            setIconsOnly(darkThemeQuery.matches);
+        };
+
+        darkThemeQuery.addEventListener('change', updateIconsOnly);
+        updateIconsOnly();
+
+        return () => {
+            darkThemeQuery.removeEventListener('change', updateIconsOnly);
+        };
+    }, []);
 
     return (
         <>
-            <header>
-                <h1>Calendar Exporter<sup>BETA</sup></h1>
-                <nav>
-                    <Link to="/">
-                        <img src="Home.svg" alt="Home.svg"></img>
-                        <span>Home</span>
-                    </Link>
-                    <Link to="/classroom">
-                        <img src="School.svg" alt="School.svg"></img>
-                        <span>Aule</span>
-                    </Link>
-                    <Link to="/calendar">
-                        <img src="Calendar.svg" alt="Calendar.svg"></img>
-                        <span>Calendario</span>
-                    </Link>
-                    <Link to="/about">
-                        <img src="Info.svg" alt="Info.svg"></img>
-                        <span>About</span>
-                    </Link>
-                    <button onClick={logout}>👋 Logout</button>
-                </nav>
+            <header className={styles.sticky}>
+                <Card className={styles.header}>
+                    <nav className={styles.nav}>
+                        <Title1 className={styles.title}>Calendar Exporter<sup>BETA</sup></Title1>
+                        {RouterMenu({ className: styles.routerMenu }, iconsOnly)}
+                    </nav>
+                </Card>
             </header>
-            <main>
+            <main className={globalStyles.main}>
                 <Outlet />
             </main>
             <footer>
-                <span>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</span>
-                <Link to="/about">About</Link>
+                <Card className={styles.footer}>
+                    <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</Body1>
+                </Card>
             </footer>
         </>
     );

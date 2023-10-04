@@ -1,12 +1,35 @@
 import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CourseDto } from "../dto/CourseDto";
 import QRCode from 'qrcode';
 import { CourseContext } from "../context/CourseContext";
+import { Body1, Card, CardHeader, Option, Combobox, Dropdown, Subtitle2, Title2, Label, Link, mergeClasses, Button, makeStyles, shorthands, Image, Popover, PopoverTrigger, PopoverSurface, tokens } from "@fluentui/react-components";
+import { useGlobalStyles } from "../globalStyles";
+
+const useStyles = makeStyles({
+    horizontalList: {
+        display: "flex",
+        alignItems: "center",
+        ...shorthands.gap("1rem"),
+
+        "@media screen and (max-width: 514px)": {
+            flexDirection: "column",
+            alignItems: "flex-start",
+        },
+    },
+    qrCode: {
+        ...shorthands.borderRadius(tokens.borderRadiusXLarge)
+    },
+    warning: {
+        backgroundColor: tokens.colorStatusWarningBackground1,
+    }
+});
 
 export function Calendar() {
+    const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
@@ -16,11 +39,7 @@ export function Calendar() {
     const [calendarUrl, setCalendarUrl] = useState<string>("");
     const [calendarProvider, setCalendarProvider] = useState<string>("");
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const qrCodeRef = useRef<HTMLDivElement>(null);
-    const windowWidth = useRef(window.innerWidth);
-
-    const [error, setError] = useState(false);
+    const [qrCode, setQrCode] = useState<string>("");
 
     // Get course list
     useEffect(() => {
@@ -32,9 +51,8 @@ export function Calendar() {
                 distinct: true
             }
         }).then(response => {
-             setCourses(response.data); 
+            setCourses(response.data);
         }).catch(() => {
-            setError(true);
         });
     }, [tokenData]);
 
@@ -82,17 +100,13 @@ export function Calendar() {
     useEffect(() => {
         // Clear canvas if no course is selected
         if (calendarUrl === "") {
-            canvasRef.current?.getContext("2d")?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+            setQrCode("");
             return;
         }
 
-        QRCode.toCanvas(canvasRef.current, calendarUrl, (error) => { if (error) console.error(error); });
-
-        // Scroll to QR code if on mobile
-        if (windowWidth.current <= 700) {
-            qrCodeRef.current?.style.setProperty("display", "flex");
-            canvasRef.current?.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-        }
+        QRCode.toDataURL(calendarUrl, (_error, url) => {
+            setQrCode(url);
+        });
     }, [calendarUrl]);
 
     // Try to set selected course
@@ -104,59 +118,63 @@ export function Calendar() {
 
     return (
         <>
-            <div className="main-container container align-left flex-grow">
-                <div className="container wide align-left">
-                    <h1>📆 Calendario</h1>
-                </div>
-                <div className="display-block flex-h">
-                    <div className="flex-v">
-                        <div className="container align-left">
-                            <h3>Integrazione con calendari di terze parti - Aggiungi il calendario delle lezioni del tuo corso alla tua app calendario preferita!</h3>
-                            <div className="display-block flex-h align-center">
-                                <span>Seleziona il tuo corso</span>
-                                <select value={selectedCourse} onChange={(e) => { setSelectedCourse(e.target.value); setIsLinkCopied(false); }}>
-                                    <option value="" disabled>{ courses[0]?.id ? "Seleziona un corso" : error ? "ERROR - Ricarica la pagina..." : "Loading..."}</option>
-                                    {courses.map(course => <option key={course.id} value={course.id}>{course.code} - {course.name}</option>)}
-                                </select>
-                            </div>
-                            <div className="display-block flex-h align-center">
-                                <span>Aggiungi a</span>
-                                <select defaultValue="" onChange={(e) => { setCalendarProvider(e.target.value); setIsLinkCopied(false); }}>
-                                    { error || !courses[0]?.id ? (
-                                        <option value="" disabled>↑ LOOK UP FOR STATUS ↑</option>
-                                    ) : (
-                                        <>
-                                            <option value="" disabled>Seleziona un calendario</option>
-                                            <option value="raw">Link diretto</option>
-                                            <option value="google">Google Calendar</option>
-                                            <option value="outlook">Outlook (Personale)</option>
-                                            <option value="ms365">Outlook (Account aziendale o scolastico)</option>
-                                        </>
-                                    )}
-                                </select>
-                            </div>
-                        </div>
-                        <div className="container align-left container-info">
-                            <h3>ℹ️ Informazioni</h3>
-                            <span>Se hai un dispositivo Apple, e vuoi aggiungere il calendario su Apple Calendar, seleziona <i>Link diretto</i>, poi scansiona il codice QR.</span>
-                            <span>Se su Google calendar non visualizzi il calendario sul cellulare, attiva la sincronizzazione del calendario (Impostazioni &gt; [Nome del calendario aggiunto] &gt; Sincronizzazione)</span>
-                        </div>
-                        <div className="container align-left container-warning">
-                            <h3>⚠️ Attenzione!</h3>
-                            <span><strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong></span>
-                        </div>
+            <div className={globalStyles.container}>
+                <Card className={globalStyles.card}>
+                    <CardHeader
+                        header={<Title2>📆 Esporta calendario</Title2>}
+                        description={<Subtitle2>Integrazione con calendari di terze parti</Subtitle2>}
+                    />
+                </Card>
+                <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+                    <Body1>
+                        Da questa pagina è possibile creare un link al calendario per il proprio corso, ed aggiungerlo ad un'app di terze parti (ad esempio <Link href="https://calendar.google.com" target="_blank">Google Calendar</Link>).
+                        <br />
+                        Il calendario contiene tutti gli eventi del corso, e si aggiornerà automaticamente in caso di modifiche.
+                    </Body1>
+
+                    <div className={styles.horizontalList}>
+                        <Label className={styles.horizontalList}>Seleziona corso</Label>
+                        <Combobox defaultValue={course ? course.code : ""} onOptionSelect={(_event, data) => { setSelectedCourse(data.optionValue || ""); setIsLinkCopied(false); }}>
+                            {courses.map(course => <Option
+                                key={course.id.toString()}
+                                value={course.id.toString()}
+                                text={course.code}
+                            >{course.code} - {course.name}</Option>)}
+                        </Combobox>
                     </div>
-                    <div id="qrCodeContainer" ref={qrCodeRef} className="flex-v">
-                        <div className="container">
-                            <h3>Scansiona codice QR</h3>
-                            <canvas ref={canvasRef}></canvas>
-                        </div>
-                        <div className="container">
-                            <h3>Oppure</h3>
-                            <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => window.open(calendarUrl, "_blank")}>Aggiungi tramite link</button>
-                            <button disabled={calendarProvider !== "" && selectedCourse !== "" ? false : true} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "🔗 Link copiato!" : "Copia negli appunti"}</button>
-                        </div>
+
+                    <div className={styles.horizontalList}>
+                        <Label>Aggiungi a</Label>
+                        <Dropdown defaultValue="" placeholder="Seleziona un calendario" onOptionSelect={(_event, data) => { setCalendarProvider(data.optionValue || ""); setIsLinkCopied(false); }}>
+                            <Option value="raw">Link diretto</Option>
+                            <Option value="google">Google Calendar</Option>
+                            <Option value="outlook">Outlook (Personale)</Option>
+                            <Option value="ms365">Outlook (Account aziendale o scolastico)</Option>
+                        </Dropdown>
                     </div>
+
+                    <div className={styles.horizontalList}>
+                        <Button disabled={calendarProvider === "" || selectedCourse === ""} as="a" href={calendarUrl} target="_blank">Aggiungi tramite link</Button>
+                        <Button disabled={calendarProvider === "" || selectedCourse === ""} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsLinkCopied(true); }}>{isLinkCopied ? "✅ Link copiato!" : "Copia link"}</Button>
+                        <Popover>
+                            <PopoverTrigger>
+                                <Button disabled={calendarProvider === "" || selectedCourse === ""}>Mostra QR code</Button>
+                            </PopoverTrigger>
+                            <PopoverSurface>
+                                <Image src={qrCode} className={styles.qrCode} />
+                            </PopoverSurface>
+                        </Popover>
+                    </div>
+
+                    <Card className={globalStyles.card}>
+                        <Subtitle2>ℹ️ Informazioni</Subtitle2>
+                        <Body1>Se hai un dispositivo Apple, e vuoi aggiungere il calendario su Apple Calendar, seleziona <i>Link diretto</i>, poi scansiona il codice QR.</Body1>
+                        <Body1>Se da Google calendar non visualizzi il calendario sul cellulare, attiva la sincronizzazione del calendario (Impostazioni &gt; JAC {courses.find(course => course.id == parseInt(selectedCourse))?.code} &gt; Sincronizzazione)</Body1>
+                    </Card>
+                    <Card className={mergeClasses(globalStyles.card, styles.warning)}>
+                        <Subtitle2>⚠️ Attenzione!</Subtitle2>
+                        <Body1><strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong></Body1>
+                    </Card>
                 </div>
             </div>
         </>
