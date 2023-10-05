@@ -124,7 +124,7 @@ export function Classroom() {
             if (!item.status.statusChangeAt)
                 changeTime = "⌚ Nessun evento programmato.";
             else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                changeTime = "⌚ Oggi alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+                changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
             else
                 changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 
