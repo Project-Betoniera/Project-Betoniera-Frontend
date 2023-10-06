@@ -1,5 +1,5 @@
 
-import { Body1, Card, CardHeader, Subtitle2, Title2, mergeClasses, makeStyles, tokens } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Subtitle2, Title2, mergeClasses, makeStyles, tokens, Link } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { CalendarExporter } from "../components/CalendarExporter";
 
@@ -23,6 +23,12 @@ export function Calendar() {
                     />
                 </Card>
                 <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+                    <Body1>
+                        Da questa pagina è possibile creare un link al calendario per un determinato corso, aula o docente, ed aggiungerlo ad un'app di terze parti (ad esempio <Link href="https://calendar.google.com" target="_blank">Google Calendar</Link>).
+                        <br />
+                        Il calendario si aggiornerà automaticamente in caso di modifiche.
+                    </Body1>
+
                     <CalendarExporter />
 
                     <Card className={globalStyles.card}>

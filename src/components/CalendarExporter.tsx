@@ -1,4 +1,4 @@
-import { Body1, Button, Combobox, Dropdown, Label, Image, Option, Popover, PopoverSurface, PopoverTrigger, Link, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { Button, Combobox, Dropdown, Label, Image, Option, Popover, PopoverSurface, PopoverTrigger, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { useContext, useEffect, useState } from "react";
 import QRCode from 'qrcode';
@@ -159,12 +159,6 @@ export function CalendarExporter() {
 
     return (
         <>
-            <Body1>
-                Da questa pagina è possibile creare un link al calendario per il proprio corso, ed aggiungerlo ad un'app di terze parti (ad esempio <Link href="https://calendar.google.com" target="_blank">Google Calendar</Link>).
-                <br />
-                Il calendario contiene tutti gli eventi del corso, e si aggiornerà automaticamente in caso di modifiche.
-            </Body1>
-
             <div className={globalStyles.horizontalList}>
                 <Label>Calendario per</Label>
                 <Dropdown value={calendarType.name} selectedOptions={[calendarType.code]} onOptionSelect={(_event, data) => handleCalendarTypeChange(data)}>
