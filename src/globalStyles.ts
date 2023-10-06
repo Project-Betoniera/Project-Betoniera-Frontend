@@ -54,6 +54,16 @@ export const useGlobalStyles = makeStyles({
             ...shorthands.margin("1rem", "0"),
         },
     },
+    horizontalList: {
+        display: "flex",
+        alignItems: "center",
+        ...shorthands.gap("1rem"),
+
+        "@media screen and (max-width: 514px)": {
+            flexDirection: "column",
+            alignItems: "flex-start",
+        },
+    },
     ongoing: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
     },
