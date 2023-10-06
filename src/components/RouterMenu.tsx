@@ -64,7 +64,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
         >
             {menuItems.map((item, i) => {
                 return (
-                    <Tab key={i} value={item.path} icon={item.icon} aria-description={item.path}>{!iconsOnly ? item.displayName : ""}</Tab>
+                    <Tab key={i} value={item.path} icon={item.icon} aria-description={item.displayName}>{!iconsOnly ? item.displayName : ""}</Tab>
                 );
             })}
 
