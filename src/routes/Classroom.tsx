@@ -55,7 +55,7 @@ export function Classroom() {
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
 
-            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33];
+            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33];
             result = result.filter((item) => !exclude.includes(item.classroom.id));
 
             result = result.map((item) => {
@@ -124,7 +124,7 @@ export function Classroom() {
             if (!item.status.statusChangeAt)
                 changeTime = "⌚ Nessun evento programmato.";
             else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                changeTime = "⌚ Oggi alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+                changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
             else
                 changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 

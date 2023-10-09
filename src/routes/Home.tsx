@@ -51,7 +51,7 @@ export function Home() {
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
 
-            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 32, 33];
+            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33];
             result = result.filter((element) => !exclude.includes(element.classroom.id) && element.status.isFree !== false);
 
             // Convert strings to objects
