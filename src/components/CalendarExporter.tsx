@@ -100,7 +100,7 @@ export function CalendarExporter() {
 
             const type = calendarType.code === "course" ? "" : `/${calendarType.code}`;
 
-            const url = new URL(`/event${type}/${encodeURIComponent(calendarSelector.code)}/ics`, apiUrl);
+            const url = new URL(`event${type}/${encodeURIComponent(calendarSelector.code)}/ics`, apiUrl);
             url.protocol = "webcal";
             url.searchParams.append("authorization", `Bearer ${tokenData.token}`);
 
