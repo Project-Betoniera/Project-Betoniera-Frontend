@@ -1,5 +1,13 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import 'dotenv/config'
+
+const apiUrl = process.env.API_URL;
+if (!apiUrl) {
+  throw new Error('API_URL environment variable is not set');
+}
+// Validates URL
+new URL(apiUrl);
 
 const plausibleDomain = process.env.PLAUSIBLE_DOMAIN || null;
 const plausibleScript = process.env.PLAUSIBLE_SCRIPT || 'https://plausible.io/js/plausible.js';
@@ -7,6 +15,7 @@ const plausibleScript = process.env.PLAUSIBLE_SCRIPT || 'https://plausible.io/js
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
+    __API_URL__: JSON.stringify(apiUrl),
     __PLAUSIBLE_DOMAIN__: JSON.stringify(plausibleDomain),
     __PLAUSIBLE_SCRIPT__: JSON.stringify(plausibleScript),
   },
