@@ -16,6 +16,9 @@ Note:
 - You can also make a copy of the `.env.example` file and rename it to `.env`.
 - The `VITE_API_URL` variable is the url of the [backend server](https://github.com/Genio2003/Project-Betoniera-Backend), which is not included in this repository.
 
+To use Plausible Analytics, the `PLAUSIBLE_DOMAIN` environment variable must be set at build time to the domain name in Plausible Analytics. If it is not set, Plausible Analytics will not be loaded.  
+Additionally, a custom path to the Plausible script can be set with the `PLAUSIBLE_SCRIPT` environment variable. If it is not set, the default path to Plausible SaaS will be used.
+
 Then, you can start the development server with:
 ```bash
 npm start
