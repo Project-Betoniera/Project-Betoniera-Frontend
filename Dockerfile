@@ -6,6 +6,8 @@ RUN npm ci
 
 # Copio i file & compilo
 COPY . /app
+ENV API_URL
+ENV PLAUSIBLE_DOMAIN
 RUN npm run build
 
 # Creo Immagine di produzione
