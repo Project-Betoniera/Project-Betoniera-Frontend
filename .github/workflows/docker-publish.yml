@@ -61,6 +61,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            API_URL=${{ vars.API_URL }}
+            PLAUSIBLE_DOMAIN=${{ vars.PLAUSIBLE_DOMAIN }}
   
   deploy_to_server:
 
