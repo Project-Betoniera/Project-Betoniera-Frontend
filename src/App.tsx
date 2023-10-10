@@ -10,6 +10,7 @@ import { Classroom } from "./routes/Classroom";
 import { About } from "./routes/About";
 import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
 import { ThemeContext } from "./context/ThemeContext";
+import { PrivacyAlert } from "./components/PrivacyAlert";
 
 const useStyles = makeStyles({
   root: {
@@ -29,23 +30,26 @@ function App() {
   content = (
     <>
       <FluentProvider className={style.root} theme={theme}>
-        {
-          tokenData.token ? (
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Wrapper />}>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/classroom" element={<Classroom />} />
-                  <Route path="/calendar" element={<Calendar />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path='*' element={<NotFound />} />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          ) : (
-            content = <LoginForm />
-          )
-        }
+        <>
+          <PrivacyAlert />
+          {
+            tokenData.token ? (
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Wrapper />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/classroom" element={<Classroom />} />
+                    <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path='*' element={<NotFound />} />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            ) : (
+              content = <LoginForm />
+            )
+          }
+        </>
       </FluentProvider>
     </>
   );
