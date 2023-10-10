@@ -4,10 +4,14 @@ WORKDIR /app
 COPY package*.json /app/
 RUN npm ci
 
+# Definisce le variabili d'ambiente da usare durante la build
+ARG API_URL
+ENV API_URL=$API_URL
+ARG PLAUSIBLE_DOMAIN
+ENV PLAUSIBLE_DOMAIN=$PLAUSIBLE_DOMAIN
+
 # Copio i file & compilo
 COPY . /app
-ENV API_URL
-ENV PLAUSIBLE_DOMAIN
 RUN npm run build
 
 # Creo Immagine di produzione
