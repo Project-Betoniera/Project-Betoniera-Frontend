@@ -4,7 +4,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 
@@ -65,6 +65,9 @@ export function LoginForm() {
     const [password, setPassword] = useState<string>("");
     const [remember, setRemember] = useState<boolean>(false);
 
+    const toasterId = useId("toaster");
+    const { dispatchToast } = useToastController(toasterId);
+
     const login = async (e: FormEvent) => {
         e.preventDefault();
 
@@ -77,13 +80,29 @@ export function LoginForm() {
                 setTokenData({ token: response.data.token, remember: remember });
                 setCourse(response.data.course as CourseDto);
             } else {
-                alert("Login Failed");
+                throw new Error("Errore durante il login");
             }
         }).catch((error) => {
             if (error.response.status === 401) {
-                alert("Login Failed: Credenziali Errate!");
+                dispatchToast(
+                    <Toast>
+                        <ToastTitle>Errore Login!</ToastTitle>
+                        <ToastBody>
+                            Le credenziali inserite non sono corrette.
+                        </ToastBody>
+                    </Toast>,
+                    { intent: "error" }
+                );
             } else {
-                alert("Login Failed: " + error.message);
+                dispatchToast(
+                    <Toast>
+                        <ToastTitle>Errore Login!</ToastTitle>
+                        <ToastBody>
+                            Si è verificato un errore durante il login.
+                        </ToastBody>
+                    </Toast>,
+                    { intent: "error" }
+                );
             }
         });
     };
@@ -120,6 +139,7 @@ export function LoginForm() {
                         />
                     </Card>
                 </div>
+                <Toaster toasterId={toasterId} />
             </main>
             <footer>
                 <Card className={styles.footer}>
@@ -129,3 +149,4 @@ export function LoginForm() {
         </>
     );
 }
+
