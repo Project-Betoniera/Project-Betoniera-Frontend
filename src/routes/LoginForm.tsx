@@ -4,7 +4,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 
@@ -67,6 +67,7 @@ export function LoginForm() {
 
     const toasterId = useId("toaster");
     const { dispatchToast } = useToastController(toasterId);
+    const [loginError, setLoginError] = useState<boolean>(false);
 
     const login = async (e: FormEvent) => {
         e.preventDefault();
@@ -84,6 +85,7 @@ export function LoginForm() {
             }
         }).catch((error) => {
             if (error.response.status === 401) {
+                setLoginError(true);
                 dispatchToast(
                     <Toast>
                         <ToastTitle>Errore Login!</ToastTitle>
@@ -115,8 +117,12 @@ export function LoginForm() {
                     <Card className={styles.loginForm}>
                         <form onSubmit={login} className={styles.loginForm}>
                             <h2>🚀 Login</h2>
-                            <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
-                            <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            <Field validationState={ loginError ? "error" : "none" }>
+                                <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
+                            </Field>
+                            <Field validationState={ loginError ? "error" : "none" }>
+                                <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            </Field>
                             <Label>
                                 <Checkbox checked={remember} onChange={() => setRemember(!remember)} />
                                 Ricordami
