@@ -17,6 +17,10 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     backgroundColor: tokens.colorNeutralBackground3,
+    paddingTop: "env(safe-area-inset-top, 0)",
+    paddingBottom: "env(safe-area-inset-bottom, 0)",
+    paddingLeft: "env(safe-area-inset-left, 0)",
+    paddingRight: "env(safe-area-inset-right, 0)",
   }
 });
 
