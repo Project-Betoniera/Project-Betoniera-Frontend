@@ -20,5 +20,16 @@ export default defineConfig({
     __PLAUSIBLE_DOMAIN__: JSON.stringify(plausibleDomain),
     __PLAUSIBLE_SCRIPT__: JSON.stringify(plausibleScript),
   },
-  plugins: [react(), VitePWA({ registerType: 'autoUpdate', devOptions: { enabled: true } })],
+  plugins: [react(), VitePWA({ registerType: 'autoUpdate', devOptions: { enabled: true }, manifest: {
+    name: 'Calendar App',
+    short_name: 'Calendar App',
+    theme_color: 'black',
+    icons: [
+      {
+        src: '/src/assets/logo.svg',
+        sizes: "192x192",
+        type: "image/svg+xml"
+      }
+    ]
+  } })],
 })
