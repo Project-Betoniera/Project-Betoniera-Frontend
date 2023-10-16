@@ -23,13 +23,24 @@ export default defineConfig({
   plugins: [react(), VitePWA({ registerType: 'autoUpdate', devOptions: { enabled: true }, manifest: {
     name: 'Calendar App',
     short_name: 'Calendar App',
+    description: 'Calendar App for JAC Students',
     theme_color: 'black',
+    start_url: '/',
+    display: 'standalone',
     icons: [
       {
-        src: '/src/assets/logo.svg',
+        src: './src/assets/logo.svg',
         sizes: "192x192",
         type: "image/svg+xml"
+      },
+      {
+        src: './src/assets/logo.svg',
+        sizes: '512x512',
+        type: 'image/svg+xml'
       }
-    ]
-  } })],
+    ]},
+    workbox: {
+      globPatterns: ['**/*.{js,css,html,svg}']
+    }
+  })],
 })
