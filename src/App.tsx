@@ -11,6 +11,7 @@ import { About } from "./routes/About";
 import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
 import { ThemeContext } from "./context/ThemeContext";
 import { PrivacyAlert } from "./components/PrivacyAlert";
+import OfflineDialog from "./components/OfflineDialog";
 
 const useStyles = makeStyles({
   root: {
@@ -36,6 +37,7 @@ function App() {
       <FluentProvider className={style.root} theme={theme}>
         <>
           <PrivacyAlert />
+          <OfflineDialog />
           {
             tokenData.token ? (
               <BrowserRouter>
