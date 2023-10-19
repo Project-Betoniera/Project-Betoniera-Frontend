@@ -4,9 +4,10 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Input, Label, LargeTitle, Link, Subtitle2, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
+import { encode as toBase64 } from "base-64";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -63,28 +64,54 @@ export function LoginForm() {
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [remember, setRemember] = useState<boolean>(false);
+    const [remember, setRemember] = useState<boolean>(true);
+
+    const toasterId = useId("toaster");
+    const { dispatchToast } = useToastController(toasterId);
+    const [loginError, setLoginError] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const login = async (e: FormEvent) => {
         e.preventDefault();
 
+        setIsLoading(true);
+
         axios.post(new URL("login", apiUrl).toString(), {}, {
-            headers: {
-                Authorization: "Basic " + btoa(email + ":" + password)
-            }
+            headers: { Authorization: `Basic ${toBase64(`${email}:${password}`)}` }
         }).then((response) => {
             if (response.status === 200) {
                 setTokenData({ token: response.data.token, remember: remember });
                 setCourse(response.data.course as CourseDto);
             } else {
-                alert("Login Failed");
+                throw new Error("Errore durante il login");
             }
+
+            setIsLoading(false);
         }).catch((error) => {
+            setLoginError(true);
             if (error.response.status === 401) {
-                alert("Login Failed: Credenziali Errate!");
+                dispatchToast(
+                    <Toast>
+                        <ToastTitle>Errore Login!</ToastTitle>
+                        <ToastBody>
+                            Le credenziali inserite non sono corrette.
+                        </ToastBody>
+                    </Toast>,
+                    { intent: "error" }
+                );
             } else {
-                alert("Login Failed: " + error.message);
+                dispatchToast(
+                    <Toast>
+                        <ToastTitle>Errore Login!</ToastTitle>
+                        <ToastBody>
+                            Si è verificato un errore durante il login.
+                        </ToastBody>
+                    </Toast>,
+                    { intent: "error" }
+                );
             }
+
+            setIsLoading(false);
         });
     };
 
@@ -96,13 +123,17 @@ export function LoginForm() {
                     <Card className={styles.loginForm}>
                         <form onSubmit={login} className={styles.loginForm}>
                             <h2>🚀 Login</h2>
-                            <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
-                            <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            <Field validationState={loginError ? "error" : "none"}>
+                                <Input disabled={isLoading} type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
+                            </Field>
+                            <Field validationState={loginError ? "error" : "none"}>
+                                <Input disabled={isLoading} type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                            </Field>
                             <Label>
-                                <Checkbox checked={remember} onChange={() => setRemember(!remember)} />
+                                <Checkbox disabled={isLoading} checked={remember} onChange={() => setRemember(!remember)} />
                                 Ricordami
                             </Label>
-                            <Button appearance="primary" type="submit">Login</Button>
+                            {isLoading ? <Spinner size="huge" /> : <Button appearance="primary" type="submit">Login</Button>}
                         </form>
                     </Card>
                     <Card className={styles.infoCard}>
@@ -120,6 +151,7 @@ export function LoginForm() {
                         />
                     </Card>
                 </div>
+                <Toaster toasterId={toasterId} />
             </main>
             <footer>
                 <Card className={styles.footer}>
@@ -129,3 +161,4 @@ export function LoginForm() {
         </>
     );
 }
+
