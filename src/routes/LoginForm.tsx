@@ -7,6 +7,7 @@ import { CourseDto } from "../dto/CourseDto";
 import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
+import { encode as toBase64 } from "base-64";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -73,9 +74,7 @@ export function LoginForm() {
         e.preventDefault();
 
         axios.post(new URL("login", apiUrl).toString(), {}, {
-            headers: {
-                Authorization: "Basic " + btoa(email + ":" + password)
-            }
+            headers: { Authorization: `Basic ${toBase64(`${email}:${password}`)}` }
         }).then((response) => {
             if (response.status === 200) {
                 setTokenData({ token: response.data.token, remember: remember });
