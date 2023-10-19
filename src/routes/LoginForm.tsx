@@ -63,7 +63,7 @@ export function LoginForm() {
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [remember, setRemember] = useState<boolean>(false);
+    const [remember, setRemember] = useState<boolean>(true);
 
     const login = async (e: FormEvent) => {
         e.preventDefault();
