@@ -4,7 +4,7 @@ import axios from "axios";
 import { apiUrl } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 import { encode as toBase64 } from "base-64";
@@ -69,9 +69,12 @@ export function LoginForm() {
     const toasterId = useId("toaster");
     const { dispatchToast } = useToastController(toasterId);
     const [loginError, setLoginError] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const login = async (e: FormEvent) => {
         e.preventDefault();
+
+        setIsLoading(true);
 
         axios.post(new URL("login", apiUrl).toString(), {}, {
             headers: { Authorization: `Basic ${toBase64(`${email}:${password}`)}` }
@@ -82,6 +85,8 @@ export function LoginForm() {
             } else {
                 throw new Error("Errore durante il login");
             }
+
+            setIsLoading(false);
         }).catch((error) => {
             setLoginError(true);
             if (error.response.status === 401) {
@@ -105,6 +110,8 @@ export function LoginForm() {
                     { intent: "error" }
                 );
             }
+
+            setIsLoading(false);
         });
     };
 
@@ -117,16 +124,16 @@ export function LoginForm() {
                         <form onSubmit={login} className={styles.loginForm}>
                             <h2>🚀 Login</h2>
                             <Field validationState={loginError ? "error" : "none"}>
-                                <Input type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
+                                <Input disabled={isLoading} type="email" required placeholder="Email" onChange={(e) => { setEmail(e.target.value); }} />
                             </Field>
                             <Field validationState={loginError ? "error" : "none"}>
-                                <Input type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
+                                <Input disabled={isLoading} type="password" required placeholder="Password" onChange={(e) => { setPassword(e.target.value); }} />
                             </Field>
                             <Label>
-                                <Checkbox checked={remember} onChange={() => setRemember(!remember)} />
+                                <Checkbox disabled={isLoading} checked={remember} onChange={() => setRemember(!remember)} />
                                 Ricordami
                             </Label>
-                            <Button appearance="primary" type="submit">Login</Button>
+                            {isLoading ? <Spinner size="huge" /> : <Button appearance="primary" type="submit">Login</Button>}
                         </form>
                     </Card>
                     <Card className={styles.infoCard}>
