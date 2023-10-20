@@ -12,6 +12,7 @@ import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
 import { ThemeContext } from "./context/ThemeContext";
 import { PrivacyAlert } from "./components/PrivacyAlert";
 import OfflineDialog from "./components/OfflineDialog";
+import InstallPWADialog from "./components/InstallPWADialog";
 
 const useStyles = makeStyles({
   root: {
@@ -41,6 +42,7 @@ function App() {
           {
             tokenData.token ? (
               <BrowserRouter>
+                <InstallPWADialog />
                 <Routes>
                   <Route path="/" element={<Wrapper />}>
                     <Route path="/" element={<Home />} />
