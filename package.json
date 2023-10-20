@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "rm -rf ./dist && tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.32.3",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^18.2.8",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
+    "@vite-pwa/assets-generator": "^0.0.10",
     "@vitejs/plugin-react": "^4.1.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.50.0",
