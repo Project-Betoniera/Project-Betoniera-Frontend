@@ -21,9 +21,9 @@ export default function OfflineDialog() {
     <Dialog open={isOffline}>
         <DialogSurface>
             <DialogBody>
-                <DialogTitle>Sei offline</DialogTitle>
+                <DialogTitle>🚫 Sei offline</DialogTitle>
                 <DialogContent>
-                    Sei offline. Connettiti ad una rete per utilizzare l'applicazione.
+                    Connettiti ad una rete per utilizzare l'applicazione.
                 </DialogContent>
             </DialogBody>
         </DialogSurface>
