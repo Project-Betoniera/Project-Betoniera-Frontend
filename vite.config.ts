@@ -26,7 +26,7 @@ export default defineConfig({
       short_name: "Calendar Exporter",
       description: "Calendar Exporter",
       theme_color: "#0F6CBD",
-      start_url: "/",
+      start_url: "/?standalone=true",
       id: "/",
       display: "standalone",
       icons: [
