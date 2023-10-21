@@ -1,13 +1,13 @@
 import { Body1, Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle2, Tab, TabList, makeStyles, shorthands } from "@fluentui/react-components";
 import { useContext, useState } from "react";
-import { createFluentIcon, MoreHorizontalRegular, MoreVerticalRegular, AddFilled, LineHorizontal3Regular, PhoneAddRegular } from "@fluentui/react-icons";
+import { createFluentIcon, MoreHorizontalRegular, MoreVerticalRegular, LineHorizontal3Regular, PhoneAddRegular } from "@fluentui/react-icons";
 import { PwaContext } from "../context/PwaContext";
 
 const chromePath: string[] = [
-    "M 24.203382,11.267795 H 44.7812 a 23.759075,22.529868 0 0 0 -41.1571203,0.0027 l 10.2889083,16.898974 0.0092,-0.0023 A 11.867903,11.253901 0 0 1 24.203382,11.267795 Z",
-    "M 33.5,24 A 9.5,9.5 0 0 1 24,33.5 9.5,9.5 0 0 1 14.5,24 9.5,9.5 0 0 1 24,14.5 9.5,9.5 0 0 1 33.5,24 Z",
-    "M 35.198423,30.0029 25.424173,48 A 22.570722,23.994 0 0 0 44.970886,12.0031 H 25.42248 l -0.0023,0.0093 a 11.274073,11.985 0 0 1 9.778294,17.9905 z",
-    "M 13.6086,30.0031 3.218,12.006 A 23.994,23.994 0 0 0 24.0025,48 L 34.3931,30.0029 34.3864,29.9961 a 11.9852,11.9852 0 0 1 -20.7778,0.007 z"
+    "M95.506,152.511c0,31.426,25.567,56.991,56.994,56.991c31.425,0,56.99-25.566,56.99-56.991 c0-31.426-25.565-56.993-56.99-56.993C121.073,95.518,95.506,121.085,95.506,152.511z",
+    "M283.733,77.281c0.444-0.781,0.436-1.74-0.023-2.513c-13.275-22.358-32.167-41.086-54.633-54.159 C205.922,7.134,179.441,0.012,152.5,0.012c-46.625,0-90.077,20.924-119.215,57.407c-0.643,0.804-0.727,1.919-0.212,2.81 l42.93,74.355c0.45,0.78,1.28,1.25,2.164,1.25c0.112,0,0.226-0.008,0.339-0.023c1.006-0.137,1.829-0.869,2.083-1.852 c8.465-32.799,38.036-55.706,71.911-55.706c2.102,0,4.273,0.096,6.455,0.282c0.071,0.007,0.143,0.01,0.214,0.01H281.56 C282.459,78.545,283.289,78.063,283.733,77.281z",
+    "M175.035,224.936c-0.621-0.803-1.663-1.148-2.646-0.876c-6.457,1.798-13.148,2.709-19.889,2.709 c-28.641,0-55.038-16.798-67.251-42.794c-0.03-0.064-0.063-0.126-0.098-0.188L23.911,77.719c-0.446-0.775-1.272-1.25-2.165-1.25 c-0.004,0-0.009,0-0.013,0c-0.898,0.005-1.725,0.49-2.165,1.272C6.767,100.456,0,126.311,0,152.511 c0,36.755,13.26,72.258,37.337,99.969c23.838,27.435,56.656,45.49,92.411,50.84c0.124,0.019,0.248,0.027,0.371,0.027 c0.883,0,1.713-0.47,2.164-1.25l42.941-74.378C175.732,226.839,175.657,225.739,175.035,224.936z",
+    "M292.175,95.226h-85.974c-1.016,0-1.931,0.615-2.314,1.555c-0.384,0.94-0.161,2.02,0.564,2.73 c14.385,14.102,22.307,32.924,22.307,53c0,15.198-4.586,29.824-13.263,42.298c-0.04,0.058-0.077,0.117-0.112,0.178l-61.346,106.252 c-0.449,0.778-0.446,1.737,0.007,2.513c0.449,0.767,1.271,1.237,2.158,1.237c0.009,0,0.019,0,0.028,0 c40.37-0.45,78.253-16.511,106.669-45.222C289.338,231.032,305,192.941,305,152.511c0-19.217-3.532-37.956-10.498-55.698 C294.126,95.855,293.203,95.226,292.175,95.226z"
 ];
 
 const safariPath: string[] = [
@@ -22,21 +22,55 @@ const firefoxPath: string[] = [
     "M 50.785817 0.0067603932 C 41.055409 5.7040712 37.748566 16.244814 37.445879 21.52728 C 37.894542 21.496408 38.339748 21.459656 38.796381 21.459656 A 19.56 19.56 0 0 1 55.776111 31.376597 A 13.38 13.38 0 0 0 46.431989 29.107197 C 60.372975 36.07719 56.632599 60.082255 37.312619 59.176256 A 17.24 17.24 0 0 1 32.270612 58.203656 C 31.891279 58.060989 31.512261 57.906239 31.132928 57.73824 C 30.913928 57.63924 30.694561 57.537973 30.478561 57.425973 C 25.749566 54.985976 21.837246 50.360364 21.349246 44.74637 C 21.349246 44.74637 23.138143 38.079384 34.158132 38.079384 C 35.349131 38.079384 38.756248 34.753202 38.820248 33.789203 L 38.818259 33.781247 C 38.803259 33.466247 32.058389 30.783274 29.428391 28.192277 C 28.029791 26.813585 27.364133 26.145668 26.775122 25.646411 A 11.59 11.59 0 0 0 26.765177 25.638455 A 11.59 11.59 0 0 0 25.776665 24.888618 A 17.97 17.97 0 0 1 25.667273 15.415214 A 28.7 28.7 0 0 0 16.337073 22.625185 L 16.319173 22.625185 C 14.783174 20.678187 14.892604 14.258082 14.980604 12.917083 A 6.928 6.928 0 0 0 13.685793 13.605263 A 28.22 28.22 0 0 0 9.898818 16.849252 A 33.84 33.84 0 0 0 6.2749375 21.197113 A 32.73 32.73 0 0 0 1.0758027 32.93594 L 1.0221008 33.192516 C 0.94910091 33.533515 0.68720992 35.240088 0.64220996 35.611088 C 0.64220996 35.640088 0.63526517 35.667613 0.63226517 35.696613 A 36.94 36.94 0 0 0 0.0037546171 41.040942 L 0.0037546171 41.239838 A 38.76 38.76 0 0 0 76.95453 47.793452 C 77.01953 47.293453 77.071558 46.798778 77.129558 46.293778 A 39.86 39.86 0 0 0 74.615516 26.823874 C 72.930583 22.773671 69.518249 18.402574 66.844659 17.020303 A 40.27 40.27 0 0 1 70.770861 28.779019 L 70.776828 28.844655 C 66.394832 17.924666 58.966094 13.514997 52.8961 3.9250066 C 52.589101 3.4400071 52.282169 2.9542438 51.983169 2.4412443 C 51.812169 2.1482446 51.676532 1.8846832 51.557532 1.6416834 A 7.053 7.053 0 0 1 50.978745 0.10620827 A 0.1 0.1 0 0 0 50.891231 0.0067603932 A 0.138 0.138 0 0 0 50.81764 0.0067603932 C 50.81264 0.0067603932 50.805739 0.014705183 50.799739 0.016705181 C 50.793739 0.018705179 50.780894 0.028616844 50.771894 0.03261684 L 50.785817 0.0067603932 z M 33.921446 22.135901 A 19.39 19.39 0 0 0 33.18951 22.356675 A 19.39 19.39 0 0 1 33.921446 22.135901 z M 30.478561 23.400878 A 19.39 19.39 0 0 0 29.786404 23.729056 A 19.39 19.39 0 0 1 30.478561 23.400878 z M 70.778817 28.818798 L 70.784784 28.860566 L 70.778817 28.856588 L 70.778817 28.818798 z M 29.949498 57.169398 C 30.130498 57.256398 30.300517 57.350929 30.486517 57.433929 L 30.514362 57.45183 C 30.326362 57.36183 30.137498 57.266731 29.949498 57.169398 z "
 ];
 
+const safariSquareAndArrowUpPath: string[] = [
+    "M17.334 10.7617L17.334 20.5078C17.334 22.5195 16.3086 23.5352 14.2676 23.5352L3.06641 23.5352C1.02539 23.5352 0 22.5195 0 20.5078L0 10.7617C0 8.75 1.02539 7.73438 3.06641 7.73438L6.00586 7.73438L6.00586 9.30664L3.08594 9.30664C2.10938 9.30664 1.57227 9.83398 1.57227 10.8496L1.57227 20.4199C1.57227 21.4355 2.10938 21.9629 3.08594 21.9629L14.2383 21.9629C15.2051 21.9629 15.7617 21.4355 15.7617 20.4199L15.7617 10.8496C15.7617 9.83398 15.2051 9.30664 14.2383 9.30664L11.3281 9.30664L11.3281 7.73438L14.2676 7.73438C16.3086 7.73438 17.334 8.75 17.334 10.7617Z",
+    "M8.66211 15.8887C9.08203 15.8887 9.44336 15.5371 9.44336 15.127L9.44336 5.09766L9.38477 3.63281L10.0391 4.32617L11.5234 5.9082C11.6602 6.06445 11.8555 6.14258 12.0508 6.14258C12.4512 6.14258 12.7637 5.84961 12.7637 5.44922C12.7637 5.24414 12.6758 5.08789 12.5293 4.94141L9.22852 1.75781C9.0332 1.5625 8.86719 1.49414 8.66211 1.49414C8.4668 1.49414 8.30078 1.5625 8.0957 1.75781L4.79492 4.94141C4.64844 5.08789 4.57031 5.24414 4.57031 5.44922C4.57031 5.84961 4.86328 6.14258 5.27344 6.14258C5.45898 6.14258 5.67383 6.06445 5.81055 5.9082L7.28516 4.32617L7.94922 3.63281L7.89062 5.09766L7.89062 15.127C7.89062 15.5371 8.24219 15.8887 8.66211 15.8887Z"
+];
+
+const safariPlusAppPath: string[] = [
+    "M16.8652 1.15234C15.8691 0.15625 14.4629 0 12.793 0L5.18555 0C3.54492 0 2.13867 0.15625 1.14258 1.15234C0.146484 2.14844 0 3.54492 0 5.18555L0 12.793C0 14.4629 0.146484 15.8594 1.14258 16.8555C2.13867 17.8516 3.54492 18.0078 5.20508 18.0078L12.793 18.0078C14.4629 18.0078 15.8691 17.8516 16.8652 16.8555C17.8613 15.8594 18.0078 14.4629 18.0078 12.793L18.0078 5.20508C18.0078 3.53516 17.8613 2.14844 16.8652 1.15234ZM16.4355 4.94141L16.4355 13.0664C16.4355 14.0723 16.3086 15.1172 15.7129 15.7031C15.127 16.2988 14.0723 16.4355 13.0664 16.4355L4.94141 16.4355C3.93555 16.4355 2.88086 16.2988 2.28516 15.7031C1.69922 15.1172 1.57227 14.0723 1.57227 13.0664L1.57227 4.9707C1.57227 3.93555 1.69922 2.89062 2.28516 2.29492C2.88086 1.70898 3.94531 1.57227 4.9707 1.57227L13.0664 1.57227C14.0723 1.57227 15.127 1.70898 15.7129 2.30469C16.3086 2.89062 16.4355 3.93555 16.4355 4.94141Z",
+    "M4.48242 9.00391C4.48242 9.48242 4.82422 9.80469 5.32227 9.80469L8.19336 9.80469L8.19336 12.6855C8.19336 13.1738 8.51562 13.5156 8.99414 13.5156C9.48242 13.5156 9.82422 13.1836 9.82422 12.6855L9.82422 9.80469L12.7051 9.80469C13.1934 9.80469 13.5352 9.48242 13.5352 9.00391C13.5352 8.51562 13.1934 8.17383 12.7051 8.17383L9.82422 8.17383L9.82422 5.30273C9.82422 4.80469 9.48242 4.46289 8.99414 4.46289C8.51562 4.46289 8.19336 4.80469 8.19336 5.30273L8.19336 8.17383L5.32227 8.17383C4.81445 8.17383 4.48242 8.51562 4.48242 9.00391Z"
+]
+
+const safariMenubarDockRectanglePath: string[] = [
+    "M1.04492 3.29102L1.04492 4.66797L21.9824 4.66797L21.9824 3.29102ZM3.06641 17.9785L19.9609 17.9785C22.0117 17.9785 23.0273 16.9727 23.0273 14.9609L23.0273 3.02734C23.0273 1.01562 22.0117 0 19.9609 0L3.06641 0C1.02539 0 0 1.01562 0 3.02734L0 14.9609C0 16.9727 1.02539 17.9785 3.06641 17.9785ZM3.08594 16.4062C2.10938 16.4062 1.57227 15.8887 1.57227 14.873L1.57227 3.11523C1.57227 2.09961 2.10938 1.57227 3.08594 1.57227L19.9414 1.57227C20.9082 1.57227 21.4551 2.09961 21.4551 3.11523L21.4551 14.873C21.4551 15.8887 20.9082 16.4062 19.9414 16.4062Z",
+    "M4.19922 14.0137C4.19922 14.5215 4.55078 14.8633 5.06836 14.8633L17.9883 14.8633C18.5059 14.8633 18.8574 14.5215 18.8574 14.0137L18.8574 12.5488C18.8574 12.041 18.5059 11.6992 17.9883 11.6992L5.06836 11.6992C4.55078 11.6992 4.19922 12.041 4.19922 12.5488Z"
+]
+
+const firefoxAddToHomeScreenPath: string[] = [
+    "M15.535,10.526L17.135,12.126C17.449,12.44 17.228,12.977 16.784,12.98L12.551,13L12,12.449L12.021,8.217C12.023,7.773 12.56,7.552 12.875,7.866L14.471,9.462L19.72,4.22C20.013,3.927 20.488,3.927 20.781,4.22C21.074,4.513 21.074,4.988 20.781,5.281L15.535,10.526Z",
+    "M7.6,14H6.4L6,14.4V15.6L6.4,16H7.6L8,15.6V14.4L7.6,14Z",
+    "M10.6,14H9.4L9,14.4V15.6L9.4,16H10.6L11,15.6V14.4L10.6,14Z",
+    "M13.6,14H12.4L12,14.4V15.6L12.4,16H13.6L14,15.6V14.4L13.6,14Z",
+    "M10.6,11H9.4L9,11.4V12.6L9.4,13H10.6L11,12.6V11.4L10.6,11Z",
+    "M14.5,2H5.5C4.119,2 3,3.119 3,4.5V19.5C3,20.881 4.119,22 5.5,22H14.5C15.881,22 17,20.881 17,19.5V15.225C17,14.811 16.664,14.475 16.25,14.475C15.836,14.475 15.5,14.811 15.5,15.225V17H4.5V4.3L5.3,3.5H14.7L15.5,4.3V5C15.5,5.414 15.836,5.75 16.25,5.75C16.664,5.75 17,5.414 17,5V4.5C17,3.119 15.881,2 14.5,2ZM8.75,19H11.25C11.664,19 12,19.336 12,19.75C12,20.164 11.664,20.5 11.25,20.5H8.75C8.336,20.5 8,20.164 8,19.75C8,19.336 8.336,19 8.75,19Z"
+]
+
 const icons = {
-    apple: {
-        share: "data:image/png;base64,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"
-    },
     browsers: {
-        Chrome: createFluentIcon("chrome", "48", chromePath),
-        Safari: createFluentIcon("safari", "24", safariPath),
-        Edge: createFluentIcon("edge", "32", edgePath),
-        Firefox: createFluentIcon("edge", "80", firefoxPath)
+        chrome: {
+            Icon: createFluentIcon("chrome", "310", chromePath)
+        },
+        safari: {
+            Icon: createFluentIcon("safari", "24", safariPath),
+            SquareAndArrowUp: createFluentIcon("squareAndArrowUp", "24", safariSquareAndArrowUpPath),
+            PlusApp: createFluentIcon("plusApp", "18", safariPlusAppPath),
+            MenubarDockRectangle: createFluentIcon("menubarDockRectangle", "23", safariMenubarDockRectanglePath)
+        },
+        edge: {
+            Icon: createFluentIcon("edge", "32", edgePath)
+        },
+        firefox: {
+            Icon: createFluentIcon("edge", "80", firefoxPath),
+            AddToHomeScreen: createFluentIcon("addToHomeScreen", "22", firefoxAddToHomeScreenPath)
+        }
     }
 };
 
 const useStyles = makeStyles({
-    icon: {
-        height: "1rem"
+    icon:{
+        height: "1rem",
+        width: "1rem"
     },
     tabList: {
         marginBottom: "1rem"
@@ -96,13 +130,13 @@ export default function InstallPwaDialog() {
                         <div className={styles.instructions}>
                             <Subtitle2>Desktop</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Apri il menu in alto a destra <MoreVerticalRegular /></Body1></li>
+                                <li><Body1>Apri il menu in alto a destra <MoreVerticalRegular className={styles.icon} /></Body1></li>
                                 <li><Body1>Seleziona <b>Installa Calendar Exporter</b></Body1></li>
                                 <li><Body1>Seleziona <b>Installa</b> nel popup</Body1></li>
                             </ol>
                             <Subtitle2>Android</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Apri il menu in alto a destra <MoreVerticalRegular /></Body1></li>
+                                <li><Body1>Apri il menu in alto a destra <MoreVerticalRegular className={styles.icon} /></Body1></li>
                                 <li><Body1>Seleziona <b>Installa app</b></Body1></li>
                                 <li><Body1>Seleziona <b>Installa</b> nel popup</Body1></li>
                             </ol>
@@ -113,15 +147,15 @@ export default function InstallPwaDialog() {
                         <div className={styles.instructions}>
                             <Subtitle2>iOS</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Seleziona l'icona di condivisione <img alt="Icona di condivisione di Safari" className={styles.icon} src={icons.apple.share}></img></Body1></li>
+                                <li><Body1>Seleziona l'icona di condivisione <icons.browsers.safari.SquareAndArrowUp className={styles.icon} /></Body1></li>
                                 <li><Body1>Scorri verso il basso</Body1></li>
-                                <li><Body1>Seleziona <b>Aggiungi alla schermata Home</b> <AddFilled /></Body1></li>
+                                <li><Body1>Seleziona <b>Aggiungi alla schermata Home</b> <icons.browsers.safari.PlusApp className={styles.icon} /></Body1></li>
                                 <li><Body1>Seleziona <b>Aggiungi</b> in alto a destra</Body1></li>
                             </ol>
                             <Subtitle2>MacOS</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Seleziona l'icona di condivisione <img alt="Icona di condivisione di Safari" className={styles.icon} src={icons.apple.share}></img></Body1></li>
-                                <li><Body1>Seleziona <b>Aggiungi al Dock</b> <AddFilled /></Body1></li>
+                                <li><Body1>Seleziona l'icona di condivisione <icons.browsers.safari.SquareAndArrowUp className={styles.icon} /></Body1></li>
+                                <li><Body1>Seleziona <b>Aggiungi al Dock</b> <icons.browsers.safari.MenubarDockRectangle className={styles.icon} /></Body1></li>
                                 <li><Body1>Seleziona <b>Aggiungi</b> in alto a destra</Body1></li>
                             </ol>
                         </div>
@@ -131,15 +165,15 @@ export default function InstallPwaDialog() {
                         <div className={styles.instructions}>
                             <Subtitle2>Desktop</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Apri il menu in alto a destra <MoreHorizontalRegular /></Body1></li>
+                                <li><Body1>Apri il menu in alto a destra <MoreHorizontalRegular className={styles.icon} /></Body1></li>
                                 <li><Body1>Seleziona <b>App</b></Body1></li>
                                 <li><Body1>Seleziona <b>Installa Calendar Exporter</b> nel popup</Body1></li>
                             </ol>
                             <Subtitle2>Android</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Apri il menu in basso a destra <LineHorizontal3Regular /></Body1></li>
+                                <li><Body1>Apri il menu in basso a destra <LineHorizontal3Regular className={styles.icon} /></Body1></li>
                                 <li><Body1>Scorri a destra</Body1></li>
-                                <li><Body1>Seleziona <b>Aggiungi al telefono</b> <PhoneAddRegular /></Body1></li>
+                                <li><Body1>Seleziona <b>Aggiungi al telefono</b> <PhoneAddRegular className={styles.icon} /></Body1></li>
                             </ol>
                         </div>
                     );
@@ -150,9 +184,9 @@ export default function InstallPwaDialog() {
                             <Body1>🤷 Le PWA non sono ancora disponibili per Firefox desktop</Body1>
                             <Subtitle2>Android</Subtitle2>
                             <ol className={styles.section}>
-                                <li><Body1>Apri il menu in basso a destra <MoreVerticalRegular /></Body1></li>
+                                <li><Body1>Apri il menu in basso a destra <MoreVerticalRegular className={styles.icon} /></Body1></li>
                                 <li><Body1>Scorri verso il basso</Body1></li>
-                                <li><Body1>Seleziona <b>Installa</b> [TODO icon]</Body1></li>
+                                <li><Body1>Seleziona <b>Installa</b> <icons.browsers.firefox.AddToHomeScreen className={styles.icon} /></Body1></li>
                             </ol>
                         </div>
                     );
@@ -164,10 +198,10 @@ export default function InstallPwaDialog() {
         return (
             <>
                 <TabList className={styles.tabList} defaultSelectedValue={getBrowser()} appearance="transparent" onTabSelect={(_event, data) => { setBrowser(data.value as string); }}>
-                    <Tab icon={<icons.browsers.Chrome />} value="chrome">Chrome</Tab>
-                    <Tab icon={<icons.browsers.Safari />} value="safari">Safari</Tab>
-                    <Tab icon={<icons.browsers.Edge />} value="edge">Edge</Tab>
-                    <Tab icon={<icons.browsers.Firefox />} value="firefox">Firefox</Tab>
+                    <Tab icon={<icons.browsers.chrome.Icon />} value="chrome">Chrome</Tab>
+                    <Tab icon={<icons.browsers.safari.Icon />} value="safari">Safari</Tab>
+                    <Tab icon={<icons.browsers.edge.Icon />} value="edge">Edge</Tab>
+                    <Tab icon={<icons.browsers.firefox.Icon />} value="firefox">Firefox</Tab>
                 </TabList>
                 {renderTutorialContent()}
             </>
