@@ -24,9 +24,10 @@ export default defineConfig({
     registerType: "autoUpdate", devOptions: { enabled: true }, manifest: {
       name: "Calendar Exporter",
       short_name: "Calendar Exporter",
-      description: "Calendar Exporter for JAC Students",
+      description: "Calendar Exporter",
       theme_color: "#0F6CBD",
       start_url: "/",
+      id: "/",
       display: "standalone",
       icons: [
         {
