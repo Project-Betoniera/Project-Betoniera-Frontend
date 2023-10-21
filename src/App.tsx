@@ -11,12 +11,18 @@ import { About } from "./routes/About";
 import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
 import { ThemeContext } from "./context/ThemeContext";
 import { PrivacyAlert } from "./components/PrivacyAlert";
+import OfflineDialog from "./components/OfflineDialog";
+import InstallPwaDialog from "./components/InstallPwaDialog";
 
 const useStyles = makeStyles({
   root: {
     display: "flex",
     flexDirection: "column",
     backgroundColor: tokens.colorNeutralBackground3,
+    paddingTop: "env(safe-area-inset-top, 0)",
+    paddingBottom: "env(safe-area-inset-bottom, 0)",
+    paddingLeft: "env(safe-area-inset-left, 0)",
+    paddingRight: "env(safe-area-inset-right, 0)",
   }
 });
 
@@ -32,9 +38,11 @@ function App() {
       <FluentProvider className={style.root} theme={theme}>
         <>
           <PrivacyAlert />
+          <OfflineDialog />
           {
             tokenData.token ? (
               <BrowserRouter>
+                <InstallPwaDialog />
                 <Routes>
                   <Route path="/" element={<Wrapper />}>
                     <Route path="/" element={<Home />} />

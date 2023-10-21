@@ -24,6 +24,7 @@ const useStyles = makeStyles({
             bottom: 0,
             left: 0,
             right: 0,
+            marginBottom: "env(safe-area-inset-bottom, 0)",
         }
     },
     nav: {

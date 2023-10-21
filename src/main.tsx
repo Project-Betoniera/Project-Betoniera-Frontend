@@ -6,6 +6,7 @@ import { TokenContextProvider } from "./context/TokenContext.tsx";
 import { CourseContextProvider } from "./context/CourseContext.tsx";
 import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { ensurePlausible } from "./plausible.tsx";
+import { PwaContextProvider } from "./context/PwaContext.tsx";
 
 ensurePlausible();
 
@@ -14,7 +15,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ThemeContextProvider>
       <TokenContextProvider>
         <CourseContextProvider>
-          <App />
+          <PwaContextProvider>
+            <App />
+          </PwaContextProvider>
         </CourseContextProvider>
       </TokenContextProvider>
     </ThemeContextProvider>
