@@ -89,7 +89,7 @@ export function LoginForm() {
             setIsLoading(false);
         }).catch((error) => {
             setLoginError(true);
-            if (error.response.status === 401) {
+            if (error.response?.status === 401) {
                 dispatchToast(
                     <Toast>
                         <ToastTitle>Errore Login!</ToastTitle>
