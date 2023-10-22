@@ -22,12 +22,27 @@ export default defineConfig({
   },
   plugins: [react(), VitePWA({
     registerType: "autoUpdate", devOptions: { enabled: true }, manifest: {
+      prefer_related_applications: true,
       name: "Calendar Exporter",
       short_name: "Calendar Exporter",
       description: "Calendar Exporter",
       theme_color: "#0F6CBD",
-      start_url: "/?source=pwa",
+      start_url: "/?utm_source=pwa&utm_medium=start_url",
       id: "/",
+      scope: "/",
+      protocol_handlers: [
+        {
+          protocol: "web+betoniera",
+          url: "/?protocol=%s&utm_source=pwa&utm_medium=protocol"
+        }
+      ],
+      related_applications: [
+        {
+          id: "org.betoniera.app",
+          platform: "webapp",
+          url: "http://localhost:5173/manifest.webmanifest"
+        }
+      ],
       display: "standalone",
       icons: [
         {
