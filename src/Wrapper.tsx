@@ -1,8 +1,10 @@
 import { Outlet } from "react-router";
-import { Body1, Card, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { useGlobalStyles } from "./globalStyles";
 import RouterMenu from "./components/RouterMenu";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { PwaContext } from "./context/PwaContext";
+import { ArrowDownloadFilled } from "@fluentui/react-icons";
 
 const useStyles = makeStyles({
     header: {
@@ -45,12 +47,17 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
         ...shorthands.margin("0.5rem"),
         ...shorthands.padding("1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         "@media screen and (max-width: 578px)": {
             marginBottom: "6rem",
         }
+    },
+    installButton: {
+        alignSelf: "end",
+        flexGrow: "0 !important",
     }
 });
 
@@ -58,6 +65,7 @@ export function Wrapper() {
     const styles = useStyles();
     const globalStyles = useGlobalStyles();
 
+    const pwa = useContext(PwaContext);
     const [iconsOnly, setIconsOnly] = useState(false);
 
     useEffect(() => {
@@ -76,6 +84,8 @@ export function Wrapper() {
         };
     }, []);
 
+    const promptPwaInstall = async () => { pwa.setAcknowledged(false); };
+
     return (
         <>
             <header className={styles.sticky}>
@@ -92,6 +102,7 @@ export function Wrapper() {
             <footer>
                 <Card className={styles.footer}>
                     <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</Body1>
+                    {(!pwa.isInstalled && !pwa.isPwa) && <Button className={styles.installButton} as="a" href={`web+betoniera://${window.location.href.substring(window.location.origin.length)}`} appearance="primary" icon={<ArrowDownloadFilled />} onClick={promptPwaInstall}>Installa App</Button>}
                 </Card>
             </footer>
         </>
