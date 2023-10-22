@@ -40,7 +40,7 @@ export default defineConfig({
         {
           id: "org.betoniera.app",
           platform: "webapp",
-          url: "http://localhost:5173/manifest.webmanifest"
+          url: "http://betoniera.org/manifest.webmanifest"
         }
       ],
       display: "standalone",
