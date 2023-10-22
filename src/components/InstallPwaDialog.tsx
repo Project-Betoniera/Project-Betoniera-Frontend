@@ -30,12 +30,12 @@ const safariSquareAndArrowUpPath: string[] = [
 const safariPlusAppPath: string[] = [
     "M16.8652 1.15234C15.8691 0.15625 14.4629 0 12.793 0L5.18555 0C3.54492 0 2.13867 0.15625 1.14258 1.15234C0.146484 2.14844 0 3.54492 0 5.18555L0 12.793C0 14.4629 0.146484 15.8594 1.14258 16.8555C2.13867 17.8516 3.54492 18.0078 5.20508 18.0078L12.793 18.0078C14.4629 18.0078 15.8691 17.8516 16.8652 16.8555C17.8613 15.8594 18.0078 14.4629 18.0078 12.793L18.0078 5.20508C18.0078 3.53516 17.8613 2.14844 16.8652 1.15234ZM16.4355 4.94141L16.4355 13.0664C16.4355 14.0723 16.3086 15.1172 15.7129 15.7031C15.127 16.2988 14.0723 16.4355 13.0664 16.4355L4.94141 16.4355C3.93555 16.4355 2.88086 16.2988 2.28516 15.7031C1.69922 15.1172 1.57227 14.0723 1.57227 13.0664L1.57227 4.9707C1.57227 3.93555 1.69922 2.89062 2.28516 2.29492C2.88086 1.70898 3.94531 1.57227 4.9707 1.57227L13.0664 1.57227C14.0723 1.57227 15.127 1.70898 15.7129 2.30469C16.3086 2.89062 16.4355 3.93555 16.4355 4.94141Z",
     "M4.48242 9.00391C4.48242 9.48242 4.82422 9.80469 5.32227 9.80469L8.19336 9.80469L8.19336 12.6855C8.19336 13.1738 8.51562 13.5156 8.99414 13.5156C9.48242 13.5156 9.82422 13.1836 9.82422 12.6855L9.82422 9.80469L12.7051 9.80469C13.1934 9.80469 13.5352 9.48242 13.5352 9.00391C13.5352 8.51562 13.1934 8.17383 12.7051 8.17383L9.82422 8.17383L9.82422 5.30273C9.82422 4.80469 9.48242 4.46289 8.99414 4.46289C8.51562 4.46289 8.19336 4.80469 8.19336 5.30273L8.19336 8.17383L5.32227 8.17383C4.81445 8.17383 4.48242 8.51562 4.48242 9.00391Z"
-]
+];
 
 const safariMenubarDockRectanglePath: string[] = [
     "M1.04492 3.29102L1.04492 4.66797L21.9824 4.66797L21.9824 3.29102ZM3.06641 17.9785L19.9609 17.9785C22.0117 17.9785 23.0273 16.9727 23.0273 14.9609L23.0273 3.02734C23.0273 1.01562 22.0117 0 19.9609 0L3.06641 0C1.02539 0 0 1.01562 0 3.02734L0 14.9609C0 16.9727 1.02539 17.9785 3.06641 17.9785ZM3.08594 16.4062C2.10938 16.4062 1.57227 15.8887 1.57227 14.873L1.57227 3.11523C1.57227 2.09961 2.10938 1.57227 3.08594 1.57227L19.9414 1.57227C20.9082 1.57227 21.4551 2.09961 21.4551 3.11523L21.4551 14.873C21.4551 15.8887 20.9082 16.4062 19.9414 16.4062Z",
     "M4.19922 14.0137C4.19922 14.5215 4.55078 14.8633 5.06836 14.8633L17.9883 14.8633C18.5059 14.8633 18.8574 14.5215 18.8574 14.0137L18.8574 12.5488C18.8574 12.041 18.5059 11.6992 17.9883 11.6992L5.06836 11.6992C4.55078 11.6992 4.19922 12.041 4.19922 12.5488Z"
-]
+];
 
 const firefoxAddToHomeScreenPath: string[] = [
     "M15.535,10.526L17.135,12.126C17.449,12.44 17.228,12.977 16.784,12.98L12.551,13L12,12.449L12.021,8.217C12.023,7.773 12.56,7.552 12.875,7.866L14.471,9.462L19.72,4.22C20.013,3.927 20.488,3.927 20.781,4.22C21.074,4.513 21.074,4.988 20.781,5.281L15.535,10.526Z",
@@ -44,7 +44,7 @@ const firefoxAddToHomeScreenPath: string[] = [
     "M13.6,14H12.4L12,14.4V15.6L12.4,16H13.6L14,15.6V14.4L13.6,14Z",
     "M10.6,11H9.4L9,11.4V12.6L9.4,13H10.6L11,12.6V11.4L10.6,11Z",
     "M14.5,2H5.5C4.119,2 3,3.119 3,4.5V19.5C3,20.881 4.119,22 5.5,22H14.5C15.881,22 17,20.881 17,19.5V15.225C17,14.811 16.664,14.475 16.25,14.475C15.836,14.475 15.5,14.811 15.5,15.225V17H4.5V4.3L5.3,3.5H14.7L15.5,4.3V5C15.5,5.414 15.836,5.75 16.25,5.75C16.664,5.75 17,5.414 17,5V4.5C17,3.119 15.881,2 14.5,2ZM8.75,19H11.25C11.664,19 12,19.336 12,19.75C12,20.164 11.664,20.5 11.25,20.5H8.75C8.336,20.5 8,20.164 8,19.75C8,19.336 8.336,19 8.75,19Z"
-]
+];
 
 const icons = {
     browsers: {
@@ -68,7 +68,7 @@ const icons = {
 };
 
 const useStyles = makeStyles({
-    icon:{
+    icon: {
         height: "1rem",
         width: "1rem"
     },
@@ -88,8 +88,8 @@ const useStyles = makeStyles({
 
 export default function InstallPwaDialog() {
     const styles = useStyles();
-    const { pwaPrompt: prompt, isPwa } = useContext(PwaContext);
-    const [acknowledged, setAcknowledged] = useState(window.localStorage.getItem("isPwaDialogAcknowledged") === "true");
+    const { pwaPrompt: prompt, isPwa, isInstalled, isAcknowledged, setAcknowledged } = useContext(PwaContext);
+
     const [installPromptFailed, setInstallPromptFailed] = useState(false);
     const [browser, setBrowser] = useState(getBrowser());
 
@@ -100,15 +100,6 @@ export default function InstallPwaDialog() {
         else if (navigator.userAgent.indexOf("Firefox") != -1) { return "firefox"; }
         else { return "chrome"; }
     }
-
-    const setAcknowledgedState = (enabled: boolean) => {
-        if (enabled) {
-            window.localStorage.setItem("isPwaDialogAcknowledged", "true");
-        } else {
-            window.localStorage.removeItem("isPwaDialogAcknowledged");
-        }
-        setAcknowledged(enabled);
-    };
 
     async function promptInstall() {
         try {
@@ -211,7 +202,7 @@ export default function InstallPwaDialog() {
     const shouldShowTutorial = installPromptFailed || prompt === null;
 
     return (
-        <Dialog open={!acknowledged && !isPwa} modalType="modal">
+        <Dialog open={!isAcknowledged && !isPwa && !isInstalled} modalType="modal">
             <DialogSurface>
                 <DialogBody>
                     <DialogTitle>📲 Installa la nostra App!</DialogTitle>
@@ -221,7 +212,7 @@ export default function InstallPwaDialog() {
                     <DialogActions>
                         <Button onClick={() => { promptInstall(); }} appearance="primary" disabled={shouldShowTutorial}>Installa</Button>
                         <DialogTrigger>
-                            <Button onClick={() => { setAcknowledgedState(true); }} appearance={shouldShowTutorial ? "primary" : "secondary"}>Chiudi</Button>
+                            <Button onClick={() => { setAcknowledged(true); }} appearance={shouldShowTutorial ? "primary" : "secondary"}>Chiudi</Button>
                         </DialogTrigger>
                     </DialogActions>
                 </DialogBody>
