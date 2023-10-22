@@ -13,6 +13,7 @@ import { ThemeContext } from "./context/ThemeContext";
 import { PrivacyAlert } from "./components/PrivacyAlert";
 import OfflineDialog from "./components/OfflineDialog";
 import InstallPwaDialog from "./components/InstallPwaDialog";
+import { ProtocolHandler } from "./components/ProtocolHandler";
 
 const useStyles = makeStyles({
   root: {
@@ -42,6 +43,7 @@ function App() {
           {
             tokenData.token ? (
               <BrowserRouter>
+                <ProtocolHandler />
                 <InstallPwaDialog />
                 <Routes>
                   <Route path="/" element={<Wrapper />}>
