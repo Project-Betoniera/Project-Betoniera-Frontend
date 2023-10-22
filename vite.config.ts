@@ -38,7 +38,7 @@ export default defineConfig({
       ],
       related_applications: [
         {
-          id: "org.betoniera.app",
+          id: "/",
           platform: "webapp",
           url: "http://betoniera.org/manifest.webmanifest"
         }
