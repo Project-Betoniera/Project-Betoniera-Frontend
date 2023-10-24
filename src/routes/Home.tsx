@@ -5,7 +5,8 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
+import { Body1, Body2, Button, Card, CardFooter, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
+import { ArrowLeftFilled, ArrowRightFilled } from "@fluentui/react-icons";
 import { useGlobalStyles } from "../globalStyles";
 
 export function Home() {
@@ -17,9 +18,10 @@ export function Home() {
     const [now] = useState(new Date());
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+    const [dateTime, setDateTime] = useState(new Date(now.getTime()));
 
     useEffect(() => {
-        const start = new Date(now); // Now
+        const start = new Date(dateTime); // Now
         const end = new Date(start); // Tomorrow at 00:00
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
@@ -42,7 +44,7 @@ export function Home() {
 
             setEvents(result);
         }).catch(() => { });
-    }, []);
+    }, [dateTime]);
 
     useEffect(() => {
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -73,7 +75,7 @@ export function Home() {
         <>
             {
                 events.map((event) => (
-                    <Card className={mergeClasses(globalStyles.card, event.start <= now ? globalStyles.ongoing : "")} key={event.id}>
+                    <Card className={mergeClasses(globalStyles.card, event.start <= now && event.end > now ? globalStyles.ongoing : "")} key={event.id}>
                         <CardHeader
                             header={<Subtitle2>💼 {event.subject}</Subtitle2>}
                             description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
@@ -89,7 +91,7 @@ export function Home() {
                 ))
             }
         </>
-    ) : (<Card className={globalStyles.card}><Subtitle2>Nessuna lezione rimasta per oggi 😊</Subtitle2></Card>);
+    ) : (<Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>);
 
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.map((item) => {
         const nextEvent = item.status.currentOrNextEvent;
@@ -126,7 +128,27 @@ export function Home() {
                 </PopoverSurface>
             </Popover>
         );
-    }) : (<Card className={globalStyles.card}><Subtitle2>Nessuna aula libera al momento 😒</Subtitle2></Card>);
+    }) : (<Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>);
+
+    const onBackButtonClick = () => {
+        let result: Date = new Date(dateTime.getTime());
+
+        result.setDate(result.getDate() - 1)
+        result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
+
+        setDateTime(result);
+    }
+
+    const onForwardButtonClick = () => {
+        let result: Date = new Date(dateTime.getTime());
+
+        result.setDate(result.getDate() + 1)
+        result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
+
+        setDateTime(result);
+    }
+
+    const onTodayButtonClick = () => { setDateTime(new Date(now.getTime())) }
 
     return (
         <>
@@ -136,6 +158,11 @@ export function Home() {
                         header={<Title2>📚 {course?.code} - Lezioni Rimanenti</Title2>}
                         description={<Subtitle2>{course?.name}</Subtitle2>}
                     />
+                    <CardFooter>
+                        <Button icon={<ArrowLeftFilled />} onClick={onBackButtonClick}></Button>
+                        <Button onClick={onTodayButtonClick}>{dateTime.toDateString() !== now.toDateString() ? "📅 " + dateTime.toLocaleString([], { dateStyle: "short" }) : "Oggi"}</Button>
+                        <Button icon={<ArrowRightFilled />} onClick={onForwardButtonClick}></Button>
+                    </CardFooter>
                 </Card>
                 <div className={globalStyles.grid}>
                     {events ? (renderEvents()) : (<Spinner size="huge" />)}
