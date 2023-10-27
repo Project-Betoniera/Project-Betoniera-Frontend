@@ -5,8 +5,8 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Body2, Button, Card, CardFooter, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, makeStyles, mergeClasses } from "@fluentui/react-components";
-import { ArrowLeftFilled, ArrowRightFilled } from "@fluentui/react-icons";
+import { Body1, Body2, Button, Card, CardFooter, CardHeader, Input, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { ArrowLeftFilled, ArrowRightFilled, CalendarTodayRegular } from "@fluentui/react-icons";
 import { useGlobalStyles } from "../globalStyles";
 
 const useStyles = makeStyles({
@@ -18,8 +18,7 @@ const useStyles = makeStyles({
             justifyContent: "space-between",
         },
     },
-    todayButton: {
-        width: "8rem",
+    dateInput: {
         maxWidth: "unset",
         "@media screen and (max-width: 578px)": {
             flexGrow: 1,
@@ -30,7 +29,7 @@ const useStyles = makeStyles({
         width: "4rem",
         maxWidth: "unset",
     }
-})
+});
 
 export function Home() {
     const styles = useStyles();
@@ -156,34 +155,35 @@ export function Home() {
     const onBackButtonClick = () => {
         let result: Date = new Date(dateTime.getTime());
 
-        result.setDate(result.getDate() - 1)
+        result.setDate(result.getDate() - 1);
         result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
 
         setDateTime(result);
-    }
+    };
 
     const onForwardButtonClick = () => {
         let result: Date = new Date(dateTime.getTime());
 
-        result.setDate(result.getDate() + 1)
+        result.setDate(result.getDate() + 1);
         result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
 
         setDateTime(result);
-    }
+    };
 
-    const onTodayButtonClick = () => { if (now.toDateString() !== dateTime.toDateString()) setDateTime(new Date(now.getTime())) }
+    const onTodayButtonClick = () => { if (now.toDateString() !== dateTime.toDateString()) setDateTime(new Date(now.getTime())); };
 
     return (
         <>
             <div className={globalStyles.container}>
                 <Card className={globalStyles.titleBar}>
                     <CardHeader
-                        header={<Title2>📚 Lezioni Rimanenti</Title2>}
-                        description={<><Subtitle2>{course?.code} - {course?.name}</Subtitle2></>}
+                        header={<Title2>📚 {course?.code} - Lezioni</Title2>}
+                        description={<><Subtitle2>{course?.name}</Subtitle2></>}
                     />
                     <CardFooter className={styles.dateSelector}>
                         <Button className={styles.arrowButton} icon={<ArrowLeftFilled />} onClick={onBackButtonClick}></Button>
-                        <Button className={styles.todayButton} onClick={onTodayButtonClick}>{dateTime.toDateString() !== now.toDateString() ? "📅 " + dateTime.toLocaleString([], { dateStyle: "short" }) : "Oggi"}</Button>
+                        <Input className={styles.dateInput} type="date" onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={new Date(dateTime.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0]}></Input>
+                        <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
                         <Button className={styles.arrowButton} icon={<ArrowRightFilled />} onClick={onForwardButtonClick}></Button>
                     </CardFooter>
                 </Card>
