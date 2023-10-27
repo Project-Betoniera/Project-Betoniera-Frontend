@@ -4,12 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "vite --host",
-    "dev": "vite",
-    "build": "rm -rf ./dist && tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "generate-pwa-assets": "pwa-assets-generator --preset minimal public/logo.svg"
+    "start": "npm run dev",
+    "dev": "npm run gen-icons && vite --host",
+    "build": "npm run clean && npm run gen-icons && tsc && vite build",
+    "clean": "npm run clean-dist && npm run clean-icons",
+    "clean-dist": "rm -rf ./dist",
+    "gen-icons": "pwa-assets-generator",
+    "clean-icons": "rm -rf ./public/icons/*.ico && rm -rf ./public/icons/*.png"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.32.3",
