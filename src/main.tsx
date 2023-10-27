@@ -7,8 +7,10 @@ import { CourseContextProvider } from "./context/CourseContext.tsx";
 import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { ensurePlausible } from "./plausible.tsx";
 import { PwaContextProvider } from "./context/PwaContext.tsx";
+import { isBetaBuild } from "./config.ts";
 
 ensurePlausible();
+if (isBetaBuild) console.log("Beta build");
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

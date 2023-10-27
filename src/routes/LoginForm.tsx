@@ -1,13 +1,14 @@
 import { FormEvent, useContext, useState } from "react";
 import { TokenContext } from "../context/TokenContext";
 import axios from "axios";
-import { apiUrl } from "../config";
+import { apiUrl, isBetaBuild } from "../config";
 import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
+import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle1, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 import { encode as toBase64 } from "base-64";
+import { useGlobalStyles } from "../globalStyles";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -57,6 +58,7 @@ const useStyles = makeStyles({
 });
 
 export function LoginForm() {
+    const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
     const { setTokenData } = useContext(TokenContext);
@@ -119,7 +121,7 @@ export function LoginForm() {
         <>
             <main className={styles.loginMain}>
                 <div className={styles.loginContainer}>
-                    <LargeTitle className={styles.title}>Calendar Exporter<sup>BETA</sup></LargeTitle>
+                    <LargeTitle className={styles.title}>Calendar Exporter{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}</LargeTitle>
                     <Card className={styles.loginForm}>
                         <form onSubmit={login} className={styles.loginForm}>
                             <h2>🚀 Login</h2>

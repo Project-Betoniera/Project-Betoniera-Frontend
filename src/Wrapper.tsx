@@ -1,10 +1,11 @@
 import { Outlet } from "react-router";
-import { Body1, Button, Card, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, Subtitle1, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { useGlobalStyles } from "./globalStyles";
 import RouterMenu from "./components/RouterMenu";
 import { useContext, useEffect, useState } from "react";
 import { PwaContext } from "./context/PwaContext";
 import { ArrowDownloadFilled } from "@fluentui/react-icons";
+import { isBetaBuild } from "./config";
 
 const useStyles = makeStyles({
     header: {
@@ -40,7 +41,8 @@ const useStyles = makeStyles({
         justifyContent: "space-between",
     },
     title: {
-        "@media screen and (max-width: 958px)": { display: "none" },
+        "@media screen and (max-width: 1000px)": { display: "none" },
+        alignSelf: "center",
         ...shorthands.padding("0"),
     },
     footer: {
@@ -91,7 +93,7 @@ export function Wrapper() {
             <header className={styles.sticky}>
                 <Card className={styles.header}>
                     <nav className={styles.nav}>
-                        <Title1 className={styles.title}>Calendar Exporter<sup>BETA</sup></Title1>
+                        <Title1 className={styles.title}>Calendar Exporter{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}</Title1>
                         {RouterMenu({ className: styles.routerMenu }, iconsOnly)}
                     </nav>
                 </Card>
