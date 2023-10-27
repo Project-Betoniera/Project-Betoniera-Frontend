@@ -84,7 +84,6 @@ export const useGlobalStyles = makeStyles({
     },
     betaBadge: {
         backgroundImage: "linear-gradient(30deg, hsl(40, 100%, 50%) , hsl(50, 100%, 50%))",
-        textAlign: "center",
         fontWeight: "bold",
         "@media screen and (prefers-color-scheme: dark)": {
             backgroundImage: "linear-gradient(30deg, hsl(40, 100%, 45%) , hsl(50, 100%, 45%))",
