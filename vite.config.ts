@@ -23,7 +23,7 @@ export default defineConfig({
     __IS_BETA_BUILD__: isBetaBuild,
   },
   plugins: [react(), VitePWA({
-    registerType: "autoUpdate", devOptions: { enabled: true }, manifest: {
+    registerType: "prompt", devOptions: { enabled: true }, manifest: {
       prefer_related_applications: true,
       name: "Calendar Exporter",
       short_name: "Calendar Exporter",

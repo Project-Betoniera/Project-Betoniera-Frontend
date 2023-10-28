@@ -10,7 +10,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "types": [
-      "vite-plugin-pwa/client"
+      "vite-plugin-pwa/react"
     ],
     /* Bundler mode */
     "moduleResolution": "bundler",
