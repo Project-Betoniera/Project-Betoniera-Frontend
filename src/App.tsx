@@ -2,18 +2,19 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./routes/Home";
 import { Wrapper } from "./Wrapper";
 import { Calendar } from "./routes/Calendar";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
 import { Classroom } from "./routes/Classroom";
 import { About } from "./routes/About";
-import { FluentProvider, makeStyles, tokens } from "@fluentui/react-components";
+import { FluentProvider, Toast, ToastBody, ToastTitle, Toaster, makeStyles, tokens, useId, useToastController } from "@fluentui/react-components";
 import { ThemeContext } from "./context/ThemeContext";
 import { PrivacyAlert } from "./components/PrivacyAlert";
 import OfflineDialog from "./components/OfflineDialog";
 import InstallPwaDialog from "./components/InstallPwaDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 const useStyles = makeStyles({
   root: {
@@ -34,10 +35,33 @@ function App() {
 
   let content: JSX.Element;
 
+  const toasterId = useId("app-toaster");
+  const { dispatchToast } = useToastController(toasterId);
+
+  const {
+    offlineReady: [offlineReady, setOfflineReady],
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker
+  } = useRegisterSW({
+    onOfflineReady: () => {
+      dispatchToast(
+        <Toast>
+          <ToastTitle>App pronta</ToastTitle>
+          <ToastBody>La PWA è stata installata correttamente.</ToastBody>
+        </Toast>,
+        { intent: "info" }
+      );
+    },
+    onNeedRefresh: () => {
+      updateServiceWorker();
+    }
+  });
+
   content = (
     <>
       <FluentProvider className={style.root} theme={theme}>
         <>
+          <Toaster toasterId={toasterId} />
           <PrivacyAlert />
           <OfflineDialog />
           {
