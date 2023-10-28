@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { apiUrl } from "../config";
 import axios from "axios";
 import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Body2, Button, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Body2, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
 
@@ -36,18 +36,40 @@ const useDarkStyles = makeStyles({
     }
 });
 
+const useStyles = makeStyles({
+    toolbar: {
+        justifyContent: "space-between",
+        "@media screen and (max-width: 620px)": {
+            justifyContent: "stretch",
+            flexDirection: "column-reverse",
+        }
+    },
+    filter: {
+        alignSelf: "flex-start",
+
+        "@media screen and (max-width: 578px)": {
+            alignSelf: "stretch",
+        }
+    }
+});
+
 export function Classroom() {
     const { theme } = useContext(ThemeContext);
 
-    const styles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const globalStyles = useGlobalStyles();
+    const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
+    const styles = useStyles();
+
     const { tokenData } = useContext(TokenContext);
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [events, setEvents] = useState<EventDto[] | null>(null);
+    const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
+    const [filteredClassrooms, setFilteredClassrooms] = useState<ClassroomStatus[]>([]);
 
+    // Get new data when the date changes
     useEffect(() => {
         setClassrooms(null);
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
@@ -67,10 +89,30 @@ export function Classroom() {
             setClassrooms(result);
         }).catch(() => {
         });
+
     }, [dateTime]);
 
+    // Filter the classrooms when the filter changes
+    useEffect(() => {
+        if (!classrooms) return;
+
+        switch (filter) {
+            case "all":
+                setFilteredClassrooms(classrooms || []);
+                break;
+            case "free":
+                setFilteredClassrooms(classrooms?.filter((item) => item.status.isFree) || []);
+                break;
+            case "busy":
+                setFilteredClassrooms(classrooms?.filter((item) => !item.status.isFree) || []);
+                break;
+        }
+    }, [filter, classrooms]);
+
     const renderClassrooms = () => {
-        return classrooms?.map((item) => {
+        return filteredClassrooms.length === 0 ? [
+            <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
+        ] : filteredClassrooms.map((item) => {
             const getEvents = (isOpen: boolean) => {
                 if (!isOpen) {
                     setEvents(null);
@@ -132,7 +174,7 @@ export function Classroom() {
             return (
                 <Dialog key={item.classroom.id} modalType="modal" onOpenChange={(_event, data) => { getEvents(data.open); }}>
                     <DialogTrigger>
-                        <Card className={mergeClasses(globalStyles.card, item.status.isFree ? styles.cardFree : styles.cardBusy)}>
+                        <Card className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)}>
                             <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
                             <div>
                                 <Body1>{status}</Body1>
@@ -163,13 +205,28 @@ export function Classroom() {
         });
     };
 
+    function onFilterChange(_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) {
+        if (data.value !== "all" &&
+            data.value !== "free" &&
+            data.value !== "busy") return;
+
+        setFilter(data.value);
+    }
+
     return (
         <div className={globalStyles.container}>
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
                 />
-                <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                <CardFooter className={styles.toolbar}>
+                    <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                    <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
+                        <option value="all">Tutte</option>
+                        <option value="free">Libere</option>
+                        <option value="busy">Occupate</option>
+                    </Select>
+                </CardFooter>
             </Card>
 
             <div className={globalStyles.grid}>
