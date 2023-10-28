@@ -9,6 +9,11 @@ type DateSelectorProps = {
 };
 
 const useStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem",
+    },
     dateSelector: {
         display: "flex",
         flexDirection: "row",
@@ -70,7 +75,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('.')[0].slice(0, -3);
 
     return (
-        <>
+        <div className={styles.root}>
             <div className={styles.dateSelector}>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>
@@ -81,6 +86,6 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 <Button className={mergeClasses(styles.arrowButton, styles.growOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.growOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
             </div>
-        </>
+        </div>
     );
 };
