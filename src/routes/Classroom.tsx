@@ -5,8 +5,9 @@ import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Body2, Button, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Input, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Body2, Button, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
+import { DateSelector } from "../components/DateSelector";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -43,7 +44,7 @@ export function Classroom() {
     const { tokenData } = useContext(TokenContext);
 
     const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date());
+    const [dateTime, setDateTime] = useState(new Date(now));
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [events, setEvents] = useState<EventDto[] | null>(null);
 
@@ -168,9 +169,7 @@ export function Classroom() {
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
                 />
-                <div>
-                    <Input type="datetime-local" defaultValue={new Date(dateTime.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('.')[0].slice(0, -3)} min="2018-10-01T00:00" onChange={(e) => { e.target.value && setDateTime(new Date(e.target.value)); }} />
-                </div>
+                <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />
             </Card>
 
             <div className={globalStyles.grid}>

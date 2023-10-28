@@ -5,43 +5,20 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Body2, Button, Card, CardFooter, CardHeader, Input, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, makeStyles, mergeClasses } from "@fluentui/react-components";
-import { ArrowLeftFilled, ArrowRightFilled, CalendarTodayRegular } from "@fluentui/react-icons";
+import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
-
-const useStyles = makeStyles({
-    dateSelector: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        "@media screen and (max-width: 578px)": {
-            justifyContent: "space-between",
-        },
-    },
-    dateInput: {
-        maxWidth: "unset",
-        "@media screen and (max-width: 578px)": {
-            flexGrow: 1,
-            width: "unset",
-        }
-    },
-    arrowButton: {
-        width: "4rem",
-        maxWidth: "unset",
-    }
-});
+import { DateSelector } from "../components/DateSelector";
 
 export function Home() {
-    const styles = useStyles();
     const globalStyles = useGlobalStyles();
 
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
     const [now] = useState(new Date());
+    const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
-    const [dateTime, setDateTime] = useState(new Date(now.getTime()));
 
     useEffect(() => {
         const start = new Date(dateTime); // Now
@@ -152,26 +129,6 @@ export function Home() {
         );
     }) : (<Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>);
 
-    const onBackButtonClick = () => {
-        let result: Date = new Date(dateTime.getTime());
-
-        result.setDate(result.getDate() - 1);
-        result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
-
-        setDateTime(result);
-    };
-
-    const onForwardButtonClick = () => {
-        let result: Date = new Date(dateTime.getTime());
-
-        result.setDate(result.getDate() + 1);
-        result.toDateString() == now.toDateString() ? result = now : result.setHours(0, 0, 0, 0);
-
-        setDateTime(result);
-    };
-
-    const onTodayButtonClick = () => { if (now.toDateString() !== dateTime.toDateString()) setDateTime(new Date(now.getTime())); };
-
     return (
         <>
             <div className={globalStyles.container}>
@@ -180,12 +137,7 @@ export function Home() {
                         header={<Title2>📚 {course?.code} - Lezioni</Title2>}
                         description={<><Subtitle2>{course?.name}</Subtitle2></>}
                     />
-                    <CardFooter className={styles.dateSelector}>
-                        <Button className={styles.arrowButton} icon={<ArrowLeftFilled />} onClick={onBackButtonClick}></Button>
-                        <Input className={styles.dateInput} type="date" onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={new Date(dateTime.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0]}></Input>
-                        <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
-                        <Button className={styles.arrowButton} icon={<ArrowRightFilled />} onClick={onForwardButtonClick}></Button>
-                    </CardFooter>
+                    <DateSelector inputType="date" dateTime={dateTime} setDateTime={setDateTime} now={now} />
                 </Card>
                 <div className={globalStyles.grid}>
                     {events ? (renderEvents()) : (<Spinner size="huge" />)}
