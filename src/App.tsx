@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./routes/Home";
 import { Wrapper } from "./Wrapper";
 import { Calendar } from "./routes/Calendar";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
@@ -39,8 +39,8 @@ function App() {
   const { dispatchToast } = useToastController(toasterId);
 
   const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
+    // offlineReady: [offlineReady, setOfflineReady],
+    // needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker
   } = useRegisterSW({
     onOfflineReady: () => {
