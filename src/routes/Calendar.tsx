@@ -18,15 +18,17 @@ export function Calendar() {
             <div className={globalStyles.container}>
                 <Card className={globalStyles.card}>
                     <CardHeader
-                        header={<Title2>📆 Esporta calendario</Title2>}
-                        description={<Subtitle2>Integrazione con calendari di terze parti</Subtitle2>}
+                        header={<Title2>📆 Sincronizza calendario</Title2>}
+                        description={<Subtitle2>Sincronizzazione con app calendari di terze parti</Subtitle2>}
                     />
                 </Card>
                 <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+                    <Card className={mergeClasses(globalStyles.card, styles.warning)}>
+                        <Subtitle2>⚠️ Attenzione!</Subtitle2>
+                        <Body1>Il calendario si aggiornerà automaticamente, ma la frequenza di aggiornamento varia a seconda dell'applicazione. Si consiglia, per sicurezza, di controllare anche il sito!</Body1>
+                    </Card>
                     <Body1>
                         Da questa pagina è possibile creare un link al calendario per un determinato corso, aula o docente, ed aggiungerlo ad un'app di terze parti (ad esempio <Link href="https://calendar.google.com" target="_blank">Google Calendar</Link>).
-                        <br />
-                        Il calendario si aggiornerà automaticamente in caso di modifiche.
                     </Body1>
 
                     <CalendarExporter />
