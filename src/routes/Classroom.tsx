@@ -78,7 +78,7 @@ export function Classroom() {
         }).then(response => {
             let result: ClassroomStatus[] = response.data;
 
-            const exclude = [5, 19, 20, 21, 22, 23, 24, 25, 26, 31, 32, 33];
+            const exclude = [5, 19, 26, 31, 33];
             result = result.filter((item) => !exclude.includes(item.classroom.id));
 
             result = result.map((item) => {
