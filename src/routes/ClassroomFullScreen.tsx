@@ -18,6 +18,9 @@ export function ClassroomFullScreen() {
     const [currentFloor, setCurrentFloor] = useState(1);
 
     useEffect(() => {
+        // First data fetch
+        fetchClassroomsStatus();
+        
         // Fetch classrooms status every 10 seconds
         const interval = setInterval(() => {
             fetchClassroomsStatus();
@@ -76,9 +79,9 @@ export function ClassroomFullScreen() {
 
     }, []);
 
-    const renderFloor = (floor: number) => {
+    const renderFloor = (floor: number, classrooms: ClassroomStatus[]) => {
             
-        const filtered = classrooms?.filter((item) => item.classroom.name[0] === floor.toString());
+        const filtered = classrooms.filter((item) => item.classroom.name[0] === floor.toString());
     
         return (
             <>
@@ -88,7 +91,7 @@ export function ClassroomFullScreen() {
                     />
                 </Card>
                 <div className={globalStyles.grid}>
-                    { filtered ? renderClassrooms(filtered) : <Spinner label="Caricamento..." /> }
+                    {renderClassrooms(filtered)}
                 </div>
             </>
         );
@@ -155,7 +158,7 @@ export function ClassroomFullScreen() {
 
     return(
         <div className={globalStyles.container}>
-            {renderFloor(currentFloor)}
+            { classrooms ? renderFloor(currentFloor, classrooms) : <Spinner label="Caricamento..." /> }
         </div>
     )
 
