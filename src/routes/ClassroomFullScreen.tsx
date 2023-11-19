@@ -1,10 +1,11 @@
-import { makeStyles } from "@fluentui/react-components";
+import { Body1, Body2, Button, Card, CardHeader, CardPreview, Divider, Spinner, Subtitle2, Title1, Title2, makeStyles } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { useGlobalStyles } from "../globalStyles";
+import { EventDto } from "../dto/EventDto";
 
 const useStyles = makeStyles({
     
@@ -17,22 +18,37 @@ export function ClassroomFullScreen() {
 
     const { tokenData } = useContext(TokenContext);
 
-    const [now] = useState(new Date());
+    const [now] = useState(new Date("2023-11-20T09:00"));
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+    const [currentFloor, setCurrentFloor] = useState(2);
 
     useEffect(() => {
         setClassrooms(null);
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: { Authorization: "Bearer " + tokenData.token },
-            params: { time: now.toISOString(), }
+            params: { time: now.toISOString() }
         }).then(response => {
+            console.log(response.data);
             let result: ClassroomStatus[] = response.data;
 
             const exclude = [5, 19, 26, 31, 33];
             result = result.filter((item) => !exclude.includes(item.classroom.id));
 
             result = result.map((item) => {
-                item.status.statusChangeAt = item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null;
+
+                if(item.status.statusChangeAt) {
+
+                    // Convert date string to date object for statusChangeAt
+                    item.status.statusChangeAt = new Date(item.status.statusChangeAt);
+
+                    if(item.status.currentOrNextEvent) {
+                        // Convert date strings to date objects for currentOrNextEvent
+                        item.status.currentOrNextEvent.start = new Date(item.status.currentOrNextEvent.start);
+                        item.status.currentOrNextEvent.end = new Date(item.status.currentOrNextEvent.end);
+                    } else { item.status.currentOrNextEvent = null; }
+
+                } else { item.status.statusChangeAt = null; }
+
                 return item;
             });
 
@@ -56,9 +72,86 @@ export function ClassroomFullScreen() {
 
     }, []);
 
+    const renderFloor = (floor: number) => {
+            
+        const filtered = classrooms?.filter((item) => item.classroom.name[0] === floor.toString());
+    
+        return (
+            <>
+                <Card className={globalStyles.card}>
+                    <CardHeader
+                        header={<Title1>{floor}° Piano</Title1>}
+                    />
+                </Card>
+                <div className={globalStyles.grid}>
+                    { filtered ? renderClassrooms(filtered) : <Spinner label="Caricamento..." /> }
+                </div>
+            </>
+        );
+    };
+
+    const renderClassrooms = (filtered: ClassroomStatus[]) => {
+
+        return filtered.map((item) => {
+            return (
+                <Card key={item.classroom.id} className={globalStyles.card}>
+                    <CardHeader
+                        header={<Title2>{item.classroom.name.split(" ")[0]}</Title2>}
+                        description={item.status.isFree ? "Libera" : "Occupata"}
+                        action={ item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? <span>{ new Date(new Date().setTime(item.status.currentOrNextEvent.start.getTime() - now.getTime())).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }</span> : null }
+                    />
+                    <Divider />
+                    {renderEvent(item.status.currentOrNextEvent)}
+                </Card>
+            );
+        });
+
+    };
+
+    const renderEvent = (event: Omit<EventDto, "classroom"> | null) => {
+
+        if (!event || event.start.getDate() !== now.getDate()) {
+            return (
+                <Title2>Nessuna Lezione</Title2>
+            )
+        }
+
+        /*
+        return (
+            <Card className={globalStyles.card}>
+                <CardHeader
+                    header={<Title2>{event.course.code}</Title2>}
+                    description={<Subtitle2>{event.course.name}</Subtitle2>}
+                />
+                <div>
+                    <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
+                    <br />
+                    {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
+                </div>
+            </Card>
+        )
+        */
+
+        return (
+            <div>
+                <Title2>{event.course.code}</Title2>
+                <br />
+                <Subtitle2 style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} >{event.course.name}</Subtitle2>
+                <br />
+                <br />
+                <Subtitle2>💼 {event.subject}</Subtitle2>
+                <br />
+                <Body2>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body2>
+                <br />
+                {event.teacher ? <Body2>🧑‍🏫 {event.teacher}</Body2> : ""}
+            </div>
+        )
+
+    };
+
     return(
         <div className={globalStyles.container}>
-            <h1>Classroom Full Screen</h1>
+            {renderFloor(currentFloor)}
         </div>
     )
 
