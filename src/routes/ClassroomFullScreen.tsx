@@ -20,9 +20,19 @@ export function ClassroomFullScreen() {
 
     const [now] = useState(new Date("2023-11-20T09:00"));
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
-    const [currentFloor, setCurrentFloor] = useState(2);
+    const [currentFloor, setCurrentFloor] = useState(1);
 
     useEffect(() => {
+        // Fetch classrooms status every 10 seconds
+        const interval = setInterval(async () => {
+            await fetchClassroomsStatus();
+            setCurrentFloor((prevCount) => (prevCount === 3 ? 1 : prevCount + 1));
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const fetchClassroomsStatus = () => {
         setClassrooms(null);
         axios.get(new URL(`classroom/status`, apiUrl).toString(), {
             headers: { Authorization: "Bearer " + tokenData.token },
@@ -56,8 +66,7 @@ export function ClassroomFullScreen() {
         }).catch((error) => {
             console.log(error);
         });
-
-    }, []);
+    };
 
     useEffect(() => {
         // Hide header and footer
