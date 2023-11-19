@@ -8,6 +8,8 @@ import { useGlobalStyles } from "../globalStyles";
 import { Body1, Body2, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
+import { FullScreenMaximizeFilled } from "@fluentui/react-icons";
+import { RouterButton } from "../components/RouterButton";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -218,6 +220,7 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
+                    action={<RouterButton as="a" icon={<FullScreenMaximizeFilled/>} href="/classroomfullscreen" />}
                 />
                 <CardFooter className={styles.toolbar}>
                     <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />

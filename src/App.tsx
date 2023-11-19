@@ -15,6 +15,7 @@ import OfflineDialog from "./components/OfflineDialog";
 import InstallPwaDialog from "./components/InstallPwaDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { ClassroomFullScreen } from "./routes/ClassroomFullScreen";
 
 const useStyles = makeStyles({
   root: {
@@ -73,6 +74,7 @@ function App() {
                   <Route path="/" element={<Wrapper />}>
                     <Route path="/" element={<Home />} />
                     <Route path="/classroom" element={<Classroom />} />
+                    <Route path="/classroomfullscreen" element={<ClassroomFullScreen />} />
                     <Route path="/calendar" element={<Calendar />} />
                     <Route path="/about" element={<About />} />
                     <Route path='*' element={<NotFound />} />
