@@ -7,14 +7,9 @@ import { TokenContext } from "../context/TokenContext";
 import { useGlobalStyles } from "../globalStyles";
 import { EventDto } from "../dto/EventDto";
 
-const useStyles = makeStyles({
-    
-});
-
 export function ClassroomFullScreen() {
 
     const globalStyles = useGlobalStyles();
-    const styles = useStyles();
 
     const { tokenData } = useContext(TokenContext);
 
@@ -24,8 +19,8 @@ export function ClassroomFullScreen() {
 
     useEffect(() => {
         // Fetch classrooms status every 10 seconds
-        const interval = setInterval(async () => {
-            await fetchClassroomsStatus();
+        const interval = setInterval(() => {
+            fetchClassroomsStatus();
             setCurrentFloor((prevCount) => (prevCount === 3 ? 1 : prevCount + 1));
         }, 10000);
 
@@ -107,7 +102,7 @@ export function ClassroomFullScreen() {
                     <CardHeader
                         header={<Title2>{item.classroom.name.split(" ")[0]}</Title2>}
                         description={item.status.isFree ? "Libera" : "Occupata"}
-                        action={ item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? <span>{ new Date(new Date().setTime(item.status.currentOrNextEvent.start.getTime() - now.getTime())).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }</span> : null }
+                        action={ item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? <span>Occupata tra { new Date(new Date().setTime(item.status.currentOrNextEvent.start.getTime() - now.getTime())).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }</span> : null }
                     />
                     <Divider />
                     {renderEvent(item.status.currentOrNextEvent)}
