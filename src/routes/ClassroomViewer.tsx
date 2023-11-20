@@ -119,7 +119,7 @@ export function ClassroomViewer() {
                     <CardHeader
                         header={<Title2>{item.classroom.name.split(" ")[0]}</Title2>}
                     />
-                    <Divider>{item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? "Occupata tra " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { hour: "numeric" }) + "h " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { minute: "numeric" }) + "min" : "Lezione in Corso"}</Divider>
+                    <Divider>{item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? "Occupata tra " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { hour: "numeric" }) + "h " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { minute: "numeric" }) + "min" : !item.status.currentOrNextEvent || item.status.currentOrNextEvent.start.getDate() !== now.getDate() ? "Aula Libera" : "Lezione in Corso"}</Divider>
                     {renderEvent(item.status.currentOrNextEvent)}
                 </Card>
             );
