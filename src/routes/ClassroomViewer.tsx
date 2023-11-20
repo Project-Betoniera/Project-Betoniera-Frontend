@@ -7,6 +7,7 @@ import { TokenContext } from "../context/TokenContext";
 import { useGlobalStyles } from "../globalStyles";
 import { EventDto } from "../dto/EventDto";
 import MarqueeText from "react-marquee-text";
+import { ClockEmoji } from "react-clock-emoji";
 
 const useStyles = makeStyles({
     displayFlex: {
@@ -141,7 +142,7 @@ export function ClassroomViewer() {
                 <Subtitle2 className={styles.displayFlex}><MarqueeText pauseOnHover={false} duration={5} direction="right">{event.course.name}</MarqueeText></Subtitle2>
                 <br />
                 <Subtitle2 className={styles.displayFlex}>💼 <MarqueeText className={styles.marqueeText} pauseOnHover={false} duration={5} direction="right">{event.subject}</MarqueeText></Subtitle2>
-                <Body2>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body2>
+                <Body2><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body2>
                 <br />
                 {event.teacher ? <Body2>🧑‍🏫 {event.teacher}</Body2> : ""}
             </div>
