@@ -16,3 +16,9 @@ h5,
 h6 {
     margin-top: 0;
 }
+
+@keyframes marqueeScroll {
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+}
