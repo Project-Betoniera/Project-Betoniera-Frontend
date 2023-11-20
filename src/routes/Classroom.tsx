@@ -8,6 +8,7 @@ import { useGlobalStyles } from "../globalStyles";
 import { Body1, Body2, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
+import { ClockEmoji } from "react-clock-emoji";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -152,7 +153,7 @@ export function Classroom() {
                         description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
                     />
                     <div>
-                        <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
+                        <Body1><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
                         <br />
                         <Body1>📚 {event.course.code} - {event.course.name}</Body1>
                         <br />
@@ -165,11 +166,11 @@ export function Classroom() {
             let changeTime = "";
 
             if (!item.status.statusChangeAt)
-                changeTime = "⌚ Nessun evento programmato.";
+                changeTime = "Nessun evento programmato.";
             else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                changeTime = "⌚ Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+                changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
             else
-                changeTime = "⌚ " + item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+                changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 
             return (
                 <Dialog key={item.classroom.id} modalType="modal" onOpenChange={(_event, data) => { getEvents(data.open); }}>
@@ -179,7 +180,7 @@ export function Classroom() {
                             <div>
                                 <Body1>{status}</Body1>
                                 <br />
-                                <Body1>{changeTime}</Body1>
+                                <Body1><ClockEmoji time={item.status.statusChangeAt} defaultTime={"15:00"}/>{changeTime}</Body1>
                             </div>
                         </Card>
                     </DialogTrigger>

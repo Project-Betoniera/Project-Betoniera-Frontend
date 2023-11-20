@@ -8,6 +8,7 @@ import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { DateSelector } from "../components/DateSelector";
+import { ClockEmoji } from 'react-clock-emoji';
 
 export function Home() {
     const globalStyles = useGlobalStyles();
@@ -80,7 +81,7 @@ export function Home() {
                     description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
                 />
                 <div>
-                    <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
+                    <Body1><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
                     <br />
                     <Body1>📍 Aula {event.classroom.name}</Body1>
                     <br />
@@ -116,7 +117,7 @@ export function Home() {
                             <>
                                 <Body1>💼 {nextEvent.subject}</Body1>
                                 <br />
-                                <Body1>⌚ {nextEvent.start.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</Body1>
+                                <Body1><ClockEmoji time={nextEvent.start} defaultTime={nextEvent.start}/> {nextEvent.start.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</Body1>
                                 <br />
                                 <Body1>📚 {nextEvent.course.code} {nextEvent.course.name}</Body1>
                                 <br />
