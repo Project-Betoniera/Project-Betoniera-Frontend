@@ -220,7 +220,7 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
-                    action={<RouterButton as="a" icon={<FullScreenMaximizeFilled/>} href="/classroomfullscreen" />}
+                    action={<RouterButton as="a" icon={<FullScreenMaximizeFilled/>} href="/viewer" />}
                 />
                 <CardFooter className={styles.toolbar}>
                     <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />

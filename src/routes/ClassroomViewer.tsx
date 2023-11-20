@@ -1,4 +1,4 @@
-import { Body1, Body2, Button, Card, CardHeader, CardPreview, Divider, Spinner, Subtitle2, Title1, Title2, makeStyles } from "@fluentui/react-components";
+import { Body2, Card, CardHeader, Divider, Spinner, Subtitle2, Title1, Title2 } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import axios from "axios";
@@ -7,20 +7,20 @@ import { TokenContext } from "../context/TokenContext";
 import { useGlobalStyles } from "../globalStyles";
 import { EventDto } from "../dto/EventDto";
 
-export function ClassroomFullScreen() {
+export function ClassroomViewer() {
 
     const globalStyles = useGlobalStyles();
 
     const { tokenData } = useContext(TokenContext);
 
-    const [now] = useState(new Date("2023-11-20T09:00"));
+    const [now] = useState(new Date());
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [currentFloor, setCurrentFloor] = useState(1);
 
     useEffect(() => {
         // First data fetch
         fetchClassroomsStatus();
-        
+
         // Fetch classrooms status every 10 seconds
         const interval = setInterval(() => {
             fetchClassroomsStatus();
@@ -105,9 +105,8 @@ export function ClassroomFullScreen() {
                     <CardHeader
                         header={<Title2>{item.classroom.name.split(" ")[0]}</Title2>}
                         description={item.status.isFree ? "Libera" : "Occupata"}
-                        action={ item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? <span>Occupata tra { new Date(new Date().setTime(item.status.currentOrNextEvent.start.getTime() - now.getTime())).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }</span> : null }
                     />
-                    <Divider />
+                    <Divider>{item.status.currentOrNextEvent && item.status.currentOrNextEvent.start.getDate() === now.getDate() && item.status.currentOrNextEvent.start > now ? "Occupata tra " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { hour: "numeric" }) + "h " + new Date(item.status.currentOrNextEvent.start.getTime() - now.getTime()).toLocaleTimeString([], { minute: "numeric" }) + "min" : "Lezione in Corso" }</Divider>
                     {renderEvent(item.status.currentOrNextEvent)}
                 </Card>
             );
@@ -122,22 +121,6 @@ export function ClassroomFullScreen() {
                 <Title2>Nessuna Lezione</Title2>
             )
         }
-
-        /*
-        return (
-            <Card className={globalStyles.card}>
-                <CardHeader
-                    header={<Title2>{event.course.code}</Title2>}
-                    description={<Subtitle2>{event.course.name}</Subtitle2>}
-                />
-                <div>
-                    <Body1>⌚ {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
-                    <br />
-                    {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
-                </div>
-            </Card>
-        )
-        */
 
         return (
             <div>
