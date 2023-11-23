@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Home } from "./routes/Home";
 import { Wrapper } from "./Wrapper";
-import { Calendar } from "./routes/Calendar";
+import { CalendarExport } from "./routes/CalendarExport";
 import { useContext } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
@@ -15,6 +15,7 @@ import OfflineDialog from "./components/OfflineDialog";
 import InstallPwaDialog from "./components/InstallPwaDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { Calendar } from "./routes/Calendar";
 
 const useStyles = makeStyles({
   root: {
@@ -74,6 +75,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/classroom" element={<Classroom />} />
                     <Route path="/calendar" element={<Calendar />} />
+                    <Route path="/calendar-export" element={<CalendarExport />} />
                     <Route path="/about" element={<About />} />
                     <Route path='*' element={<NotFound />} />
                   </Route>
