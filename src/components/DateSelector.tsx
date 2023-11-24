@@ -1,11 +1,11 @@
-import { Button, Input, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { Button, Input, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
 import { ArrowLeftFilled, ArrowRightFilled, CalendarTodayRegular } from "@fluentui/react-icons";
 
 type DateSelectorProps = {
     now: Date;
     dateTime: Date;
     setDateTime: (dateTime: Date) => void;
-    inputType: "date" | "datetime-local";
+    inputType: "date" | "datetime-local" | "month";
 };
 
 const useStyles = makeStyles({
@@ -58,7 +58,10 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
     const onArrowButtonClick = (value: number) => {
 
         let result: Date = new Date(dateTime);
-        result.setDate(result.getDate() + value);
+
+        inputType === "month" ?
+            result.setMonth(result.getMonth() + value) :
+            result.setDate(result.getDate() + value);
 
         // If the date is today, set the time to now, else set it to 00:00
         if (inputType === "date") result.toDateString() == now.toDateString() ?
@@ -78,7 +81,12 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
         <div className={styles.root}>
             <div className={styles.dateSelector}>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
-                <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>
+                {
+                    inputType === "month" ?
+                        <Subtitle2>{dateTime.toLocaleString([], { month: "long" })}</Subtitle2>
+                        :
+                        <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>
+                }
                 <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
             </div>
