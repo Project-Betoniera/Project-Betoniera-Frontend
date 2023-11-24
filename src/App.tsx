@@ -75,7 +75,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/classroom" element={<Classroom />} />
                     <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/calendar-export" element={<CalendarExport />} />
+                    <Route path="/calendar-sync" element={<CalendarExport />} />
                     <Route path="/about" element={<About />} />
                     <Route path='*' element={<NotFound />} />
                   </Route>
