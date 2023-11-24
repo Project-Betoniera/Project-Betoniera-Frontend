@@ -1,7 +1,7 @@
 import { Button, Tab, TabList, TabListProps } from '@fluentui/react-components';
 import { FunctionComponent, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, ArrowExportFilled } from "@fluentui/react-icons";
+import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled } from "@fluentui/react-icons";
 import { TokenContext } from '../context/TokenContext';
 import { CourseContext } from '../context/CourseContext';
 
@@ -20,11 +20,6 @@ const menuItems = [
         displayName: 'Calendario',
         path: '/calendar',
         icon: <CalendarFilled />,
-    },
-    {
-        displayName: 'Integrazioni',
-        path: '/calendar-export',
-        icon: <ArrowExportFilled />,
     },
     {
         displayName: 'About',
