@@ -211,7 +211,11 @@ export function Calendar() {
             </div >
 
             <Card className={styles.calendarHeader}>
-                {result.weekdays.map((day) => {
+                {window.matchMedia('(max-width: 578px)').matches ? result.weekdaysAbbr.map((day) => {
+                    return (
+                        <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>
+                    );
+                }) : result.weekdays.map((day) => {
                     return (
                         <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>
                     );
