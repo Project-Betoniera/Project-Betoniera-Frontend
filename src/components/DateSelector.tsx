@@ -77,13 +77,17 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('T')[0] :
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('.')[0].slice(0, -3);
 
+    const firstCharUppercase = (string: string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     return (
         <div className={styles.root}>
             <div className={styles.dateSelector}>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 {
                     inputType === "month" ?
-                        <Subtitle2>{dateTime.toLocaleString([], { month: "long" })}</Subtitle2>
+                        <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long" }))}</Subtitle2>
                         :
                         <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>
                 }
