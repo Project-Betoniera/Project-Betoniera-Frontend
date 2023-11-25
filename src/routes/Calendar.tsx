@@ -44,15 +44,16 @@ const useStyles = makeStyles({
     toolbar: {
         display: "flex",
         justifyContent: "space-between",
+        flexDirection: "row",
         ...shorthands.margin("0.7rem"),
         "@media screen and (max-width: 620px)": {
             justifyContent: "stretch",
-            flexDirection: "column-reverse",
+            flexDirection: "column",
         }
     },
     syncButton: {
         alignSelf: "flex-start",
-
+        flexGrow: "initial !important",
         "@media screen and (max-width: 578px)": {
             alignSelf: "stretch",
         }
@@ -222,13 +223,13 @@ export function Calendar() {
     return (
         <>
             <Card className={styles.toolbar}>
-                <RouterButton as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 <DateSelector
                     now={now}
                     dateTime={dateTime}
                     setDateTime={setDateTime}
                     inputType={"month"}
                 />
+                <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 
             <Card className={styles.calendarHeader}>
