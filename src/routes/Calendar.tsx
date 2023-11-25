@@ -111,7 +111,6 @@ export function Calendar() {
     const [events, setEvents] = useState<EventDto[] | null>(null);
 
     const result: DetailedCalendar = (CalendarJs() as any).detailed(dateTime.getFullYear(), dateTime.getMonth());
-    console.log(result);
 
     useEffect(() => {
         const start = result.calendar.flat()[0].date;
@@ -170,7 +169,7 @@ export function Calendar() {
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
-                <Dialog >
+                <Dialog key={day.date.getTime()}>
                     <DialogTrigger>
                         <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() ? styles.todayBadge : "")}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
@@ -214,7 +213,7 @@ export function Calendar() {
             <Card className={styles.calendarHeader}>
                 {result.weekdays.map((day) => {
                     return (
-                        <Subtitle1 className={styles.headerItem}>{day}</Subtitle1>
+                        <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>
                     );
                 })}
             </Card>
