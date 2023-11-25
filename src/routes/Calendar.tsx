@@ -68,6 +68,10 @@ const useStyles = makeStyles({
         ...shorthands.padding("0.5rem"),
         ...shorthands.gap("0.2rem"),
         overflowY: "auto",
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.margin("0.2rem"),
+            ...shorthands.padding("0.2rem"),
+        }
     },
     todayBadge: {
         // ...shorthands.padding("0.1rem"),
@@ -84,6 +88,9 @@ const useStyles = makeStyles({
         flexDirection: "column",
         overflowY: "scroll",
         rowGap: "0.5rem",
+        "@media screen and (max-width: 578px)": {
+            rowGap: "0.2rem",
+        }
     },
     event: {
         flexShrink: 0,
