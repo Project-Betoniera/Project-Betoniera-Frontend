@@ -11,6 +11,7 @@ import { ClockEmoji } from "react-clock-emoji";
 import { useGlobalStyles } from "../globalStyles";
 import { ArrowExportRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
+import Swipe from "react-easy-swipe";
 
 type DetailedCalendar = {
     year: string,
@@ -244,11 +245,17 @@ export function Calendar() {
                 })}
             </Card>
 
-            { events ? (
-                <div className={styles.calendar}>
-                    {renderCalendar()}
-                </div>
-            ) : <Spinner size="large" label="Caricamento..." />}
+            <Swipe
+                onSwipeRight={() => { setDateTime(new Date(dateTime.getFullYear(), dateTime.getMonth() - 1)); console.log("swipe right") }}
+                onSwipeLeft={() => { setDateTime(new Date(dateTime.getFullYear(), dateTime.getMonth() + 1)); console.log("swipe left") }}
+                tolerance={100}
+            >
+                { events ? (
+                    <div className={styles.calendar}>
+                        {renderCalendar()}
+                    </div>
+                ) : <Spinner size="large" label="Caricamento..." />}
+            </Swipe>
         </>
     );
 }
