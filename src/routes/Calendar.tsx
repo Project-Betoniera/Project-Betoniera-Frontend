@@ -1,4 +1,4 @@
-import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2 } from "@fluentui/react-components";
+import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner } from "@fluentui/react-components";
 import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -45,6 +45,17 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         ...shorthands.margin("0.7rem"),
+        "@media screen and (max-width: 620px)": {
+            justifyContent: "stretch",
+            flexDirection: "column-reverse",
+        }
+    },
+    syncButton: {
+        alignSelf: "flex-start",
+
+        "@media screen and (max-width: 578px)": {
+            alignSelf: "stretch",
+        }
     },
     calendarHeader: {
         ...shorthands.margin("0.5rem"),
@@ -90,6 +101,7 @@ const useStyles = makeStyles({
         rowGap: "0.5rem",
         "@media screen and (max-width: 578px)": {
             rowGap: "0.2rem",
+            overflowY: "hidden"
         }
     },
     event: {
@@ -170,13 +182,15 @@ export function Calendar() {
                         <br />
                         <Body1>📚 {event.course.code} - {event.course.name}</Body1>
                         <br />
+                        <Body1>📍 Aula {event.classroom.name}</Body1>
+                        <br />
                         {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
                     </div>
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
-                <Dialog key={day.date.getTime()}>
+                <Dialog key={day.date.getTime()} modalType="modal">
                     <DialogTrigger>
                         <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() ? styles.todayBadge : "")}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
@@ -207,15 +221,15 @@ export function Calendar() {
 
     return (
         <>
-            <div className={styles.toolbar}>
+            <Card className={styles.toolbar}>
+                <RouterButton as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 <DateSelector
                     now={now}
                     dateTime={dateTime}
                     setDateTime={setDateTime}
                     inputType={"month"}
                 />
-                <RouterButton as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
-            </div >
+            </Card>
 
             <Card className={styles.calendarHeader}>
                 {window.matchMedia('(max-width: 578px)').matches ? result.weekdaysAbbr.map((day) => {
@@ -229,9 +243,11 @@ export function Calendar() {
                 })}
             </Card>
 
-            <div className={styles.calendar}>
-                {renderCalendar()}
-            </div>
+            { events ? (
+                <div className={styles.calendar}>
+                    {renderCalendar()}
+                </div>
+            ) : <Spinner size="large" label="Caricamento..." />}
         </>
     );
 }
