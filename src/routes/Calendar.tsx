@@ -41,36 +41,39 @@ type CalendarConfig = {
 };
 
 const useStyles = makeStyles({
+    container: {
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        ...shorthands.gap("0.5rem"),
+        ...shorthands.margin("1rem"),
+    },
+    messageBarGroup: {
+        display: "flex",
+        flexDirection: "column",
+        ...shorthands.gap("0.5rem")
+    },
     toolbar: {
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        marginTop: "0.3rem",
-        marginBottom: "0.3rem",
-        marginLeft: "0.5rem",
-        marginRight: "0.5rem",
         "@media screen and (max-width: 620px)": {
             justifyContent: "stretch",
             flexDirection: "column",
         }
     },
     syncButton: {
-        alignSelf: "flex-start",
-        flexGrow: "initial !important",
+        alignSelf: "end",
+        flexGrow: "0 !important",
         "@media screen and (max-width: 578px)": {
             alignSelf: "stretch",
         }
     },
     calendarHeader: {
         display: "grid",
-        marginTop: "0.3rem",
-        marginBottom: "0.3rem",
-        marginLeft: "0.5rem",
-        marginRight: "0.5rem",
-        paddingLeft: "0",
-        paddingRight: "0",
         columnGap: "1rem",
         gridTemplateColumns: "repeat(7, 1fr)",
+        ...shorthands.padding("0.5rem", "0"),
         "@media screen and (max-width: 578px)": {
             ...shorthands.margin("0.2rem"),
             columnGap: "0.2rem",
@@ -84,10 +87,6 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         flexGrow: "1",
-        marginTop: "0.3rem",
-        marginBottom: "0.3rem",
-        marginLeft: "0.5rem",
-        marginRight: "0.5rem",
     },
     calendar: {
         position: "absolute",
@@ -102,8 +101,10 @@ const useStyles = makeStyles({
     card: {
         display: "flex",
         ...shorthands.margin("0rem"),
-        ...shorthands.padding("0.3rem"),
+        ...shorthands.gap("0.3rem"),
+        ...shorthands.padding("0.5rem"),
         "@media screen and (max-width: 578px)": {
+            ...shorthands.gap("0"),
             ...shorthands.padding("0.2rem"),
         }
     },
