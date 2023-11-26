@@ -40,7 +40,7 @@ export function CalendarExporter() {
     // Selected values
     const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
     const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code } : { code: "", name: "" });
-    const [calendarProvider, setCalendarProvider] = useState<{ code: string, name: string; }>(calendarProviders[1]);
+    const [calendarProvider, setCalendarProvider] = useState<{ code: string, name: string; }>(calendarProviders[3]);
 
     // Generated values
     const [calendarUrl, setCalendarUrl] = useState<string>("");
