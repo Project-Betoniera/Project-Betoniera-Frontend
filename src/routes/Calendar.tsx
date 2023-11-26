@@ -45,7 +45,7 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        ...shorthands.margin("0.3rem"),
+        ...shorthands.margin("0.5rem"),
         "@media screen and (max-width: 620px)": {
             justifyContent: "stretch",
             flexDirection: "column",
@@ -59,11 +59,11 @@ const useStyles = makeStyles({
         }
     },
     calendarHeader: {
+        display: "grid",
         ...shorthands.margin("0.5rem"),
         paddingLeft: "0",
         paddingRight: "0",
         columnGap: "1rem",
-        display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
         "@media screen and (max-width: 578px)": {
             ...shorthands.margin("0.2rem"),
@@ -77,30 +77,28 @@ const useStyles = makeStyles({
         position: "relative",
         display: "flex",
         flexDirection: "row",
-        flexGrow: "1"
+        flexGrow: "1",
+        ...shorthands.margin("0.5rem"),
     },
     calendar: {
         position: "absolute",
+        width: "100%",
         top: "0",
         bottom: "0",
         display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
         gridAutoRows: "1fr",
+        ...shorthands.gap("0.5rem"),
     },
     card: {
         display: "flex",
-        ...shorthands.margin("0.3rem"),
+        ...shorthands.margin("0rem"),
         ...shorthands.padding("0.3rem"),
-        ...shorthands.gap("0.2rem"),
         "@media screen and (max-width: 578px)": {
-            ...shorthands.margin("0.2rem"),
             ...shorthands.padding("0.2rem"),
         }
     },
     todayBadge: {
-        // ...shorthands.padding("0.1rem"),
-        // ...shorthands.borderRadius("25%"),
-        // ...shorthands.border("4px", "solid", tokens.colorBrandBackground),
         backgroundColor: tokens.colorBrandBackground,
         ":hover": {
             backgroundColor: tokens.colorBrandBackgroundHover
@@ -263,7 +261,7 @@ export function Calendar() {
                 })}
             </Card>
 
-            { events ? (
+            {events ? (
                 <div className={styles.calendarContainer}>
                     <div className={styles.calendar}>
                         {renderCalendar()}
