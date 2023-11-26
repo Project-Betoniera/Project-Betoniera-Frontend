@@ -11,7 +11,6 @@ import { ClockEmoji } from "react-clock-emoji";
 import { useGlobalStyles } from "../globalStyles";
 import { ArrowExportRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
-import Swipe from "react-easy-swipe";
 
 type DetailedCalendar = {
     year: string,
@@ -46,7 +45,7 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        ...shorthands.margin("0.7rem"),
+        ...shorthands.margin("0.2rem"),
         "@media screen and (max-width: 620px)": {
             justifyContent: "stretch",
             flexDirection: "column",
@@ -66,14 +65,27 @@ const useStyles = makeStyles({
         columnGap: "1rem",
         display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
+        "@media screen and (max-width: 578px)": {
+            ...shorthands.margin("0.2rem"),
+            columnGap: "0.2rem",
+        }
     },
     headerItem: {
         textAlign: "center",
     },
+    calendarContainer: {
+        position: "relative",
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: "1"
+    },
     calendar: {
+        position: "absolute",
+        top: "0",
+        bottom: "0",
         display: "grid",
         gridTemplateColumns: "repeat(7, 1fr)",
-        flexGrow: 1
+        gridAutoRows: "1fr",
     },
     card: {
         display: "flex",
@@ -243,17 +255,13 @@ export function Calendar() {
                 })}
             </Card>
 
-            <Swipe
-                onSwipeRight={() => { setDateTime(new Date(dateTime.getFullYear(), dateTime.getMonth() - 1)); console.log("swipe right") }}
-                onSwipeLeft={() => { setDateTime(new Date(dateTime.getFullYear(), dateTime.getMonth() + 1)); console.log("swipe left") }}
-                tolerance={100}
-            >
-                { events ? (
+            { events ? (
+                <div className={styles.calendarContainer}>
                     <div className={styles.calendar}>
                         {renderCalendar()}
                     </div>
-                ) : <Spinner size="large" label="Caricamento..." />}
-            </Swipe>
+                </div>
+            ) : <Spinner size="large" label="Caricamento..." />}
         </>
     );
 }
