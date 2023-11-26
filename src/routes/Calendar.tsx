@@ -99,11 +99,9 @@ const useStyles = makeStyles({
         maxHeight: "4rem",
         display: "flex",
         flexDirection: "column",
-        overflowY: "scroll",
         rowGap: "0.5rem",
         "@media screen and (max-width: 578px)": {
             rowGap: "0.2rem",
-            overflowY: "hidden"
         }
     },
     event: {
@@ -196,7 +194,7 @@ export function Calendar() {
                     <DialogTrigger>
                         <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() ? styles.todayBadge : "")}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
-                            <div className={styles.eventContainer}>
+                            <div className={styles.eventContainer} style={ window.matchMedia('(max-width: 578px)').matches ? { overflowY: "hidden" } : filteredEvents.length > 3 ? { overflowY: "scroll" } : { overflowY: "auto" } }>
                                 {renderPreviewEvents(filteredEvents)}
                             </div>
                         </Card>
