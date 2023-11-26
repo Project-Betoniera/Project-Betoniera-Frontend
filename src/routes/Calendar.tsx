@@ -151,6 +151,7 @@ export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
+    // TODO Use proper localization
     const calendarConfig: CalendarConfig = {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
@@ -182,13 +183,10 @@ export function Calendar() {
         end.setHours(0, 0, 0, 0);
 
         setEvents(null); // Show spinner
+
         axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
             headers: { Authorization: "Bearer " + tokenData.token },
-            params: {
-                start: start.toISOString(),
-                end: end.toISOString(),
-                includeOngoing: true
-            }
+            params: { start: start.toISOString(), end: end.toISOString(), includeOngoing: true }
         }).then(response => {
             let result: EventDto[] = [];
 
@@ -207,8 +205,7 @@ export function Calendar() {
             const filteredEvents = events.filter((event) => event.start.toLocaleDateString() === day.date.toLocaleDateString());
 
             const renderPreviewEvents = (events: EventDto[]) => {
-                return events.map((event) =>
-                    event.start.toLocaleDateString() === day.date.toLocaleDateString() &&
+                return events.map((event) => event.start.toLocaleDateString() === day.date.toLocaleDateString() &&
                     <Card key={event.id} className={styles.event}>
                         <Caption1 className={styles.eventText}>{event.subject}</Caption1>
                     </Card>
@@ -236,7 +233,7 @@ export function Calendar() {
             return (
                 <Dialog key={day.date.getTime()} modalType="modal">
                     <DialogTrigger>
-                        <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() ? styles.todayBadge : "")}>
+                        <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() && styles.todayBadge)}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
                             <div className={styles.eventContainer}>
                                 {renderPreviewEvents(filteredEvents)}
@@ -259,22 +256,15 @@ export function Calendar() {
                         </DialogBody>
                     </DialogSurface>
                 </Dialog>
-
             );
         });
-
 
     const clearMessage = (id: number) => { setMessages((messages) => messages.filter((message) => message.id !== id)); };
 
     return (
-        <>
+        <div className={styles.container}>
             <Card className={styles.toolbar}>
-                <DateSelector
-                    now={now}
-                    dateTime={dateTime}
-                    setDateTime={setDateTime}
-                    inputType={"month"}
-                />
+                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 
@@ -291,24 +281,16 @@ export function Calendar() {
             </MessageBarGroup>
 
             <Card className={styles.calendarHeader}>
-                {window.matchMedia('(max-width: 578px)').matches ? calendarConfig.weekDaysAbbr.map((day) => {
-                    return (
-                        <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>
-                    );
-                }) : calendarConfig.weekDays.map((day) => {
-                    return (
-                        <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>
-                    );
-                })}
+                {window.matchMedia('(max-width: 578px)').matches ?
+                    calendarConfig.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
+                    : calendarConfig.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
             </Card>
 
             {events ? (
                 <div className={styles.calendarContainer}>
-                    <div className={styles.calendar}>
-                        {renderCalendar()}
-                    </div>
+                    <div className={styles.calendar}>{renderCalendar()}</div>
                 </div>
-            ) : <Spinner size="large" label="Caricamento..." />}
-        </>
+            ) : <Spinner size="huge" />}
+        </div>
     );
 }
