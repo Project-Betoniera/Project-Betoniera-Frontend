@@ -64,7 +64,7 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        "@media screen and (max-width: 620px)": {
+        "@media screen and (max-width: 578px)": {
             justifyContent: "stretch",
             flexDirection: "column",
         }
