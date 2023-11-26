@@ -1,4 +1,4 @@
-import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner } from "@fluentui/react-components";
+import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions } from "@fluentui/react-components";
 import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -9,7 +9,7 @@ import { CourseContext } from "../context/CourseContext";
 import { apiUrl } from "../config";
 import { ClockEmoji } from "react-clock-emoji";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular } from "@fluentui/react-icons";
+import { ArrowExportRegular, DismissRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 
 type DetailedCalendar = {
@@ -45,7 +45,7 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        marginTop: "0rem",
+        marginTop: "0.3rem",
         marginBottom: "0.3rem",
         marginLeft: "0.5rem",
         marginRight: "0.5rem",
@@ -258,6 +258,18 @@ export function Calendar() {
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 
+            <MessageBar id="messageBar" intent={"warning"} layout={window.matchMedia('(max-width: 578px)').matches ? "multiline" : "auto"}>
+                <MessageBarBody>
+                    <MessageBarTitle>Work in Progress!</MessageBarTitle>
+                    Questa funzionalità è ancora in fase di sviluppo!
+                </MessageBarBody>
+                <MessageBarActions
+                    containerAction={
+                        <Button appearance="transparent" icon={<DismissRegular />} onClick={() => { const messagebar = document.getElementById("messageBar"); (messagebar as HTMLElement).style.display = "none" } } />
+                    }
+                />
+            </MessageBar>
+            
             <Card className={styles.calendarHeader}>
                 {window.matchMedia('(max-width: 578px)').matches ? calendarConfig.weekDaysAbbr.map((day) => {
                     return (
