@@ -33,12 +33,12 @@ type CalendarDay = {
     index: { day: number, week: number; };
 };
 
-// type CalendarConfig = {
-//     months: string[];
-//     monthsAbbr: string[];
-//     weekDays: string[];
-//     weekDaysAbbr: string[];
-// };
+type CalendarConfig = {
+    months: string[];
+    monthsAbbr: string[];
+    weekDays: string[];
+    weekDaysAbbr: string[];
+};
 
 const useStyles = makeStyles({
     toolbar: {
@@ -92,7 +92,6 @@ const useStyles = makeStyles({
         ...shorthands.margin("0.5rem"),
         ...shorthands.padding("0.5rem"),
         ...shorthands.gap("0.2rem"),
-        overflowY: "auto",
         "@media screen and (max-width: 578px)": {
             ...shorthands.margin("0.2rem"),
             ...shorthands.padding("0.2rem"),
@@ -108,8 +107,10 @@ const useStyles = makeStyles({
         }
     },
     eventContainer: {
-        maxHeight: "4rem",
         display: "flex",
+        minHeight: 0,
+        flexShrink: 1,
+        overflowY: "auto",
         flexDirection: "column",
         rowGap: "0.5rem",
         "@media screen and (max-width: 578px)": {
@@ -134,14 +135,20 @@ export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
+    const calendarConfig: CalendarConfig = {
+        months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+        monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
+        weekDays: ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
+        weekDaysAbbr: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"]
+    };
+
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
-
-    const result: DetailedCalendar = (CalendarJs() as any).detailed(dateTime.getFullYear(), dateTime.getMonth());
+    const result: DetailedCalendar = (CalendarJs(calendarConfig) as any).detailed(dateTime.getFullYear(), dateTime.getMonth());
 
     useEffect(() => {
         const start = result.calendar.flat()[0].date;
@@ -206,7 +213,7 @@ export function Calendar() {
                     <DialogTrigger>
                         <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() ? styles.todayBadge : "")}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
-                            <div className={styles.eventContainer} style={ window.matchMedia('(max-width: 578px)').matches ? { overflowY: "hidden" } : filteredEvents.length > 3 ? { overflowY: "scroll" } : { overflowY: "auto" } }>
+                            <div className={styles.eventContainer}>
                                 {renderPreviewEvents(filteredEvents)}
                             </div>
                         </Card>
