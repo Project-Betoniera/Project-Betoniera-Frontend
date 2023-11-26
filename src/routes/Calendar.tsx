@@ -229,7 +229,7 @@ export function Calendar() {
                     <DialogSurface>
                         <DialogBody>
                             <DialogTitle>
-                                <Title3>Lezioni {now.toLocaleDateString() === day.date.toLocaleDateString() ? "di oggi" : `del ${day.date.toLocaleDateString([], { dateStyle: "medium" })}`}</Title3>
+                                <Title3>Lezioni {now.toLocaleDateString() === day.date.toLocaleDateString() ? "di oggi" : `del ${day.date.toLocaleDateString([], { day: "numeric", month: "long" })}`}</Title3>
                             </DialogTitle>
                             <DialogContent className={globalStyles.list}>
                                 {renderDetailedEvents(filteredEvents)}
