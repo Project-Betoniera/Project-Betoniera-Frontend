@@ -45,7 +45,7 @@ const useStyles = makeStyles({
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        ...shorthands.margin("0.2rem"),
+        ...shorthands.margin("0.3rem"),
         "@media screen and (max-width: 620px)": {
             justifyContent: "stretch",
             flexDirection: "column",
@@ -89,8 +89,8 @@ const useStyles = makeStyles({
     },
     card: {
         display: "flex",
-        ...shorthands.margin("0.5rem"),
-        ...shorthands.padding("0.5rem"),
+        ...shorthands.margin("0.3rem"),
+        ...shorthands.padding("0.3rem"),
         ...shorthands.gap("0.2rem"),
         "@media screen and (max-width: 578px)": {
             ...shorthands.margin("0.2rem"),
@@ -115,6 +115,7 @@ const useStyles = makeStyles({
         rowGap: "0.5rem",
         "@media screen and (max-width: 578px)": {
             rowGap: "0.2rem",
+            overflowY: "hidden",
         }
     },
     event: {
