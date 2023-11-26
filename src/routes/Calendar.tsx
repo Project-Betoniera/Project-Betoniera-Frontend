@@ -1,4 +1,4 @@
-import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions } from "@fluentui/react-components";
+import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions, MessageBarGroup } from "@fluentui/react-components";
 import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -38,6 +38,13 @@ type CalendarConfig = {
     monthsAbbr: string[];
     weekDays: string[];
     weekDaysAbbr: string[];
+};
+
+type Message = {
+    id: number;
+    intent: "info" | "success" | "warning" | "error";
+    title: string;
+    body: string;
 };
 
 const useStyles = makeStyles({
@@ -154,6 +161,15 @@ export function Calendar() {
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
 
+    // TODO Move messagebars to context
+    const [messages, setMessages] = useState<Message[]>([
+        {
+            id: 0,
+            intent: "warning",
+            title: "Attenzione!",
+            body: "Questa funzionalità è in fase di sviluppo, potrebbe non funzionare correttamente.",
+        }
+    ]);
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
@@ -247,6 +263,9 @@ export function Calendar() {
             );
         });
 
+
+    const clearMessage = (id: number) => { setMessages((messages) => messages.filter((message) => message.id !== id)); };
+
     return (
         <>
             <Card className={styles.toolbar}>
@@ -259,18 +278,18 @@ export function Calendar() {
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 
-            <MessageBar id="messageBar" intent={"warning"} layout={window.matchMedia('(max-width: 578px)').matches ? "multiline" : "auto"}>
-                <MessageBarBody>
-                    <MessageBarTitle>Work in Progress!</MessageBarTitle>
-                    Questa funzionalità è ancora in fase di sviluppo!
-                </MessageBarBody>
-                <MessageBarActions
-                    containerAction={
-                        <Button appearance="transparent" icon={<DismissRegular />} onClick={() => { const messagebar = document.getElementById("messageBar"); (messagebar as HTMLElement).style.display = "none" } } />
-                    }
-                />
-            </MessageBar>
-            
+            <MessageBarGroup className={styles.messageBarGroup}>
+                {messages.map((message) => (
+                    <MessageBar key={message.id} intent={message.intent}>
+                        <MessageBarBody>
+                            <MessageBarTitle>{message.title}</MessageBarTitle>
+                            <Body1>{message.body}</Body1>
+                        </MessageBarBody>
+                        <MessageBarActions containerAction={<Button onClick={() => clearMessage(message.id)} aria-label="dismiss" appearance="transparent" icon={<DismissRegular />} />} />
+                    </MessageBar>
+                ))}
+            </MessageBarGroup>
+
             <Card className={styles.calendarHeader}>
                 {window.matchMedia('(max-width: 578px)').matches ? calendarConfig.weekDaysAbbr.map((day) => {
                     return (
