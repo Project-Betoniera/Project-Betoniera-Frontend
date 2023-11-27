@@ -20,7 +20,7 @@ export function PwaContextProvider({ children }: { children: JSX.Element; }) {
     const [promptEvent, setPromptEvent] = useState<{ prompt: PwaPrompt; }>({ prompt: null });
     const [isPwa, setPwa] = useState<boolean>(false);
     const [isInstalled, setInstalled] = useState<boolean>(false);
-    const [isAcknowledged, setAcknowledged] = useState(window.localStorage.getItem("isPwaDialogAcknowledged") === "true"); // Check if PWA dialog has been acknowledged
+    const [isAcknowledged, setAcknowledged] = useState(() => window.localStorage.getItem("isPwaDialogAcknowledged") === "true"); // Check if PWA dialog has been acknowledged
 
     useEffect(() => {
         // Check if app is running in standalone mode (PWA)
@@ -61,13 +61,16 @@ export function PwaContextProvider({ children }: { children: JSX.Element; }) {
         return () => { window.removeEventListener("beforeinstallprompt", catchEvent); };
     }, []);
 
-    const setAcknowledgedState = (state: boolean) => {
-        setAcknowledged(state);
-        window.localStorage.setItem("isPwaDialogAcknowledged", state.toString());
-    };
+    useEffect(() => {
+        if (isAcknowledged) {
+            window.localStorage.setItem("isPwaDialogAcknowledged", "true");
+        } else {
+            window.localStorage.removeItem("isPwaDialogAcknowledged");
+        }
+    }, [isAcknowledged]);
 
     return (
-        <PwaContext.Provider value={{ pwaPrompt: promptEvent.prompt, isPwa, isInstalled, isAcknowledged, setAcknowledged: setAcknowledgedState }}>
+        <PwaContext.Provider value={{ pwaPrompt: promptEvent.prompt, isPwa, isInstalled, isAcknowledged, setAcknowledged }}>
             {children}
         </PwaContext.Provider>
     );
