@@ -171,7 +171,7 @@ export function Classroom() {
                             <div>
                                 <Body1>{status}</Body1>
                                 <br />
-                                <Body1><ClockEmoji time={item.status.statusChangeAt} defaultTime={"15:00"}/>{changeTime}</Body1>
+                                <Body1><ClockEmoji time={item.status.statusChangeAt} defaultTime={"15:00"} /> {changeTime}</Body1>
                             </div>
                         </Card>
                     </DialogTrigger>

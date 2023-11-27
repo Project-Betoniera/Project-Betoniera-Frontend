@@ -53,7 +53,7 @@ const useStyles = makeStyles({
         flexDirection: "column",
         flexGrow: 1,
         ...shorthands.gap("0.5rem"),
-        ...shorthands.margin("1rem"),
+        ...shorthands.margin("0", "1rem"),
     },
     messageBarGroup: {
         display: "flex",
@@ -78,7 +78,7 @@ const useStyles = makeStyles({
     },
     calendarHeader: {
         display: "grid",
-        columnGap: "1rem",
+        columnGap: "0.5rem",
         gridTemplateColumns: "repeat(7, 1fr)",
         ...shorthands.padding("0.5rem", "0"),
         "@media screen and (max-width: 578px)": {
