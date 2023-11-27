@@ -52,6 +52,10 @@ const useStyles = makeStyles({
     },
 });
 
+/**
+ * Configurable component used to display the details of an event.
+ * @param props the properties of the component.
+ */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
     const styles = useStyles();
 
