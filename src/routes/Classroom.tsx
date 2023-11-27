@@ -5,10 +5,11 @@ import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Body2, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
 import { ClockEmoji } from "react-clock-emoji";
+import EventDetails from "../components/EventDetails";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -148,17 +149,7 @@ export function Classroom() {
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
                 <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
-                    <CardHeader
-                        header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                        description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
-                    />
-                    <div>
-                        <Body1><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
-                        <br />
-                        <Body1>📚 {event.course.code} - {event.course.name}</Body1>
-                        <br />
-                        {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
-                    </div>
+                    <EventDetails event={event} title="subject" hide={["classroom"]} now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 

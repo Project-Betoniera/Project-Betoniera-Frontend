@@ -5,10 +5,11 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Body2, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { DateSelector } from "../components/DateSelector";
-import { ClockEmoji } from 'react-clock-emoji';
+import EventDetails from "../components/EventDetails";
+import { ClassroomDto } from "../dto/ClassroomDto";
 
 export function Home() {
     const globalStyles = useGlobalStyles();
@@ -76,17 +77,7 @@ export function Home() {
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
             <Card className={mergeClasses(globalStyles.card, event.start <= now && event.end > now ? globalStyles.ongoing : "")} key={event.id}>
-                <CardHeader
-                    header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                    description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
-                />
-                <div>
-                    <Body1><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
-                    <br />
-                    <Body1>📍 Aula {event.classroom.name}</Body1>
-                    <br />
-                    {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
-                </div>
+                <EventDetails event={event} title="subject" hide={["course"]} now={now} />
             </Card>
         ))
     ) : (
@@ -94,7 +85,24 @@ export function Home() {
     );
 
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.map((item) => {
-        const nextEvent = item.status.currentOrNextEvent;
+        // TODO Return classroom object inside ClassroomStatus object
+        const fixNextEvent = (event: Omit<EventDto, "classroom"> | null, classroom: ClassroomDto) => {
+            if (!event) return null;
+
+            let result: EventDto = {
+                id: event.id,
+                start: event.start,
+                end: event.end,
+                subject: event.subject,
+                teacher: event.teacher,
+                course: event.course,
+                classroom: classroom
+            };
+
+            return result;
+        };
+
+        const nextEvent = fixNextEvent(item.status.currentOrNextEvent, item.classroom);
 
         let changeTime = "";
         if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
@@ -111,20 +119,7 @@ export function Home() {
                     </Card>
                 </PopoverTrigger>
                 <PopoverSurface>
-                    <h3>Prossima lezione</h3>
-                    {
-                        nextEvent ? (
-                            <>
-                                <Body1>💼 {nextEvent.subject}</Body1>
-                                <br />
-                                <Body1><ClockEmoji time={nextEvent.start} defaultTime={nextEvent.start}/> {nextEvent.start.toLocaleString([], { dateStyle: "medium", timeStyle: "short" })}</Body1>
-                                <br />
-                                <Body1>📚 {nextEvent.course.code} {nextEvent.course.name}</Body1>
-                                <br />
-                                {nextEvent.teacher ? <Body1>🧑‍🏫 {nextEvent.teacher}</Body1> : ""}
-                            </>
-                        ) : (<Body1>Nessuna</Body1>)
-                    }
+                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
                 </PopoverSurface>
             </Popover>
         );

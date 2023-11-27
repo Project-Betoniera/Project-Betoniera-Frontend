@@ -1,4 +1,4 @@
-import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Body2, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions, MessageBarGroup } from "@fluentui/react-components";
+import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions, MessageBarGroup } from "@fluentui/react-components";
 import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -7,10 +7,10 @@ import axios from "axios";
 import { TokenContext } from "../context/TokenContext";
 import { CourseContext } from "../context/CourseContext";
 import { apiUrl } from "../config";
-import { ClockEmoji } from "react-clock-emoji";
 import { useGlobalStyles } from "../globalStyles";
 import { ArrowExportRegular, DismissRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
+import EventDetails from "../components/EventDetails";
 
 type DetailedCalendar = {
     year: string,
@@ -214,19 +214,7 @@ export function Calendar() {
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
                 <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
-                    <CardHeader
-                        header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                        description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
-                    />
-                    <div>
-                        <Body1><ClockEmoji time={event.start} defaultTime={event.start} /> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
-                        <br />
-                        <Body1>📚 {event.course.code} - {event.course.name}</Body1>
-                        <br />
-                        <Body1>📍 Aula {event.classroom.name}</Body1>
-                        <br />
-                        {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
-                    </div>
+                    <EventDetails event={event} title="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
