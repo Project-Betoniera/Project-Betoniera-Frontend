@@ -8,8 +8,8 @@ import { useGlobalStyles } from "../globalStyles";
 import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
-import { ClockEmoji } from "react-clock-emoji";
 import EventDetails from "../components/EventDetails";
+import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -171,7 +171,7 @@ export function Classroom() {
                             <div>
                                 <Body1>{status}</Body1>
                                 <br />
-                                <Body1><ClockEmoji time={item.status.statusChangeAt} defaultTime={"15:00"} /> {changeTime}</Body1>
+                                <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
                             </div>
                         </Card>
                     </DialogTrigger>

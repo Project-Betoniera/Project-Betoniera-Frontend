@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 import { EventDto } from "../dto/EventDto";
 import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
+import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 
 export type EventDetailsProps = {
     /**
@@ -59,7 +60,7 @@ const useStyles = makeStyles({
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
     const styles = useStyles();
 
-    const time = `\u{1F552} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
+    const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
     const classroom = `\u{1F4CD} Aula ${props.event.classroom.name}`;
     const teacher = props.event.teacher ? `\u{1F9D1}\u{200D}\u{1F3EB} ${props.event.teacher}` : "";
