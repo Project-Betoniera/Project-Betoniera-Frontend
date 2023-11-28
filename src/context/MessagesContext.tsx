@@ -26,7 +26,7 @@ export function MessagesContextProvider({ children }: { children: JSX.Element; }
         console.log("Loaded from local storage: ", dismissedMessages);
 
         // Get messages from API
-        axios.get(new URL("/message", apiUrl).toString(), {
+        axios.get(new URL("message", apiUrl).toString(), {
             headers: {
                 Authorization: `Bearer ${tokenData.token}`
             }
