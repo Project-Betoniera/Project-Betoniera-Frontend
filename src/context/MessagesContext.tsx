@@ -23,7 +23,6 @@ export function MessagesContextProvider({ children }: { children: JSX.Element; }
     useEffect(() => {
         // Get dismissed messages from local storage
         const dismissedMessages: number[] = JSON.parse(localStorage.getItem("dismissedMessages") || "[]");
-        console.log("Loaded from local storage: ", dismissedMessages);
 
         // Get messages from API
         axios.get(new URL("message", apiUrl).toString(), {
