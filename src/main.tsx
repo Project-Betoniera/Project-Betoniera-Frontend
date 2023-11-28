@@ -8,6 +8,7 @@ import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { ensurePlausible } from "./plausible.tsx";
 import { PwaContextProvider } from "./context/PwaContext.tsx";
 import { isBetaBuild } from "./config.ts";
+import { MessagesContextProvider } from "./context/MessagesContext.tsx";
 
 ensurePlausible();
 if (isBetaBuild) console.log("Beta build");
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <TokenContextProvider>
         <CourseContextProvider>
           <PwaContextProvider>
-            <App />
+            <MessagesContextProvider>
+              <App />
+            </MessagesContextProvider>
           </PwaContextProvider>
         </CourseContextProvider>
       </TokenContextProvider>

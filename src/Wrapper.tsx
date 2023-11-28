@@ -1,23 +1,27 @@
 import { Outlet } from "react-router";
-import { Body1, Button, Card, Subtitle1, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, Link, MessageBar, MessageBarActions, MessageBarBody, MessageBarGroup, MessageBarTitle, Subtitle1, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { useGlobalStyles } from "./globalStyles";
 import RouterMenu from "./components/RouterMenu";
 import { useContext, useEffect, useState } from "react";
 import { PwaContext } from "./context/PwaContext";
-import { ArrowDownloadFilled } from "@fluentui/react-icons";
+import { AlertOffRegular, ArrowDownloadFilled, DismissRegular } from "@fluentui/react-icons";
 import { isBetaBuild } from "./config";
+import { MessagesContext } from "./context/MessagesContext";
 
 const useStyles = makeStyles({
     header: {
         display: "flex",
-        ...shorthands.margin("0.5rem"),
-        ...shorthands.padding("1rem", "1rem"),
+        ...shorthands.padding("0.5rem", "1rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         "@media screen and (max-width: 578px)": {
             ...shorthands.padding("0.5rem"),
         }
     },
     sticky: {
+        display: "flex",
+        flexDirection: "column",
+        ...shorthands.margin("0.5rem", "0.5rem", "0", "0.5rem"),
+        ...shorthands.gap("0.5rem"),
         position: "sticky",
         top: 0,
         zIndex: 1,
@@ -28,6 +32,7 @@ const useStyles = makeStyles({
             left: 0,
             right: 0,
             marginBottom: "env(safe-area-inset-bottom, 0)",
+            flexDirection: "column-reverse",
         }
     },
     nav: {
@@ -44,6 +49,11 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 1000px)": { display: "none" },
         alignSelf: "center",
         ...shorthands.padding("0"),
+    },
+    messageBarGroup: {
+        display: "flex",
+        flexDirection: "column",
+        ...shorthands.gap("0.5rem")
     },
     footer: {
         display: "flex",
@@ -68,6 +78,8 @@ export function Wrapper() {
     const globalStyles = useGlobalStyles();
 
     const pwa = useContext(PwaContext);
+    const { messages, dismissMessage, doNotShowAgain } = useContext(MessagesContext);
+    const pageMessages = messages.filter((message) => window.location.pathname.match(message.matchPath) !== null);
     const [iconsOnly, setIconsOnly] = useState(false);
 
     useEffect(() => {
@@ -97,6 +109,24 @@ export function Wrapper() {
                         {RouterMenu({ className: styles.routerMenu }, iconsOnly)}
                     </nav>
                 </Card>
+
+                {pageMessages.length > 0 && <MessageBarGroup className={styles.messageBarGroup} animate="both">
+                    {pageMessages.map((message) => (
+                        <MessageBar key={message.id} intent={message.intent}>
+                            <MessageBarBody>
+                                <MessageBarTitle>{message.title}</MessageBarTitle>
+                                {message.body && <Body1>{message.body} </Body1>}
+                                {message.link && <Link href={message.link} target="blank">{message.linkText ? message.linkText : message.link}</Link>}
+                            </MessageBarBody>
+                            <MessageBarActions containerAction={
+                                <>
+                                    {message.isDismissable && <Button onClick={() => doNotShowAgain(message.id)} aria-label="do-not-show-again" appearance="transparent" size="medium" title="Non mostrare più" icon={<AlertOffRegular />} />}
+                                    <Button onClick={() => dismissMessage(message.id)} aria-label="dismiss" appearance="transparent" icon={<DismissRegular />} />
+                                </>
+                            } />
+                        </MessageBar>
+                    ))}
+                </MessageBarGroup>}
             </header>
             <main className={globalStyles.main}>
                 <Outlet />

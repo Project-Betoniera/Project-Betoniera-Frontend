@@ -1,4 +1,4 @@
-import { Body1, Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions, MessageBarGroup } from "@fluentui/react-components";
+import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner } from "@fluentui/react-components";
 import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -8,7 +8,7 @@ import { TokenContext } from "../context/TokenContext";
 import { CourseContext } from "../context/CourseContext";
 import { apiUrl } from "../config";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular, DismissRegular } from "@fluentui/react-icons";
+import { ArrowExportRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 
@@ -40,13 +40,6 @@ type CalendarConfig = {
     weekDaysAbbr: string[];
 };
 
-type Message = {
-    id: number;
-    intent: "info" | "success" | "warning" | "error";
-    title: string;
-    body: string;
-};
-
 const useStyles = makeStyles({
     container: {
         display: "flex",
@@ -54,11 +47,6 @@ const useStyles = makeStyles({
         flexGrow: 1,
         ...shorthands.gap("0.5rem"),
         ...shorthands.margin("0", "1rem"),
-    },
-    messageBarGroup: {
-        display: "flex",
-        flexDirection: "column",
-        ...shorthands.gap("0.5rem")
     },
     toolbar: {
         display: "flex",
@@ -161,16 +149,6 @@ export function Calendar() {
 
     const { tokenData } = useContext(TokenContext);
     const { course } = useContext(CourseContext);
-
-    // TODO Move messagebars to context
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 0,
-            intent: "warning",
-            title: "Attenzione!",
-            body: "Questa funzionalità è in fase di sviluppo, potrebbe non funzionare correttamente.",
-        }
-    ]);
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
@@ -247,26 +225,12 @@ export function Calendar() {
             );
         });
 
-    const clearMessage = (id: number) => { setMessages((messages) => messages.filter((message) => message.id !== id)); };
-
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
-
-            <MessageBarGroup className={styles.messageBarGroup}>
-                {messages.map((message) => (
-                    <MessageBar key={message.id} intent={message.intent}>
-                        <MessageBarBody>
-                            <MessageBarTitle>{message.title}</MessageBarTitle>
-                            <Body1>{message.body}</Body1>
-                        </MessageBarBody>
-                        <MessageBarActions containerAction={<Button onClick={() => clearMessage(message.id)} aria-label="dismiss" appearance="transparent" icon={<DismissRegular />} />} />
-                    </MessageBar>
-                ))}
-            </MessageBarGroup>
 
             <Card className={styles.calendarHeader}>
                 {window.matchMedia('(max-width: 578px)').matches ?
