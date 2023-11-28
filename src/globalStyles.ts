@@ -3,8 +3,14 @@ import { makeStyles, shorthands, tokens } from "@fluentui/react-components";
 export const useGlobalStyles = makeStyles({
     card: {
         display: "flex",
+        flexDirection: "column",
         flexShrink: "0",
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    },
+    eventCard: {
+        display: "flex",
+        flexDirection: "column",
+        flexShrink: "0",
+        backgroundColor: tokens.colorBrandBackground2Hover,
     },
     main: {
         display: "flex",

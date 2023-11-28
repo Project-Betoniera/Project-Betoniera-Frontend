@@ -213,13 +213,13 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)}>
                     <EventDetails event={event} title="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
-                <Dialog key={day.date.getTime()} modalType="modal">
+                <Dialog key={day.date.getTime()}>
                     <DialogTrigger>
                         <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() && styles.todayBadge)}>
                             <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />

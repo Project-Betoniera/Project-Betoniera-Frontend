@@ -148,7 +148,7 @@ export function Classroom() {
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
                     <EventDetails event={event} title="subject" hide={["classroom"]} now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
