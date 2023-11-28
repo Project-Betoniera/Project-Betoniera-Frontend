@@ -12,6 +12,7 @@ const useStyles = makeStyles({
     header: {
         display: "flex",
         ...shorthands.padding("0.5rem", "1rem"),
+        ...shorthands.margin("0.5rem"),
         ...shorthands.borderRadius(tokens.borderRadiusXLarge),
         "@media screen and (max-width: 578px)": {
             ...shorthands.padding("0.5rem"),
@@ -20,8 +21,6 @@ const useStyles = makeStyles({
     sticky: {
         display: "flex",
         flexDirection: "column",
-        ...shorthands.margin("0.5rem", "0.5rem", "0", "0.5rem"),
-        ...shorthands.gap("0.5rem"),
         position: "sticky",
         top: 0,
         zIndex: 1,
@@ -53,6 +52,7 @@ const useStyles = makeStyles({
     messageBarGroup: {
         display: "flex",
         flexDirection: "column",
+        ...shorthands.margin("0", "0.5rem", "0.5rem", "0.5rem"),
         ...shorthands.gap("0.5rem")
     },
     footer: {
