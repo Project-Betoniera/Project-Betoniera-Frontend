@@ -30,8 +30,8 @@ export default function classroomRequests(token: string) {
             !excludedClassrooms.includes(item.classroom.id) && result.push({
                 status: {
                     isFree: item.status.isFree,
-                    statusChangeAt: new Date(item.status.statusChangeAt),
-                    currentOrNextEvent: {
+                    statusChangeAt: item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null,
+                    currentOrNextEvent: item.status.currentOrNextEvent ? {
                         id: item.status.currentOrNextEvent?.id,
                         course: {
                             id: item.status.currentOrNextEvent?.course.id,
@@ -50,7 +50,7 @@ export default function classroomRequests(token: string) {
                         end: new Date(item.status.currentOrNextEvent?.end),
                         subject: item.status.currentOrNextEvent?.subject,
                         teacher: item.status.currentOrNextEvent?.teacher,
-                    },
+                    } : null,
                 },
                 classroom: {
                     id: item.classroom.id,
