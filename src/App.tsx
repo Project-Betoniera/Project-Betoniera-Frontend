@@ -1,8 +1,8 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Home } from "./routes/Home";
 import { Wrapper } from "./Wrapper";
 import { CalendarExport } from "./routes/CalendarExport";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { LoginForm } from "./routes/LoginForm";
 import { TokenContext } from "./context/TokenContext";
 import { NotFound } from "./routes/NotFound";
@@ -34,8 +34,6 @@ function App() {
   const { tokenData } = useContext(TokenContext);
   const { theme } = useContext(ThemeContext);
 
-  let content: JSX.Element;
-
   const toasterId = useId("app-toaster");
   const { dispatchToast } = useToastController(toasterId);
 
@@ -48,9 +46,9 @@ function App() {
       dispatchToast(
         <Toast>
           <ToastTitle>App pronta</ToastTitle>
-          <ToastBody>La PWA è stata installata correttamente.</ToastBody>
+          <ToastBody>La PWA è pronta per essere installata.</ToastBody>
         </Toast>,
-        { intent: "info" }
+        { intent: "success" }
       );
     },
     onNeedRefresh: () => {
@@ -58,39 +56,35 @@ function App() {
     }
   });
 
-  content = (
-    <>
-      <FluentProvider className={style.root} theme={theme}>
-        <>
-          <Toaster toasterId={toasterId} />
-          <PrivacyAlert />
-          <OfflineDialog />
-          {
-            tokenData.token ? (
-              <BrowserRouter>
-                <ProtocolHandler />
-                <InstallPwaDialog />
-                <Routes>
-                  <Route path="/" element={<Wrapper />}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/classroom" element={<Classroom />} />
-                    <Route path="/calendar" element={<Calendar />} />
-                    <Route path="/calendar-sync" element={<CalendarExport />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path='*' element={<NotFound />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            ) : (
-              content = <LoginForm />
-            )
-          }
-        </>
-      </FluentProvider>
-    </>
-  );
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    // Redirect to login if not logged in
+    if (!tokenData.token && location.pathname !== "/login") navigate("/login");
+    // Redirect to home if logged in
+    if (tokenData.token && location.pathname === "/login") navigate("/");
+  }, [location, tokenData]);
 
-  return content;
+  return (
+    <FluentProvider className={style.root} theme={theme}>
+      <Toaster toasterId={toasterId} />
+      <PrivacyAlert />
+      <OfflineDialog />
+      {tokenData.token && <InstallPwaDialog />}
+      <ProtocolHandler />
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/" element={<Wrapper />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/classroom" element={<Classroom />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/calendar-sync" element={<CalendarExport />} />
+          <Route path="/about" element={<About />} />
+          <Route path='*' element={<NotFound />} />
+        </Route>
+      </Routes>
+    </FluentProvider>
+  );
 }
 
 export default App;
