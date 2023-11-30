@@ -3,14 +3,12 @@ import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
-import axios from "axios";
-import { TokenContext } from "../context/TokenContext";
 import { CourseContext } from "../context/CourseContext";
-import { apiUrl } from "../config";
 import { useGlobalStyles } from "../globalStyles";
 import { ArrowExportRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
+import useRequests from "../libraries/requests/requests";
 
 type DetailedCalendar = {
     year: string,
@@ -138,6 +136,8 @@ const useStyles = makeStyles({
 export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
+    const { course } = useContext(CourseContext);
+    const requests = useRequests();
 
     // TODO Use proper localization
     const calendarConfig: CalendarConfig = {
@@ -147,8 +147,6 @@ export function Calendar() {
         weekDaysAbbr: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"]
     };
 
-    const { tokenData } = useContext(TokenContext);
-    const { course } = useContext(CourseContext);
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
@@ -162,20 +160,9 @@ export function Calendar() {
 
         setEvents(null); // Show spinner
 
-        axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
-            headers: { Authorization: "Bearer " + tokenData.token },
-            params: { start: start.toISOString(), end: end.toISOString(), includeOngoing: true }
-        }).then(response => {
-            let result: EventDto[] = [];
-
-            (response.data as any[]).forEach(element => {
-                element.start = new Date(element.start);
-                element.end = new Date(element.end);
-                result.push(element as EventDto);
-            });
-
-            setEvents(result);
-        }).catch(() => { });
+        requests.event.byCourse(start, end, course?.id || 0, true)
+            .then((result) => { setEvents(result); })
+            .catch((error) => { console.error(error); }); // TODO Handle error
     }, [dateTime]);
 
     const renderCalendar = () =>

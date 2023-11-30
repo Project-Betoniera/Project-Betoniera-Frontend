@@ -1,6 +1,3 @@
-import axios from "axios";
-import { apiUrl } from "../config";
-import { TokenContext } from "../context/TokenContext";
 import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
@@ -10,11 +7,12 @@ import { useGlobalStyles } from "../globalStyles";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { ClassroomDto } from "../dto/ClassroomDto";
+import useRequests from "../libraries/requests/requests";
 
 export function Home() {
     const globalStyles = useGlobalStyles();
 
-    const { tokenData } = useContext(TokenContext);
+    const requests = useRequests();
     const { course } = useContext(CourseContext);
 
     const [now] = useState(new Date());
@@ -29,49 +27,16 @@ export function Home() {
         end.setHours(0, 0, 0, 0);
 
         setEvents(null); // Show spinner
-        axios.get(new URL(`event/${encodeURIComponent(course?.id as number)}`, apiUrl).toString(), {
-            headers: { Authorization: "Bearer " + tokenData.token },
-            params: {
-                start: start.toISOString(),
-                end: end.toISOString(),
-                includeOngoing: true
-            }
-        }).then(response => {
-            let result: EventDto[] = [];
 
-            (response.data as any[]).forEach(element => {
-                element.start = new Date(element.start);
-                element.end = new Date(element.end);
-                result.push(element as EventDto);
-            });
-
-            setEvents(result);
-        }).catch(() => { });
+        requests.event.byCourse(start, end, course?.id || 0, true)
+            .then((result) => { setEvents(result); })
+            .catch((error) => { console.error(error); }); // TODO Handle error
     }, [dateTime]);
 
     useEffect(() => {
-        axios.get(new URL(`classroom/status`, apiUrl).toString(), {
-            headers: { Authorization: "Bearer " + tokenData.token },
-            params: { time: now.toISOString(), }
-        }).then(response => {
-            let result: ClassroomStatus[] = response.data;
-
-            const exclude = [5, 19, 26, 31, 33];
-            result = result.filter((element) => !exclude.includes(element.classroom.id) && element.status.isFree !== false);
-
-            // Convert strings to objects
-            result = result.map((item) => {
-                item.status.statusChangeAt = item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null;
-                if (item.status.currentOrNextEvent) {
-                    item.status.currentOrNextEvent.start = new Date(item.status.currentOrNextEvent.start);
-                    item.status.currentOrNextEvent.end = new Date(item.status.currentOrNextEvent.end);
-                }
-                item.classroom = item.classroom;
-                return item;
-            });
-
-            setClassrooms(result);
-        }).catch(() => { });
+        requests.classroom.status(now)
+            .then((result) => { setClassrooms(result); })
+            .catch((error) => { console.error(error); }); // TODO Handle error
     }, []);
 
     const renderEvents = () => events && events.length > 0 ? (
