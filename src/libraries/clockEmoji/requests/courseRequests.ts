@@ -3,17 +3,17 @@ import { apiUrl } from "../../../config";
 import { CourseDto } from "../../../dto/CourseDto";
 
 export default function courseRequests(token: string) {
-    function parseCourses(courses: any) {
+    function parseCourses(data: any) {
         const result: CourseDto[] = [];
-        if (!Array.isArray(courses)) return result;
+        if (!Array.isArray(data)) return result;
 
-        courses.forEach((course: any) => {
+        data.forEach((item: any) => {
             result.push({
-                id: course.id,
-                code: course.code,
-                name: course.name,
-                startYear: course.startYear,
-                endYear: course.endYear,
+                id: item.id,
+                code: item.code,
+                name: item.name,
+                startYear: item.startYear,
+                endYear: item.endYear,
             });
         });
 
