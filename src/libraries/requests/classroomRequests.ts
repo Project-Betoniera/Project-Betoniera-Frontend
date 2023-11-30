@@ -4,12 +4,14 @@ import { ClassroomDto } from "../../dto/ClassroomDto";
 import { ClassroomStatus } from "../../dto/ClassroomStatus";
 
 export default function classroomRequests(token: string) {
+    const excludedClassrooms = [5, 19, 26, 31, 33]; // TODO Get this from the API
+
     function parseClassrooms(data: any) {
         const result: ClassroomDto[] = [];
         if (!Array.isArray(data)) return result;
 
         data.forEach((item: any) => {
-            result.push({
+            !excludedClassrooms.includes(item.id) && result.push({
                 id: item.id,
                 name: item.name,
                 color: item.color,
@@ -25,7 +27,7 @@ export default function classroomRequests(token: string) {
         if (!Array.isArray(data)) return result;
 
         data.forEach((item: any) => {
-            result.push({
+            !excludedClassrooms.includes(item.classroom.id) && result.push({
                 status: {
                     isFree: item.status.isFree,
                     statusChangeAt: new Date(item.status.statusChangeAt),
