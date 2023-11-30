@@ -1,17 +1,60 @@
 import axios from "axios";
 import { apiUrl } from "../../../config";
 import { ClassroomDto } from "../../../dto/ClassroomDto";
+import { ClassroomStatus } from "../../../dto/ClassroomStatus";
 
 export default function classroomRequests(token: string) {
-    function parseClassrooms(classrooms: any) {
+    function parseClassrooms(data: any) {
         const result: ClassroomDto[] = [];
-        if (!Array.isArray(classrooms)) return result;
+        if (!Array.isArray(data)) return result;
 
-        classrooms.forEach((classroom: any) => {
+        data.forEach((item: any) => {
             result.push({
-                id: classroom.id,
-                name: classroom.name,
-                color: classroom.color,
+                id: item.id,
+                name: item.name,
+                color: item.color,
+            });
+        });
+
+        return result;
+    }
+
+    function parseClassroomStatus(data: any) {
+        const result: ClassroomStatus[] = [];
+
+        if (!Array.isArray(data)) return result;
+
+        data.forEach((item: any) => {
+            result.push({
+                status: {
+                    isFree: item.status.isFree,
+                    statusChangeAt: new Date(item.status.statusChangeAt),
+                    currentOrNextEvent: {
+                        id: item.status.currentOrNextEvent?.id,
+                        course: {
+                            id: item.status.currentOrNextEvent?.course.id,
+                            code: item.status.currentOrNextEvent?.course.code,
+                            name: item.status.currentOrNextEvent?.course.name,
+                            startYear: item.status.currentOrNextEvent?.course.startYear,
+                            endYear: item.status.currentOrNextEvent?.course.endYear,
+                        },
+                        // TODO Uncomment when classroom is returned in the response
+                        // classroom: {
+                        //     id: item.status.currentOrNextEvent?.classroom.id,
+                        //     name: item.status.currentOrNextEvent?.classroom.name,
+                        //     color: item.status.currentOrNextEvent?.classroom.color,
+                        // },
+                        start: new Date(item.status.currentOrNextEvent?.start),
+                        end: new Date(item.status.currentOrNextEvent?.end),
+                        subject: item.status.currentOrNextEvent?.subject,
+                        teacher: item.status.currentOrNextEvent?.teacher,
+                    },
+                },
+                classroom: {
+                    id: item.classroom.id,
+                    name: item.classroom.name,
+                    color: item.classroom.color,
+                }
             });
         });
 
@@ -83,7 +126,7 @@ export default function classroomRequests(token: string) {
                 }
             });
 
-            return parseClassrooms(response.data);
+            return parseClassroomStatus(response.data);
         }
     };
 }
