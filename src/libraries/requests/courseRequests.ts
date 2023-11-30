@@ -1,6 +1,6 @@
 import axios from "axios";
-import { apiUrl } from "../../../config";
-import { CourseDto } from "../../../dto/CourseDto";
+import { apiUrl } from "../../config";
+import { CourseDto } from "../../dto/CourseDto";
 
 export default function courseRequests(token: string) {
     function parseCourses(data: any) {

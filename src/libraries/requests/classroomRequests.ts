@@ -1,7 +1,7 @@
 import axios from "axios";
-import { apiUrl } from "../../../config";
-import { ClassroomDto } from "../../../dto/ClassroomDto";
-import { ClassroomStatus } from "../../../dto/ClassroomStatus";
+import { apiUrl } from "../../config";
+import { ClassroomDto } from "../../dto/ClassroomDto";
+import { ClassroomStatus } from "../../dto/ClassroomStatus";
 
 export default function classroomRequests(token: string) {
     function parseClassrooms(data: any) {

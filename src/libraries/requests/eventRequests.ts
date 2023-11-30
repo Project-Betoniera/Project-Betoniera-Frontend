@@ -1,6 +1,6 @@
 import axios from "axios";
-import { apiUrl } from "../../../config";
-import { EventDto } from "../../../dto/EventDto";
+import { apiUrl } from "../../config";
+import { EventDto } from "../../dto/EventDto";
 
 export default function eventRequests(token: string) {
     function parseEvents(data: any) {
