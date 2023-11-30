@@ -1,4 +1,4 @@
-export default function getClockEmoji(date?: Date) {
+export default function getClockEmoji(date?: Date | null) {
     if (!date) date = new Date();
 
     const hour = date.getHours();
