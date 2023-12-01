@@ -1,7 +1,4 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { apiUrl } from "../config";
-import axios from "axios";
-import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
@@ -10,6 +7,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import useRequests from "../libraries/requests/requests";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -61,8 +59,7 @@ export function Classroom() {
     const globalStyles = useGlobalStyles();
     const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
-
-    const { tokenData } = useContext(TokenContext);
+    const requests = useRequests();
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -73,25 +70,9 @@ export function Classroom() {
 
     // Get new data when the date changes
     useEffect(() => {
-        setClassrooms(null);
-        axios.get(new URL(`classroom/status`, apiUrl).toString(), {
-            headers: { Authorization: "Bearer " + tokenData.token },
-            params: { time: dateTime.toISOString(), }
-        }).then(response => {
-            let result: ClassroomStatus[] = response.data;
-
-            const exclude = [5, 19, 26, 31, 33];
-            result = result.filter((item) => !exclude.includes(item.classroom.id));
-
-            result = result.map((item) => {
-                item.status.statusChangeAt = item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null;
-                return item;
-            });
-
-            setClassrooms(result);
-        }).catch(() => {
-        });
-
+        requests.classroom.status(dateTime)
+            .then(setClassrooms)
+            .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     // Filter the classrooms when the filter changes
@@ -126,25 +107,9 @@ export function Classroom() {
                 const end = new Date(start);
                 end.setDate(end.getDate() + 1);
 
-                axios.get(new URL(`event/classroom/${encodeURIComponent(item.classroom.id)}`, apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + tokenData.token },
-                    params: {
-                        start: start.toISOString(),
-                        end: end.toISOString()
-                    }
-                }).then(response => {
-                    const result: EventDto[] = [];
-
-                    // Convert strings to objects
-                    (response.data as any[]).forEach(element => {
-                        element.start = new Date(element.start);
-                        element.end = new Date(element.end);
-                        result.push(element as EventDto);
-                    });
-
-                    setEvents(result);
-                }).catch(() => {
-                });
+                requests.event.byClassroom(start, end, item.classroom.id)
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
