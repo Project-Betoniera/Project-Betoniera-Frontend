@@ -161,8 +161,8 @@ export function Calendar() {
         setEvents(null); // Show spinner
 
         requests.event.byCourse(start, end, course?.id || 0, true)
-            .then((result) => { setEvents(result); })
-            .catch((error) => { console.error(error); }); // TODO Handle error
+            .then(setEvents)
+            .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     const renderCalendar = () =>

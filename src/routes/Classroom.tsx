@@ -71,8 +71,8 @@ export function Classroom() {
     // Get new data when the date changes
     useEffect(() => {
         requests.classroom.status(dateTime)
-            .then((result) => { setClassrooms(result); })
-            .catch((error) => { console.error(error); }); // TODO Handle error
+            .then(setClassrooms)
+            .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     // Filter the classrooms when the filter changes
@@ -108,8 +108,8 @@ export function Classroom() {
                 end.setDate(end.getDate() + 1);
 
                 requests.event.byClassroom(start, end, item.classroom.id)
-                    .then((result) => { setEvents(result); })
-                    .catch((error) => { console.error(error); }); // TODO Handle error
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (

@@ -29,14 +29,14 @@ export function Home() {
         setEvents(null); // Show spinner
 
         requests.event.byCourse(start, end, course?.id || 0, true)
-            .then((result) => { setEvents(result); })
-            .catch((error) => { console.error(error); }); // TODO Handle error
+            .then(setEvents)
+            .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     useEffect(() => {
         requests.classroom.status(now)
-            .then((result) => { setClassrooms(result); })
-            .catch((error) => { console.error(error); }); // TODO Handle error
+            .then(setClassrooms)
+            .catch(console.error); // TODO Handle error
     }, []);
 
     const renderEvents = () => events && events.length > 0 ? (
