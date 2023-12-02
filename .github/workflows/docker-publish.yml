@@ -85,4 +85,4 @@ jobs:
             docker rm project-betoniera-frontend
             docker rmi ghcr.io/genio2003/project-betoniera-frontend:main
             docker pull ghcr.io/genio2003/project-betoniera-frontend:main
-            docker run -t -d --restart unless-stopped -p 4200:80 --name project-betoniera-frontend ghcr.io/genio2003/project-betoniera-frontend:main
+            docker run -t -d --restart unless-stopped -p 4200:80 --sig-proxy=false --name project-betoniera-frontend ghcr.io/genio2003/project-betoniera-frontend:main
