@@ -8,26 +8,15 @@ const VERSION = 1;
 const VERSION_STORAGE_KEY = 'privacy-version';
 
 export function PrivacyAlert() {
-  const [acknowledged, setAcknowledgedState] = useState(false);
+  const [acknowledged, setAcknowledged] = useState(() => window.localStorage.getItem(VERSION_STORAGE_KEY) === VERSION.toString());
 
-  // This updates both the component state and the value in localStorage
-  // to persist the popup closure across reloads.
-  const setAcknowledged = (enabled: boolean) => {
-    if (enabled) {
-      window.localStorage.setItem(VERSION_STORAGE_KEY, `${VERSION}`);
+  useEffect(() => {
+    if (acknowledged) {
+      window.localStorage.setItem(VERSION_STORAGE_KEY, VERSION.toString());
     } else {
       window.localStorage.removeItem(VERSION_STORAGE_KEY);
     }
-    setAcknowledgedState(enabled);
-  }
-
-  // This useEffect sets the enabled state based on the value of a value in
-  // localStorage with the key defined in the VERSION_STORAGE_KEY constant when
-  // this component is initially mounted.
-  useEffect(() => {
-    const storedVersion = window.localStorage.getItem(VERSION_STORAGE_KEY);
-    setAcknowledgedState(storedVersion === `${VERSION}`);
-  }, []);
+  }, [acknowledged]);
 
   if (!hasPlausible()) {
     // plausible not configured

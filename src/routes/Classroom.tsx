@@ -1,16 +1,15 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { apiUrl } from "../config";
-import axios from "axios";
-import { TokenContext } from "../context/TokenContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Body2, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ThemeContext } from "../context/ThemeContext";
 import { DateSelector } from "../components/DateSelector";
 import { FullScreenMaximizeFilled } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
-import { ClockEmoji } from "react-clock-emoji";
+import EventDetails from "../components/EventDetails";
+import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import useRequests from "../libraries/requests/requests";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -62,8 +61,7 @@ export function Classroom() {
     const globalStyles = useGlobalStyles();
     const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
-
-    const { tokenData } = useContext(TokenContext);
+    const requests = useRequests();
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -74,25 +72,9 @@ export function Classroom() {
 
     // Get new data when the date changes
     useEffect(() => {
-        setClassrooms(null);
-        axios.get(new URL(`classroom/status`, apiUrl).toString(), {
-            headers: { Authorization: "Bearer " + tokenData.token },
-            params: { time: dateTime.toISOString(), }
-        }).then(response => {
-            let result: ClassroomStatus[] = response.data;
-
-            const exclude = [5, 19, 26, 31, 33];
-            result = result.filter((item) => !exclude.includes(item.classroom.id));
-
-            result = result.map((item) => {
-                item.status.statusChangeAt = item.status.statusChangeAt ? new Date(item.status.statusChangeAt) : null;
-                return item;
-            });
-
-            setClassrooms(result);
-        }).catch(() => {
-        });
-
+        requests.classroom.status(dateTime)
+            .then(setClassrooms)
+            .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     // Filter the classrooms when the filter changes
@@ -127,40 +109,14 @@ export function Classroom() {
                 const end = new Date(start);
                 end.setDate(end.getDate() + 1);
 
-                axios.get(new URL(`event/classroom/${encodeURIComponent(item.classroom.id)}`, apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + tokenData.token },
-                    params: {
-                        start: start.toISOString(),
-                        end: end.toISOString()
-                    }
-                }).then(response => {
-                    const result: EventDto[] = [];
-
-                    // Convert strings to objects
-                    (response.data as any[]).forEach(element => {
-                        element.start = new Date(element.start);
-                        element.end = new Date(element.end);
-                        result.push(element as EventDto);
-                    });
-
-                    setEvents(result);
-                }).catch(() => {
-                });
+                requests.event.byClassroom(start, end, item.classroom.id)
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.card, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
-                    <CardHeader
-                        header={<Subtitle2>💼 {event.subject}</Subtitle2>}
-                        description={event.start <= now && event.end > now ? <Body2 className={globalStyles.blink}>🔴 <strong>In corso</strong></Body2> : ""}
-                    />
-                    <div>
-                        <Body1><ClockEmoji time={event.start} defaultTime={event.start}/> {event.start.toLocaleTimeString([], { timeStyle: "short" })} - {event.end.toLocaleTimeString([], { timeStyle: "short" })}</Body1>
-                        <br />
-                        <Body1>📚 {event.course.code} - {event.course.name}</Body1>
-                        <br />
-                        {event.teacher ? <Body1>🧑‍🏫 {event.teacher}</Body1> : ""}
-                    </div>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
+                    <EventDetails event={event} title="subject" hide={["classroom"]} now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
@@ -182,7 +138,7 @@ export function Classroom() {
                             <div>
                                 <Body1>{status}</Body1>
                                 <br />
-                                <Body1><ClockEmoji time={item.status.statusChangeAt} defaultTime={"15:00"}/>{changeTime}</Body1>
+                                <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
                             </div>
                         </Card>
                     </DialogTrigger>

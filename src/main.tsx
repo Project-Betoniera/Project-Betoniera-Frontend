@@ -8,6 +8,8 @@ import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { ensurePlausible } from "./plausible.tsx";
 import { PwaContextProvider } from "./context/PwaContext.tsx";
 import { isBetaBuild } from "./config.ts";
+import { MessagesContextProvider } from "./context/MessagesContext.tsx";
+import { BrowserRouter } from "react-router-dom";
 
 ensurePlausible();
 if (isBetaBuild) console.log("Beta build");
@@ -18,7 +20,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <TokenContextProvider>
         <CourseContextProvider>
           <PwaContextProvider>
-            <App />
+            <MessagesContextProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </MessagesContextProvider>
           </PwaContextProvider>
         </CourseContextProvider>
       </TokenContextProvider>
