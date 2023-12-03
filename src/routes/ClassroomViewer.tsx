@@ -56,7 +56,7 @@ export function ClassroomViewer() {
                 if (oldValue === 3) fetchClassroomsStatus(); // Refresh when all data has been shown
                 return oldValue === 3 ? 1 : oldValue + 1
             });
-        }, 10000000);
+        }, 15000);
 
         return () => clearInterval(interval);
     }, []);
