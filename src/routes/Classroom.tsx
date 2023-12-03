@@ -72,6 +72,8 @@ export function Classroom() {
 
     // Get new data when the date changes
     useEffect(() => {
+        setClassrooms(null); // Show spinner
+
         requests.classroom.status(dateTime)
             .then(setClassrooms)
             .catch(console.error); // TODO Handle error
