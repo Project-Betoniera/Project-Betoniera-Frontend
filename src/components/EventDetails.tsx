@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import { EventDto } from "../dto/EventDto";
-import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { Body1, Body2, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 
 export type EventDetailsProps = {
@@ -11,11 +11,19 @@ export type EventDetailsProps = {
     /**
      * The property to use as title. If `custom` is used, the `customTitle` property should be provided.
     */
-    title: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    titleType: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    /**
+     * The size of the title.
+    */
+    titleSize?: "small" | "medium" | "large" | "huge";
     /**
      * The title to be displayed if the `title` property is set to `custom`.
     */
-    customTitle?: string;
+    title?: string;
+    /**
+     * The subtitle to be displayed.
+    */
+    subtitle?: string;
     /**
      * The properties to hide. If not provided, all properties will be displayed.
     */
@@ -35,6 +43,12 @@ const useStyles = makeStyles({
     body: {
         display: "flex",
         flexDirection: "column"
+    },
+    text: {
+        display: "block",
+        overflowX: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
     },
     blinkAnimation: {
         animationDuration: "1s",
@@ -58,6 +72,9 @@ const useStyles = makeStyles({
  * @param props the properties of the component.
  */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
+    if (!props.titleSize) props.titleSize = "medium";
+    if (!props.title) props.title = "";
+
     const styles = useStyles();
 
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
@@ -67,30 +84,45 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     const course = `\u{1F4DA} ${props.event.course.code} ${props.event.course.name}`;
 
     let title: string;
-    switch (props.title) {
-        case "subject":
-            title = subject;
-            break;
+    switch (props.titleType) {
         case "classroom":
             title = classroom;
             break;
-        case "custom":
-            title = props.customTitle || "eventDetails";
+        case "course":
+            title = course;
+            break;
+        case "teacher":
+            title = teacher;
+            break;
+        case "time":
+            title = time;
+            break;
+        case "subject":
+            title = subject;
             break;
         default:
-            title = "eventDetails";
+            title = props.title;
+            break;
     }
 
     return (
         <div className={styles.root}>
-            <Subtitle2>{title}</Subtitle2>
+            {props.titleSize === "huge" && <Title1 className={styles.text}>{title}</Title1>}
+            {props.subtitle && props.titleSize === "huge" && <Title3 className={styles.text}>{props.subtitle}</Title3>}
+            {props.titleSize === "large" && <Title2 className={styles.text}>{title}</Title2>}
+            {props.subtitle && props.titleSize === "large" && <Subtitle1 className={styles.text}>{props.subtitle}</Subtitle1>}
+            {props.titleSize === "medium" && <Subtitle1 className={styles.text}>{title}</Subtitle1>}
+            {props.subtitle && props.titleSize === "medium" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+            {props.titleSize === "small" && <Subtitle2 className={styles.text}>{title}</Subtitle2>}
+            {props.subtitle && props.titleSize === "small" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+            
             {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
-                {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
-                {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
-                {props.title !== "course" && !props.hide?.includes("course") && <Body1>{course}</Body1>}
-                {props.title !== "classroom" && !props.hide?.includes("classroom") && <Body1>{classroom}</Body1>}
-                {props.title !== "teacher" && !props.hide?.includes("teacher") && <Body1>{teacher}</Body1>}
+                {props.titleType !== "time" && !props.hide?.includes("time") && <Body1 className={styles.text}>{time}</Body1>}
+                {props.titleType !== "subject" && !props.hide?.includes("subject") && <Body1 className={styles.text}>{subject}</Body1>}
+                {props.titleType !== "course" && !props.hide?.includes("course") && <Body1 className={styles.text}>{course}</Body1>}
+                {props.titleType !== "classroom" && !props.hide?.includes("classroom") && <Body1 className={styles.text}>{classroom}</Body1>}
+                {props.titleType !== "teacher" && !props.hide?.includes("teacher") && <Body1 className={styles.text}>{teacher}</Body1>}
             </div>
         </div>
     );

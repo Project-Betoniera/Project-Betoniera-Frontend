@@ -42,7 +42,7 @@ export function Home() {
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
             <Card className={mergeClasses(globalStyles.card, event.start <= now && event.end > now ? globalStyles.ongoing : "")} key={event.id}>
-                <EventDetails event={event} title="subject" hide={["course"]} now={now} />
+                <EventDetails event={event} titleType="subject" hide={["course"]} now={now} />
             </Card>
         ))
     ) : (
@@ -84,7 +84,7 @@ export function Home() {
                     </Card>
                 </PopoverTrigger>
                 <PopoverSurface>
-                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                    {nextEvent ? <EventDetails event={nextEvent as EventDto} titleType="custom" title="Prossima lezione" hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
                 </PopoverSurface>
             </Popover>
         );
