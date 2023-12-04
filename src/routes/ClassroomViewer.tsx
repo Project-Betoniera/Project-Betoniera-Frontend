@@ -33,8 +33,8 @@ const useDarkStyles = makeStyles({
 });
 
 export function ClassroomViewer() {
-    const globalStyles = useGlobalStyles();
     const { theme } = useContext(ThemeContext);
+    const globalStyles = useGlobalStyles();
     const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
 
     const requests = useRequests();
@@ -98,10 +98,10 @@ export function ClassroomViewer() {
 
         return filtered.map((item) => {
             const getDividerText = () => {
-                if (!item.status.statusChangeAt || !item.status.currentOrNextEvent)
-                    return "Libera";
-                else if (item.status.statusChangeAt.getDate() == now.getDate())
+                if (item.status.statusChangeAt && item.status.statusChangeAt.getDate() === now.getDate())
                     return `${item.status.isFree ? "Libera" : "Occupata"} fino alle ${item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" })}`;
+                else
+                    return "Libera";
             };
 
             return (
@@ -134,11 +134,12 @@ export function ClassroomViewer() {
             return result;
         };
 
-        if (!event || event.start.getDate() !== now.getDate() || event.end < now) {
-            return <Subtitle2>Nessuna Lezione</Subtitle2>;
+        if (event && event.start.getDate() === now.getDate() && event.end > now) {
+            return <EventDetails event={fixEvent(event, classroom)} titleType={"custom"} titleSize="large" subtitle={event.course.name} hide={["classroom", "course"]} title={event.course.code} />;
         }
-
-        return <EventDetails event={fixEvent(event, classroom)} titleType={"custom"} titleSize="large" subtitle={event.course.name} hide={["classroom", "course"]} title={event.course.code} />;
+        else {
+            return <Subtitle2>Nessuna lezione</Subtitle2>;
+        }
     };
 
     return (
