@@ -59,8 +59,6 @@ export function ClassroomViewer() {
     }, []);
 
     const getClassroomsStatus = () => {
-        setClassrooms(null);
-
         requests.classroom.status(now)
             .then(setClassrooms)
             .catch(console.error);
