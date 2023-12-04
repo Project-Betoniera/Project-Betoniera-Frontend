@@ -39,7 +39,7 @@ export function ClassroomViewer() {
 
     const requests = useRequests();
 
-    const [now] = useState(new Date());
+    const [now, setNow] = useState(new Date());
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [currentFloor, setCurrentFloor] = useState(1);
 
@@ -50,7 +50,10 @@ export function ClassroomViewer() {
         // Fetch classrooms status every 10 seconds
         const interval = setInterval(() => {
             setCurrentFloor((oldValue) => {
-                if (oldValue === 3) getClassroomsStatus(); // Refresh when all data has been shown
+                if (oldValue === 3) {
+                    getClassroomsStatus(); // Refresh when all data has been shown
+                    setNow(new Date());
+                }
                 return oldValue === 3 ? 1 : oldValue + 1;
             });
         }, 15000);
