@@ -1,4 +1,4 @@
-import { Card, CardHeader, Divider, Spinner, Subtitle2, Title1, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Divider, Spinner, Subtitle2, Title1, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { useGlobalStyles } from "../globalStyles";
@@ -123,7 +123,7 @@ export function ClassroomViewer() {
                         header={<Title1>Aula {item.classroom.name.split(" ")[0]}</Title1>}
                     />
                     <div>
-                        <Divider><Subtitle2>{getDividerText()}</Subtitle2></Divider>
+                        <Divider><Body1>{getDividerText()}</Body1></Divider>
                         {renderEvent(item.status.currentOrNextEvent, item.classroom)}
                     </div>
                 </Card>
