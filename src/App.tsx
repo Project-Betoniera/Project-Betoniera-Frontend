@@ -75,11 +75,11 @@ function App() {
       <ProtocolHandler />
       <Routes>
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/viewer" element={<ClassroomViewer />} />
         <Route path="/" element={<Wrapper />}>
           <Route path="/" element={<Home />} />
           <Route path="/classroom" element={<Classroom />} />
           <Route path="/calendar" element={<Calendar />} />
-          <Route path="/viewer" element={<ClassroomViewer />} />
           <Route path="/calendar-sync" element={<CalendarExport />} />
           <Route path="/about" element={<About />} />
           <Route path='*' element={<NotFound />} />

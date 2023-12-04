@@ -64,19 +64,6 @@ export function ClassroomViewer() {
             .catch(console.error);
     };
 
-    useEffect(() => {
-        // Hide header and footer
-        document.getElementsByTagName("header")[0].style.display = "none";
-        document.getElementsByTagName("footer")[0].style.display = "none";
-
-        return () => {
-            // Restore header and footer
-            document.getElementsByTagName("header")[0].style.display = "block";
-            document.getElementsByTagName("footer")[0].style.display = "block";
-        };
-
-    }, []);
-
     const renderFloor = (floor: number, classrooms: ClassroomStatus[]) => {
         const filtered = classrooms.filter((item) => item.classroom.name[0] === floor.toString());
 
