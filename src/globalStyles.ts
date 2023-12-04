@@ -44,6 +44,7 @@ export const useGlobalStyles = makeStyles({
     grid: {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))",
+        gridAutoRows: "1fr",
         ...shorthands.gap("1rem"),
         ...shorthands.margin("1rem"),
         "@media screen and (max-width: 578px)": {
