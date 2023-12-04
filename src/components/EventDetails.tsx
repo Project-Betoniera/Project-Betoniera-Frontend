@@ -72,10 +72,10 @@ const useStyles = makeStyles({
  * @param props the properties of the component.
  */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
-    if (!props.titleSize) props.titleSize = "medium";
-    if (!props.title) props.title = "";
-
     const styles = useStyles();
+
+    let title: string;
+    const titleSize = props.titleSize ?? "medium";
 
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
@@ -83,7 +83,6 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     const teacher = props.event.teacher ? `\u{1F9D1}\u{200D}\u{1F3EB} ${props.event.teacher}` : "";
     const course = `\u{1F4DA} ${props.event.course.code} ${props.event.course.name}`;
 
-    let title: string;
     switch (props.titleType) {
         case "classroom":
             title = classroom;
@@ -101,21 +100,21 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             title = subject;
             break;
         default:
-            title = props.title;
+            title = props.title ?? "";
             break;
     }
 
     return (
         <div className={styles.root}>
-            {props.titleSize === "huge" && <Title1 className={styles.text}>{title}</Title1>}
-            {props.subtitle && props.titleSize === "huge" && <Title3 className={styles.text}>{props.subtitle}</Title3>}
-            {props.titleSize === "large" && <Title2 className={styles.text}>{title}</Title2>}
-            {props.subtitle && props.titleSize === "large" && <Subtitle1 className={styles.text}>{props.subtitle}</Subtitle1>}
-            {props.titleSize === "medium" && <Subtitle1 className={styles.text}>{title}</Subtitle1>}
-            {props.subtitle && props.titleSize === "medium" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
-            {props.titleSize === "small" && <Subtitle2 className={styles.text}>{title}</Subtitle2>}
-            {props.subtitle && props.titleSize === "small" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
-            
+            {titleSize === "huge" && <Title1 className={styles.text}>{title}</Title1>}
+            {props.subtitle && titleSize === "huge" && <Title3 className={styles.text}>{props.subtitle}</Title3>}
+            {titleSize === "large" && <Title2 className={styles.text}>{title}</Title2>}
+            {props.subtitle && titleSize === "large" && <Subtitle1 className={styles.text}>{props.subtitle}</Subtitle1>}
+            {titleSize === "medium" && <Subtitle1 className={styles.text}>{title}</Subtitle1>}
+            {props.subtitle && titleSize === "medium" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+            {titleSize === "small" && <Subtitle2 className={styles.text}>{title}</Subtitle2>}
+            {props.subtitle && titleSize === "small" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+
             {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
                 {props.titleType !== "time" && !props.hide?.includes("time") && <Body1 className={styles.text}>{time}</Body1>}
