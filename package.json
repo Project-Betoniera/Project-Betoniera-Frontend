@@ -16,7 +16,6 @@
     "@fluentui/react-components": "^9.41.0",
     "axios": "^1.6.2",
     "base-64": "^1.0.0",
-    "calendar-js": "^1.4.4",
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
