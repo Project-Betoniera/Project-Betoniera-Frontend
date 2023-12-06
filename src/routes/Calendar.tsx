@@ -4,7 +4,7 @@ import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular } from "@fluentui/react-icons";
+import { ArrowExportRegular, CircleFilled } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
@@ -52,6 +52,7 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         flexGrow: "1",
+        minHeight: "14rem"
     },
     calendar: {
         position: "absolute",
@@ -77,6 +78,17 @@ const useStyles = makeStyles({
         backgroundColor: tokens.colorBrandBackground,
         ":hover": {
             backgroundColor: tokens.colorBrandBackgroundHover
+        },
+        color: "white"
+    },
+    eventIndicator: {
+        "@media (min-width: 351px)": {
+            display: "none",
+        }
+    },
+    verticalEventIndicator: {
+        "@media (max-width: 350px), (min-height: 601px)": {
+            display: "none",
         }
     },
     eventContainer: {
@@ -86,10 +98,13 @@ const useStyles = makeStyles({
         overflowY: "auto",
         flexDirection: "column",
         rowGap: "0.4rem",
-        "@media screen and (max-width: 578px)": {
+        "@media (max-width: 578px)": {
             rowGap: "0.2rem",
             overflowY: "hidden",
-        }
+        },
+        "@media (max-width: 350px), (max-height: 600px)": {
+            display: "none",
+        },
     },
     event: {
         flexShrink: 0,
@@ -159,7 +174,8 @@ export function Calendar() {
                 <Dialog key={day.getTime()}>
                     <DialogTrigger>
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
-                            <CardHeader header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
+                            <CardHeader action={filteredEvents.length > 0 ? <CircleFilled className={styles.verticalEventIndicator} color={now.toLocaleDateString() === day.toLocaleDateString() ? "white" : tokens.colorBrandBackground} /> : undefined} header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
+                            {filteredEvents.length > 0 && <CircleFilled className={styles.eventIndicator} color={now.toLocaleDateString() === day.toLocaleDateString() ? "white" : tokens.colorBrandBackground} />}
                             <div className={styles.eventContainer}>
                                 {renderPreviewEvents(filteredEvents)}
                             </div>
