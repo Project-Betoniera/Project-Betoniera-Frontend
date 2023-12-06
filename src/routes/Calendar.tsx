@@ -8,7 +8,7 @@ import { ArrowExportRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
-import { generateMonth, generateWeek } from "../libraries/calendarHelper/calendarHelper";
+import { generateMonth } from "../libraries/calendarGenerator/calendarGenerator";
 
 const useStyles = makeStyles({
     container: {
@@ -122,13 +122,11 @@ export function Calendar() {
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
-    const result = generateMonth(dateTime);
-
-    generateWeek(now);
+    const result = generateMonth(dateTime).flat();
 
     useEffect(() => {
-        const start = result.flat()[0];
-        const end = result.flat()[result.flat().length - 1];
+        const start = result[0];
+        const end = result[result.length - 1];
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
 
@@ -140,7 +138,7 @@ export function Calendar() {
     }, [dateTime]);
 
     const renderCalendar = () =>
-        events && result.flat().map((day) => {
+        events && result.map((day) => {
             const filteredEvents = events.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString());
 
             const renderPreviewEvents = (events: EventDto[]) => {
@@ -153,7 +151,7 @@ export function Calendar() {
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
                 <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)}>
-                    <EventDetails event={event} title="subject" now={now} />
+                    <EventDetails event={event} titleType="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
