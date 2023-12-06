@@ -13,7 +13,8 @@ export function generateMonth(inputDate: Date) {
         lastDayOfTheMonth.setDate(lastDayOfTheMonth.getDate() + 1);
     }
 
-    const numberOfWeeks = Math.ceil((lastDayOfTheMonth.getTime() - firstDayOfTheMonth.getTime()) / 1000 / 60 / 60 / 24 / 7);
+    const millisecondsInAWeek = 604800000;
+    const numberOfWeeks = Math.ceil((lastDayOfTheMonth.getTime() - firstDayOfTheMonth.getTime()) / millisecondsInAWeek);
 
     let currentDay = new Date(firstDayOfTheMonth);
     for (let i = 0; i < numberOfWeeks; i++) {
