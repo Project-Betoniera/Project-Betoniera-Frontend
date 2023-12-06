@@ -79,20 +79,17 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
 
     const firstCharUppercase = (string: string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+    };
 
     return (
         <div className={styles.root}>
             <div className={styles.dateSelector}>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
-                {
-                    inputType === "month" ?
-                        <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long" }))}</Subtitle2>
-                        :
-                        <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>
-                }
-                <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
+                <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
+                {inputType === "month" ?
+                    <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long", year: "numeric" }))}</Subtitle2> :
+                    <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>}
             </div>
             <div className={mergeClasses(styles.dateSelector, styles.hideOnDesktop)}>
                 <Button className={mergeClasses(styles.arrowButton, styles.growOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
