@@ -18,7 +18,7 @@ export const MessagesContext = createContext({ messages: [] as Message[], dismis
 
 export function MessagesContextProvider({ children }: { children: JSX.Element; }) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const { tokenData } = useContext(TokenContext);
+    const token = useContext(TokenContext).token;
 
     useEffect(() => {
         // Get dismissed messages from local storage
@@ -27,7 +27,7 @@ export function MessagesContextProvider({ children }: { children: JSX.Element; }
         // Get messages from API
         axios.get(new URL("message", apiUrl).toString(), {
             headers: {
-                Authorization: `Bearer ${tokenData.token}`
+                Authorization: `Bearer ${token}`
             }
         }).then((response) => {
             setMessages((response.data as Message[]).filter((message) => !dismissedMessages.includes(message.id)));

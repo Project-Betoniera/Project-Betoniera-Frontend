@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { CourseDto } from "../../dto/CourseDto";
 
-export default function courseRequests(token: string) {
+export default function courseRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
     function parseCourses(data: any) {
         const result: CourseDto[] = [];
         if (!Array.isArray(data)) return result;
@@ -22,26 +22,32 @@ export default function courseRequests(token: string) {
 
     return {
         all: async () => {
-            const response = await axios({
+            return await axios({
                 url: new URL("course", apiUrl).toString(),
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
+            }).then((response) => {
+                return parseCourses(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as CourseDto[];
             });
-
-            return parseCourses(response.data);
         },
         byId: async (id: number) => {
-            const response = await axios({
+            return await axios({
                 url: new URL(`course/${encodeURIComponent(id)}`, apiUrl).toString(),
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
+            }).then((response) => {
+                return parseCourses(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as CourseDto[];
             });
-
-            return parseCourses(response.data);
         },
     };
 }

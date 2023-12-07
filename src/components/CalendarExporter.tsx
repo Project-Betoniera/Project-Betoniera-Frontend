@@ -20,7 +20,7 @@ export function CalendarExporter() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
-    const { tokenData } = useContext(TokenContext);
+    const token = useContext(TokenContext).token;
     const { course: userCourse } = useContext(CourseContext);
 
     // Items for the various selectors
@@ -58,7 +58,7 @@ export function CalendarExporter() {
         switch (calendarType.code) {
             case "course":
                 axios.get(new URL("course", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + tokenData.token },
+                    headers: { Authorization: "Bearer " + token },
                     params: { distinct: true }
                 }).then(response => {
                     const courses: CourseDto[] = response.data;
@@ -68,7 +68,7 @@ export function CalendarExporter() {
                 break;
             case "classroom":
                 axios.get(new URL("classroom", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + tokenData.token },
+                    headers: { Authorization: "Bearer " + token },
                 }).then(response => {
                     const classrooms: ClassroomDto[] = response.data;
                     setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
@@ -77,7 +77,7 @@ export function CalendarExporter() {
                 break;
             case "teacher":
                 axios.get(new URL("teacher", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + tokenData.token },
+                    headers: { Authorization: "Bearer " + token },
                 }).then(response => {
                     let teachers: { teacher: string; }[] = response.data;
                     teachers = teachers.filter(item => item.teacher !== null && item.teacher !== " "); // Remove null or empty teachers
@@ -89,7 +89,7 @@ export function CalendarExporter() {
                 console.error("Invalid calendar selector");
                 break;
         }
-    }, [calendarType, tokenData]);
+    }, [calendarType, token]);
 
     // Update calendar URL
     useEffect(() => {
@@ -103,7 +103,7 @@ export function CalendarExporter() {
 
             const url = new URL(`event${type}/${encodeURIComponent(calendarSelector.code)}/ics`, apiUrl);
             url.protocol = "webcal";
-            url.searchParams.append("authorization", `Bearer ${tokenData.token}`);
+            url.searchParams.append("authorization", `Bearer ${token}`);
 
             switch (calendarProvider.code) {
                 case "google":

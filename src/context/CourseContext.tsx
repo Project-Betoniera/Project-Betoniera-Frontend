@@ -5,11 +5,11 @@ import { TokenContext } from "./TokenContext";
 export const CourseContext = createContext({ course: null as CourseDto | null, setCourse: (data: CourseDto | null) => { console.log(data); } });
 
 export function CourseContextProvider({ children }: { children: JSX.Element; }) {
-    const { tokenData } = useContext(TokenContext);
+    const remember = useContext(TokenContext).remember;
     const [course, setCourse] = useState<CourseDto | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
 
     useEffect(() => {
-        if (course !== null && tokenData.remember)
+        if (course !== null && remember)
             localStorage.setItem("course", JSON.stringify(course));
         else
             localStorage.removeItem("course");

@@ -29,12 +29,14 @@ const menuItems = [
 ];
 
 const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
-    const { setTokenData } = useContext(TokenContext);
+    const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
     const { setCourse } = useContext(CourseContext);
 
 
     const logout = () => {
-        setTokenData({ token: null, remember: false });
+        setToken(null);
+        setRemember(false);
+        setIsInvalid(false);
         setCourse(null);
     };
 

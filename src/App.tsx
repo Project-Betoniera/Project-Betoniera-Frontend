@@ -16,6 +16,7 @@ import InstallPwaDialog from "./components/InstallPwaDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Calendar } from "./routes/Calendar";
+import InvalidTokenDialog from "./components/InvalidTokenDialog";
 
 const useStyles = makeStyles({
   root: {
@@ -31,7 +32,7 @@ const useStyles = makeStyles({
 
 function App() {
   const style = useStyles();
-  const { tokenData } = useContext(TokenContext);
+  const token = useContext(TokenContext).token;
   const { theme } = useContext(ThemeContext);
 
   const toasterId = useId("app-toaster");
@@ -60,17 +61,18 @@ function App() {
   const navigate = useNavigate();
   useEffect(() => {
     // Redirect to login if not logged in
-    if (!tokenData.token && location.pathname !== "/login") navigate("/login");
+    if (!token && location.pathname !== "/login") navigate("/login");
     // Redirect to home if logged in
-    if (tokenData.token && location.pathname === "/login") navigate("/");
-  }, [location, tokenData]);
+    if (token && location.pathname === "/login") navigate("/");
+  }, [location, token]);
 
   return (
     <FluentProvider className={style.root} theme={theme}>
       <Toaster toasterId={toasterId} />
       <PrivacyAlert />
       <OfflineDialog />
-      {tokenData.token && <InstallPwaDialog />}
+      {token && <InstallPwaDialog />}
+      <InvalidTokenDialog />
       <ProtocolHandler />
       <Routes>
         <Route path="/login" element={<LoginForm />} />
