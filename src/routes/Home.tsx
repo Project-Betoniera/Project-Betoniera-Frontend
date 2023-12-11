@@ -49,7 +49,7 @@ export function Home() {
         <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
     );
 
-    const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.map((item) => {
+    const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
         // TODO Return classroom object inside ClassroomStatus object
         const fixNextEvent = (event: Omit<EventDto, "classroom"> | null, classroom: ClassroomDto) => {
             if (!event) return null;
