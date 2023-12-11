@@ -1,8 +1,8 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { EventDto } from "../../dto/EventDto";
 
-export default function eventRequests(token: string) {
+export default function eventRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
     function parseEvents(data: any) {
         const result: EventDto[] = [];
         if (!Array.isArray(data)) return result;
@@ -34,7 +34,7 @@ export default function eventRequests(token: string) {
 
     return {
         byClassroom: async (start: Date, end: Date, classroomId: number, includeOngoing: boolean = false) => {
-            const response = await axios({
+            return await axios({
                 url: new URL(`event/classroom/${encodeURIComponent(classroomId)}`, apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -45,12 +45,15 @@ export default function eventRequests(token: string) {
                     end: end.toISOString(),
                     includeOngoing: includeOngoing
                 }
+            }).then((response) => {
+                return parseEvents(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as EventDto[];
             });
-
-            return parseEvents(response.data);
         },
         byCourse: async (start: Date, end: Date, courseId: number, includeOngoing: boolean = false) => {
-            const response = await axios({
+            return await axios({
                 url: new URL(`event/${encodeURIComponent(courseId)}`, apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -61,12 +64,15 @@ export default function eventRequests(token: string) {
                     end: end.toISOString(),
                     includeOngoing: includeOngoing
                 }
+            }).then((response) => {
+                return parseEvents(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as EventDto[];
             });
-
-            return parseEvents(response.data);
         },
         byTeacher: async (start: Date, end: Date, teacher: string, includeOngoing: boolean = false) => {
-            const response = await axios({
+            return await axios({
                 url: new URL(`event/teacher/${encodeURIComponent(teacher)}`, apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -77,9 +83,12 @@ export default function eventRequests(token: string) {
                     end: end.toISOString(),
                     includeOngoing: includeOngoing
                 }
+            }).then((response) => {
+                return parseEvents(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as EventDto[];
             });
-
-            return parseEvents(response.data);
         }
     };
 }

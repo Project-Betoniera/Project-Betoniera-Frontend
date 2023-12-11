@@ -1,9 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { ClassroomDto } from "../../dto/ClassroomDto";
 import { ClassroomStatus } from "../../dto/ClassroomStatus";
 
-export default function classroomRequests(token: string) {
+export default function classroomRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
     const excludedClassrooms = [5, 19, 26, 31, 33]; // TODO Get this from the API
 
     function parseClassrooms(data: any) {
@@ -65,29 +65,35 @@ export default function classroomRequests(token: string) {
 
     return {
         all: async () => {
-            const response = await axios({
+            return await axios({
                 url: new URL("classroom", apiUrl).toString(),
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
+            }).then((response) => {
+                return parseClassrooms(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as ClassroomDto[];
             });
-
-            return parseClassrooms(response.data);
         },
         byId: async (id: number) => {
-            const response = await axios({
+            return await axios({
                 url: new URL(`classroom/${encodeURIComponent(id)}`, apiUrl).toString(),
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
+            }).then((response) => {
+                return parseClassrooms(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as ClassroomDto[];
             });
-
-            return parseClassrooms(response.data);
         },
         busy: async (start: Date, end: Date) => {
-            const response = await axios({
+            return await axios({
                 url: new URL("classroom/occupied", apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -97,12 +103,15 @@ export default function classroomRequests(token: string) {
                     start: start.toISOString(),
                     end: end.toISOString(),
                 }
+            }).then((response) => {
+                return parseClassrooms(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as ClassroomDto[];
             });
-
-            return parseClassrooms(response.data);
         },
         free: async (start: Date, end: Date) => {
-            const response = await axios({
+            return await axios({
                 url: new URL("classroom/free", apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -112,12 +121,15 @@ export default function classroomRequests(token: string) {
                     start: start.toISOString(),
                     end: end.toISOString(),
                 }
+            }).then((response) => {
+                return parseClassrooms(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as ClassroomDto[];
             });
-
-            return parseClassrooms(response.data);
         },
         status: async (time?: Date) => {
-            const response = await axios({
+            return await axios({
                 url: new URL("classroom/status", apiUrl).toString(),
                 method: "GET",
                 headers: {
@@ -126,9 +138,12 @@ export default function classroomRequests(token: string) {
                 params: {
                     time: time?.toISOString(),
                 }
+            }).then((response) => {
+                return parseClassroomStatus(response.data);
+            }).catch((error: AxiosError) => {
+                if (error.response?.status === 401) setIsInvalid(true);
+                return [] as ClassroomStatus[];
             });
-
-            return parseClassroomStatus(response.data);
         }
     };
 }

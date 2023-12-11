@@ -101,10 +101,9 @@ export function Classroom() {
             <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
         ] : filteredClassrooms.map((item) => {
             const getEvents = (isOpen: boolean) => {
-                if (!isOpen) {
-                    setEvents(null);
-                    return;
-                };
+                if (!isOpen) return;
+
+                setEvents(null); // Show spinner
 
                 const start = new Date(dateTime);
                 start.setHours(0, 0, 0, 0);

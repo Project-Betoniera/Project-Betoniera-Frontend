@@ -61,7 +61,8 @@ export function LoginForm() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
-    const { setTokenData } = useContext(TokenContext);
+    const setToken = useContext(TokenContext).setToken;
+    const setRememberToken = useContext(TokenContext).setRemember;
     const { setCourse } = useContext(CourseContext);
 
     const [email, setEmail] = useState<string>("");
@@ -82,7 +83,8 @@ export function LoginForm() {
             headers: { Authorization: `Basic ${toBase64(`${email}:${password}`)}` }
         }).then((response) => {
             if (response.status === 200) {
-                setTokenData({ token: response.data.token, remember: remember });
+                setToken(response.data.token);
+                setRememberToken(remember);
                 setCourse(response.data.course as CourseDto);
             } else {
                 throw new Error("Errore durante il login");

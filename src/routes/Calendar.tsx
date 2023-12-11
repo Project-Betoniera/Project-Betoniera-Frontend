@@ -1,42 +1,14 @@
 import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner } from "@fluentui/react-components";
-import CalendarJs from "calendar-js";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular } from "@fluentui/react-icons";
+import { ArrowExportRegular, CircleFilled } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
-
-type DetailedCalendar = {
-    year: string,
-    yearAbbr: string,
-    month: string,
-    monthAbbr: string,
-    weekdays: string[],
-    weekdaysAbbr: string[],
-    days: number,
-    firstWeekday: number,
-    lastWeekday: number,
-    calendar: CalendarDay[][];
-};
-
-type CalendarDay = {
-    date: Date,
-    day: number,
-    isInPrimaryMonth: boolean,
-    isInLastWeekOfPrimaryMonth: boolean,
-    index: { day: number, week: number; };
-};
-
-type CalendarConfig = {
-    months: string[];
-    monthsAbbr: string[];
-    weekDays: string[];
-    weekDaysAbbr: string[];
-};
+import { generateMonth } from "../libraries/calendarGenerator/calendarGenerator";
 
 const useStyles = makeStyles({
     container: {
@@ -80,6 +52,7 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         flexGrow: "1",
+        minHeight: "14rem"
     },
     calendar: {
         position: "absolute",
@@ -105,6 +78,17 @@ const useStyles = makeStyles({
         backgroundColor: tokens.colorBrandBackground,
         ":hover": {
             backgroundColor: tokens.colorBrandBackgroundHover
+        },
+        color: "white"
+    },
+    eventIndicator: {
+        "@media (min-width: 351px)": {
+            display: "none",
+        }
+    },
+    verticalEventIndicator: {
+        "@media (max-width: 350px), (min-height: 601px)": {
+            display: "none",
         }
     },
     eventContainer: {
@@ -114,10 +98,13 @@ const useStyles = makeStyles({
         overflowY: "auto",
         flexDirection: "column",
         rowGap: "0.4rem",
-        "@media screen and (max-width: 578px)": {
+        "@media (max-width: 578px)": {
             rowGap: "0.2rem",
             overflowY: "hidden",
-        }
+        },
+        "@media (max-width: 350px), (max-height: 600px)": {
+            display: "none",
+        },
     },
     event: {
         flexShrink: 0,
@@ -140,21 +127,21 @@ export function Calendar() {
     const requests = useRequests();
 
     // TODO Use proper localization
-    const calendarConfig: CalendarConfig = {
+    const calendarLocal = {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
-        weekDays: ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
-        weekDaysAbbr: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"]
+        weekDays: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
+        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
-    const result: DetailedCalendar = (CalendarJs(calendarConfig) as any).detailed(dateTime.getFullYear(), dateTime.getMonth());
+    const result = generateMonth(dateTime).flat();
 
     useEffect(() => {
-        const start = result.calendar.flat()[0].date;
-        const end = result.calendar.flat()[result.calendar.flat().length - 1].date;
+        const start = result[0];
+        const end = result[result.length - 1];
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
 
@@ -166,11 +153,11 @@ export function Calendar() {
     }, [dateTime]);
 
     const renderCalendar = () =>
-        events && result.calendar.flat().map((day) => {
-            const filteredEvents = events.filter((event) => event.start.toLocaleDateString() === day.date.toLocaleDateString());
+        events && result.map((day) => {
+            const filteredEvents = events.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString());
 
             const renderPreviewEvents = (events: EventDto[]) => {
-                return events.map((event) => event.start.toLocaleDateString() === day.date.toLocaleDateString() &&
+                return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
                     <Card key={event.id} className={styles.event}>
                         <Caption1 className={styles.eventText}>{event.subject}</Caption1>
                     </Card>
@@ -184,10 +171,11 @@ export function Calendar() {
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
-                <Dialog key={day.date.getTime()}>
+                <Dialog key={day.getTime()}>
                     <DialogTrigger>
-                        <Card key={day.date.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.date.toLocaleDateString() && styles.todayBadge)}>
-                            <CardHeader header={<Subtitle2>{day.date.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
+                        <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
+                            <CardHeader action={filteredEvents.length > 0 ? <CircleFilled className={styles.verticalEventIndicator} color={now.toLocaleDateString() === day.toLocaleDateString() ? "white" : tokens.colorBrandBackground} /> : undefined} header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
+                            {filteredEvents.length > 0 && <CircleFilled className={styles.eventIndicator} color={now.toLocaleDateString() === day.toLocaleDateString() ? "white" : tokens.colorBrandBackground} />}
                             <div className={styles.eventContainer}>
                                 {renderPreviewEvents(filteredEvents)}
                             </div>
@@ -196,7 +184,7 @@ export function Calendar() {
                     <DialogSurface>
                         <DialogBody>
                             <DialogTitle>
-                                <Title3>Lezioni {now.toLocaleDateString() === day.date.toLocaleDateString() ? "di oggi" : `del ${day.date.toLocaleDateString([], { day: "numeric", month: "long" })}`}</Title3>
+                                <Title3>Lezioni {now.toLocaleDateString() === day.toLocaleDateString() ? "di oggi" : `del ${day.toLocaleDateString([], { day: "numeric", month: "long" })}`}</Title3>
                             </DialogTitle>
                             <DialogContent className={globalStyles.list}>
                                 {renderDetailedEvents(filteredEvents)}
@@ -221,8 +209,8 @@ export function Calendar() {
 
             <Card className={styles.calendarHeader}>
                 {window.matchMedia('(max-width: 578px)').matches ?
-                    calendarConfig.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
-                    : calendarConfig.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
+                    calendarLocal.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
+                    : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
             </Card>
 
             {events ? (
