@@ -4,7 +4,7 @@ import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular, CircleFilled } from "@fluentui/react-icons";
+import { ArrowExportRegular, CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
@@ -27,11 +27,18 @@ const useStyles = makeStyles({
             flexDirection: "column",
         }
     },
+    toolbarButtons: {
+        display: "flex",
+        flexDirection: "row",
+        columnGap: "0.5rem",
+        justifyContent: "flex-end",
+        "@media (max-width: 578px)": {
+            justifyContent: "space-between",
+        }
+    },
     syncButton: {
-        alignSelf: "end",
-        flexGrow: "0 !important",
         "@media screen and (max-width: 578px)": {
-            alignSelf: "stretch",
+            flexGrow: 1,
         }
     },
     calendarHeader: {
@@ -125,6 +132,7 @@ export function Calendar() {
     const styles = useStyles();
     const { course } = useContext(CourseContext);
     const requests = useRequests();
+    const [currentView, setCurrentView] = useState<boolean>(true);
 
     // TODO Use proper localization
     const calendarLocal = {
@@ -138,6 +146,7 @@ export function Calendar() {
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const result = generateMonth(dateTime).flat();
+    //const result = generateWeek(dateTime);
 
     useEffect(() => {
         const start = result[0];
@@ -204,7 +213,11 @@ export function Calendar() {
         <div className={styles.container}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
-                <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
+                <div className={styles.toolbarButtons}>
+                    <Button icon={currentView ? <CalendarMonthRegular /> : <CalendarWeekNumbersRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Mese" : "Settimana"}</Button>
+                    <Button icon={<SettingsRegular />} />
+                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
+                </div>
             </Card>
 
             <Card className={styles.calendarHeader}>
