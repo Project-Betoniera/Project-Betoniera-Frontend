@@ -98,7 +98,7 @@ export function Home() {
                         header={<Title2>📚 {course?.code} - Lezioni</Title2>}
                         description={<><Subtitle2>{course?.name}</Subtitle2></>}
                     />
-                    <DateSelector inputType="date" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                    <DateSelector inputType="day" dateTime={dateTime} setDateTime={setDateTime} now={now} />
                 </Card>
                 <div className={globalStyles.grid}>
                     {events ? (renderEvents()) : (<Spinner size="huge" />)}

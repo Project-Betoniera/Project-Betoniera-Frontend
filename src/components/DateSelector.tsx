@@ -5,7 +5,7 @@ type DateSelectorProps = {
     now: Date;
     dateTime: Date;
     setDateTime: (dateTime: Date) => void;
-    inputType: "date" | "datetime-local" | "month";
+    inputType: "month" | "week" | "day" | "hour";
 };
 
 const useStyles = makeStyles({
@@ -56,15 +56,25 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
      * @param value The amount of days to add or remove to the current date
      */
     const onArrowButtonClick = (value: number) => {
-
         let result: Date = new Date(dateTime);
 
-        inputType === "month" ?
-            result.setMonth(result.getMonth() + value) :
-            result.setDate(result.getDate() + value);
+        switch (inputType) {
+            case "month":
+                result.setMonth(result.getMonth() + value);
+                break;
+            case "week":
+                result.setDate(result.getDate() + (value * 7));
+                break;
+            case "day":
+            case "hour":
+                result.setDate(result.getDate() + value);
+                break;
+            default:
+                break;
+        }
 
         // If the date is today, set the time to now, else set it to 00:00
-        if (inputType === "date") result.toDateString() == now.toDateString() ?
+        if (inputType === "day") result.toDateString() == now.toDateString() ?
             result.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()) :
             result.setHours(0, 0, 0, 0);
 
@@ -73,12 +83,26 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
 
     const onTodayButtonClick = () => { if (now.toDateString() !== dateTime.toDateString()) setDateTime(new Date(now)); };
 
-    const selectorValue = inputType === "date" ?
+    const selectorValue = inputType === "day" ?
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('T')[0] :
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('.')[0].slice(0, -3);
 
     const firstCharUppercase = (string: string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
+    };
+
+    const getInputType = () => {
+        switch (inputType) {
+            case "month":
+                return "month";
+            case "week":
+            case "day":
+                return "date";
+            case "hour":
+                return "datetime-local";
+            default:
+                return "date";
+        }
     };
 
     return (
@@ -87,9 +111,14 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
                 <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
-                {inputType === "month" ?
+                {inputType === "month" || inputType === "week" ?
                     <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long", year: "numeric" }))}</Subtitle2> :
-                    <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>}
+                    <Input
+                        className={styles.growOnMobile}
+                        type={getInputType()}
+                        onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }}
+                        value={selectorValue}
+                    ></Input>}
             </div>
             <div className={mergeClasses(styles.dateSelector, styles.hideOnDesktop)}>
                 <Button className={mergeClasses(styles.arrowButton, styles.growOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
