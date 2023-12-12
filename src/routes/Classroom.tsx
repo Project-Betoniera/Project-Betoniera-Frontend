@@ -178,7 +178,7 @@ export function Classroom() {
                     header={<Title2>🏫 Stato Aule</Title2>}
                 />
                 <CardFooter className={styles.toolbar}>
-                    <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                    <DateSelector inputType="hour" dateTime={dateTime} setDateTime={setDateTime} now={now} />
                     <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
                         <option value="all">Tutte</option>
                         <option value="free">Libere</option>

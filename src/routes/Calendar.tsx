@@ -212,11 +212,10 @@ export function Calendar() {
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
-                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
+                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"week"} />
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarMonthRegular /> : <CalendarWeekNumbersRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Mese" : "Settimana"}</Button>
                     <Button icon={<SettingsRegular />} />
-                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 </div>
             </Card>
 
