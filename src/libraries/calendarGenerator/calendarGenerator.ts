@@ -1,5 +1,6 @@
 export function generateMonth(inputDate: Date) {
-    const monthView: [Date[]] = [[]];
+    const monthView: [Date[]] = [[]]; // Declare an array of arrays, with the first array being empty
+    monthView.pop(); // Remove the first empty array
 
     // Get first day of the result array (Monday)
     const firstDayOfTheMonth = new Date(inputDate.getFullYear(), inputDate.getMonth(), 1);
