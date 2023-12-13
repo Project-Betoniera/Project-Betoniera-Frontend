@@ -1,4 +1,4 @@
-import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner } from "@fluentui/react-components";
+import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2 } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
@@ -8,7 +8,7 @@ import { ArrowExportRegular, CircleFilled, SettingsRegular, CalendarMonthRegular
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
-import { generateMonth } from "../libraries/calendarGenerator/calendarGenerator";
+import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 
 const useStyles = makeStyles({
     container: {
@@ -145,8 +145,7 @@ export function Calendar() {
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
-    const result = generateMonth(dateTime).flat();
-    //const result = generateWeek(dateTime);
+    const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
     useEffect(() => {
         const start = result[0];
@@ -159,7 +158,7 @@ export function Calendar() {
         requests.event.byCourse(start, end, course?.id || 0, true)
             .then(setEvents)
             .catch(console.error); // TODO Handle error
-    }, [dateTime]);
+    }, [dateTime, currentView]);
 
     const renderCalendar = () =>
         events && result.map((day) => {
@@ -168,7 +167,12 @@ export function Calendar() {
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
                     <Card key={event.id} className={styles.event}>
-                        <Caption1 className={styles.eventText}>{event.subject}</Caption1>
+                        <Caption1 className={currentView ? styles.eventText : undefined}>{event.subject}</Caption1>
+                        <div style={currentView ? { display: "none" } : undefined}>
+                            <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
+                            <br />
+                            <Caption2>Aula {event.classroom.name}</Caption2>
+                        </div>
                     </Card>
                 );
             };
@@ -212,9 +216,9 @@ export function Calendar() {
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
-                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"week"} />
+                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
                 <div className={styles.toolbarButtons}>
-                    <Button icon={currentView ? <CalendarMonthRegular /> : <CalendarWeekNumbersRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Mese" : "Settimana"}</Button>
+                    <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} />
                 </div>
             </Card>
