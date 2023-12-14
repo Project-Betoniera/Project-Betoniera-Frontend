@@ -157,25 +157,40 @@ export function Calendar() {
     const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
     const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
 
+    // Set calendar selector from URL
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+
+        const input_course = params.get("course");
+        const input_classroom = params.get("classroom");
+
+        if (input_course || input_classroom) {
+            if (input_course) {
+                requests.course.byId(Number(params.get("course"))).then((course) => {
+                    console.log(course);
+                    if (!course[0]) { throw new Error("Invalid course"); }
+                    setCalendarSelector({
+                        code: input_course,
+                        name: course[0].code
+                    });
+                }).catch(console.error);
+            } else if (input_classroom) {
+                requests.classroom.byId(Number(input_classroom)).then((classroom) => {
+                    if (!classroom[0]) { throw new Error("Invalid classroom"); }
+                    setCalendarType(calendarTypes[1]); // Set calendar type to classroom
+                    setCalendarSelector({
+                        code: input_classroom,
+                        name: classroom[0].name
+                    })
+                }).catch(console.error);
+            }
+        }
+    }, []);
+
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
-
-    /*
-    useEffect(() => {
-        const start = result[0];
-        const end = result[result.length - 1];
-        end.setDate(end.getDate() + 1);
-        end.setHours(0, 0, 0, 0);
-
-        setEvents(null); // Show spinner
-
-        requests.event.byCourse(start, end, course?.id || 0, true)
-            .then(setEvents)
-            .catch(console.error); // TODO Handle error
-    }, [dateTime, currentView]);
-    */
 
     useEffect(() => {
 
@@ -265,7 +280,6 @@ export function Calendar() {
         });
 
     const renderFilters = () => {
-
         // Get calendar selector list
         useEffect(() => {
             // Clear selectors, but only if the list is already populated (so always but the first time)
