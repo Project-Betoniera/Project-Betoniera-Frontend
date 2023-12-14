@@ -86,7 +86,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
                     Authorization: `Bearer ${token}`
                 },
             }).then((response) => {
-                return parseClassrooms(response.data);
+                return parseClassrooms(new Array(response.data));
             }).catch((error: AxiosError) => {
                 if (error.response?.status === 401) setIsInvalid(true);
                 return [] as ClassroomDto[];

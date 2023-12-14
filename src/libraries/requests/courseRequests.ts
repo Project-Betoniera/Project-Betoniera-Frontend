@@ -43,7 +43,7 @@ export default function courseRequests(token: string, setIsInvalid: (isInvalid: 
                     Authorization: `Bearer ${token}`
                 },
             }).then((response) => {
-                return parseCourses(response.data);
+                return parseCourses(new Array(response.data));
             }).catch((error: AxiosError) => {
                 if (error.response?.status === 401) setIsInvalid(true);
                 return [] as CourseDto[];
