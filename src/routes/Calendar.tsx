@@ -1,14 +1,17 @@
-import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2 } from "@fluentui/react-components";
-import { useContext, useEffect, useState } from "react";
+import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Popover, PopoverTrigger, PopoverSurface, Label, Select, Combobox, SelectOnChangeData, Option } from "@fluentui/react-components";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { ArrowExportRegular, CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular } from "@fluentui/react-icons";
-import { RouterButton } from "../components/RouterButton";
+import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular } from "@fluentui/react-icons";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
 import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
+import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
+import axios from "axios";
+import { apiUrl } from "../config";
+import { TokenContext } from "../context/TokenContext";
 
 const useStyles = makeStyles({
     container: {
@@ -130,6 +133,7 @@ const useStyles = makeStyles({
 export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
+    const token = useContext(TokenContext).token;
     const { course } = useContext(CourseContext);
     const requests = useRequests();
     const [currentView, setCurrentView] = useState<boolean>(true);
@@ -142,11 +146,23 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
+    // Items for the various selectors
+    const calendarTypes: { code: string, name: string; }[] = [
+        { code: "course", name: "Corso", },
+        { code: "classroom", name: "Aula" },
+        { code: "teacher", name: "Docente" },
+    ];
+
+    const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
+    const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
+    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
+
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
+    /*
     useEffect(() => {
         const start = result[0];
         const end = result[result.length - 1];
@@ -159,6 +175,41 @@ export function Calendar() {
             .then(setEvents)
             .catch(console.error); // TODO Handle error
     }, [dateTime, currentView]);
+    */
+
+    useEffect(() => {
+
+        // If the calendar selector is empty, don't fetch anything
+        if (calendarSelector.code === "") return;
+
+        const start = result[0];
+        const end = result[result.length - 1];
+        end.setDate(end.getDate() + 1);
+        end.setHours(0, 0, 0, 0);
+
+        setEvents(null); // Show spinner
+
+        switch (calendarType.code) {
+            case "course":
+                requests.event.byCourse(start, end, Number(calendarSelector.code) || 0, true)
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
+                break;
+            case "classroom":
+                requests.event.byClassroom(start, end, Number(calendarSelector.code) || 0, true)
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
+                break;
+            case "teacher":
+                requests.event.byTeacher(start, end, calendarSelector.code, true)
+                    .then(setEvents)
+                    .catch(console.error); // TODO Handle error
+                break;
+            default:
+                console.error("Invalid calendar selector");
+                break;
+        }
+    }, [dateTime, currentView, calendarSelector]);
 
     const renderCalendar = () =>
         events && result.map((day) => {
@@ -213,13 +264,86 @@ export function Calendar() {
             );
         });
 
+    const renderFilters = () => {
+
+        // Get calendar selector list
+        useEffect(() => {
+            // Clear selectors, but only if the list is already populated (so always but the first time)
+            if (calendarSelectors.length > 0) {
+                setCalendarSelector({ code: "", name: "" });
+                setCalendarSelectors([]);
+            }
+
+            switch (calendarType.code) {
+                case "course":
+                    requests.course.all().then((courses) => {
+                        setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
+                    })
+                    break;
+                case "classroom":
+                    requests.classroom.all().then(classrooms => {
+                        setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
+                    })
+                    break;
+                case "teacher":
+                    axios.get(new URL("teacher", apiUrl).toString(), {
+                        headers: { Authorization: "Bearer " + token },
+                    }).then(response => {
+                        let teachers: { teacher: string; }[] = response.data;
+                        teachers = teachers.filter(item => item.teacher !== null && item.teacher !== " "); // Remove null or empty teachers
+                        setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
+                    }).catch(() => {
+                        console.error("Error while fetching teachers");
+                    });
+                    break;
+                default:
+                    console.error("Invalid calendar selector");
+                    break;
+            }
+        }, [calendarType, token]);
+
+        const onCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
+            setCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
+        };
+
+        const onCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
+            setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
+        };
+
+        return (
+            <>
+                <div className={globalStyles.horizontalList}>
+                    <Label>Calendario per</Label>
+                    <Select value={calendarType.code} onChange={onCalendarTypeChange}>
+                        {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
+                    </Select>
+                </div>
+
+                <div className={globalStyles.horizontalList}>
+                    <Label className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Label>
+                    <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
+                        {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
+                    </Combobox>
+                </div>
+            </>
+        )
+    };
+
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
-                    <Button icon={<SettingsRegular />} />
+                    <Popover>
+                        <PopoverTrigger>
+                            <Button icon={<SettingsRegular />} />
+                        </PopoverTrigger>
+                        <PopoverSurface>
+                            {renderFilters()}
+                        </PopoverSurface>
+                    </Popover>
+
                 </div>
             </Card>
 
