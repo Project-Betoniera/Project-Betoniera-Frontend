@@ -4,7 +4,7 @@ import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular } from "@fluentui/react-icons";
+import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, ArrowExportRegular } from "@fluentui/react-icons";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
 import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
@@ -12,6 +12,7 @@ import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import axios from "axios";
 import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
+import { RouterButton } from "../components/RouterButton";
 
 const useStyles = makeStyles({
     container: {
@@ -146,7 +147,7 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
-    // Items for the various selectors
+    // Items for the calendar selector
     const calendarTypes: { code: string, name: string; }[] = [
         { code: "course", name: "Corso", },
         { code: "classroom", name: "Aula" },
@@ -357,7 +358,7 @@ export function Calendar() {
                             {renderFilters()}
                         </PopoverSurface>
                     </Popover>
-
+                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 </div>
             </Card>
 
