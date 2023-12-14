@@ -84,7 +84,7 @@ export function Home() {
                     </Card>
                 </PopoverTrigger>
                 <PopoverSurface>
-                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
                 </PopoverSurface>
             </Popover>
         );
