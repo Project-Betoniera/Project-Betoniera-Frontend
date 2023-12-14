@@ -4,11 +4,9 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import QRCode from 'qrcode';
 import { TokenContext } from "../context/TokenContext";
 import { CourseContext } from "../context/CourseContext";
-import { CourseDto } from "../dto/CourseDto";
-import { ClassroomDto } from "../dto/ClassroomDto";
-import axios from "axios";
 import { apiUrl } from "../config";
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
+import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
     qrCode: {
@@ -22,6 +20,7 @@ export function CalendarExporter() {
 
     const token = useContext(TokenContext).token;
     const { course: userCourse } = useContext(CourseContext);
+    const requests = useRequests();
 
     // Items for the various selectors
     const calendarTypes: { code: string, name: string; }[] = [
@@ -57,30 +56,19 @@ export function CalendarExporter() {
 
         switch (calendarType.code) {
             case "course":
-                axios.get(new URL("course", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                    params: { distinct: true }
-                }).then(response => {
-                    const courses: CourseDto[] = response.data;
+                requests.course.all().then(courses => {
                     setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
                 }).catch(() => {
                 });
                 break;
             case "classroom":
-                axios.get(new URL("classroom", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                }).then(response => {
-                    const classrooms: ClassroomDto[] = response.data;
+                requests.classroom.all().then(classrooms => {
                     setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
                 }).catch(() => {
                 });
                 break;
             case "teacher":
-                axios.get(new URL("teacher", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                }).then(response => {
-                    let teachers: { teacher: string; }[] = response.data;
-                    teachers = teachers.filter(item => item.teacher !== null && item.teacher !== " "); // Remove null or empty teachers
+                requests.teacher.all().then(teachers => {
                     setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
                 }).catch(() => {
                 });
