@@ -9,8 +9,6 @@ import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
 import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import axios from "axios";
-import { apiUrl } from "../config";
 import { TokenContext } from "../context/TokenContext";
 import { RouterButton } from "../components/RouterButton";
 
@@ -25,10 +23,12 @@ const useStyles = makeStyles({
     toolbar: {
         display: "flex",
         justifyContent: "space-between",
+        alignItems: "center",
         flexDirection: "row",
         "@media screen and (max-width: 578px)": {
             justifyContent: "stretch",
             flexDirection: "column",
+            alignItems: "unset"
         }
     },
     toolbarButtons: {
@@ -344,6 +344,7 @@ export function Calendar() {
         <div className={styles.container}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
+                { events && events[0] && course && (calendarType.code === "course" && course.id !== Number(calendarSelector.code)) ? <Subtitle2>{events[0].course.code + " " + events[0].course.name}</Subtitle2> : (calendarType.code === "classroom") && calendarSelector.name !== "" ? <Subtitle2>{"Lezioni Aula " + calendarSelector.name}</Subtitle2> : null }
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
                     <Popover>
