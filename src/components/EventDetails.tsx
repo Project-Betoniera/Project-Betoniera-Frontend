@@ -2,6 +2,7 @@ import { FunctionComponent } from "react";
 import { EventDto } from "../dto/EventDto";
 import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import { RouterLink } from "./RouterLink";
 
 export type EventDetailsProps = {
     /**
@@ -16,6 +17,10 @@ export type EventDetailsProps = {
      * The title to be displayed if the `title` property is set to `custom`.
     */
     customTitle?: string;
+    /**
+     * Whether to make the course label a link to see the calendar of the course. Defaults to `false`.
+    */
+    linkToCalendar?: boolean;
     /**
      * The properties to hide. If not provided, all properties will be displayed.
     */
@@ -51,6 +56,12 @@ const useStyles = makeStyles({
             }
         ],
     },
+    removeLinkStyle: {
+        color: "inherit",
+        ":hover": {
+            color: "inherit",
+        },
+    }
 });
 
 /**
@@ -88,7 +99,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
                 {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
-                {props.title !== "course" && !props.hide?.includes("course") && <Body1>{course}</Body1>}
+                {props.title !== "course" && !props.hide?.includes("course") ? props.linkToCalendar ? <RouterLink as="a" className={styles.removeLinkStyle} href={"/calendar?course=" + props.event.course.id}>{course}</RouterLink> : <Body1>{course}</Body1> : null}
                 {props.title !== "classroom" && !props.hide?.includes("classroom") && <Body1>{classroom}</Body1>}
                 {props.title !== "teacher" && !props.hide?.includes("teacher") && <Body1>{teacher}</Body1>}
             </div>
