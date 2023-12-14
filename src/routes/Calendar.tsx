@@ -301,11 +301,7 @@ export function Calendar() {
                     })
                     break;
                 case "teacher":
-                    axios.get(new URL("teacher", apiUrl).toString(), {
-                        headers: { Authorization: "Bearer " + token },
-                    }).then(response => {
-                        let teachers: { teacher: string; }[] = response.data;
-                        teachers = teachers.filter(item => item.teacher !== null && item.teacher !== " "); // Remove null or empty teachers
+                    requests.teacher.all().then(teachers => {
                         setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
                     }).catch(() => {
                         console.error("Error while fetching teachers");
