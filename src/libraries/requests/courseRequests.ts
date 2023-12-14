@@ -25,6 +25,7 @@ export default function courseRequests(token: string, setIsInvalid: (isInvalid: 
             return await axios({
                 url: new URL("course", apiUrl).toString(),
                 method: "GET",
+                params: { distinct: true },
                 headers: {
                     Authorization: `Bearer ${token}`
                 },
