@@ -1,4 +1,4 @@
-import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Popover, PopoverTrigger, PopoverSurface, Label, Select, Combobox, SelectOnChangeData, Option, Drawer, DrawerHeader, DrawerHeaderTitle, DrawerBody } from "@fluentui/react-components";
+import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Label, Select, Combobox, SelectOnChangeData, Option, Drawer, DrawerHeader, DrawerHeaderTitle, DrawerBody, Body1 } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
@@ -11,6 +11,7 @@ import { generateMonth, generateWeek } from "../libraries/calendarGenerator/cale
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { TokenContext } from "../context/TokenContext";
 import { RouterButton } from "../components/RouterButton";
+import { CalendarSelection, CalendarSelector, CalendarTypeCode } from "../components/CalendarSelector";
 
 const useStyles = makeStyles({
     drawerContainer: {
@@ -146,7 +147,6 @@ const useStyles = makeStyles({
 export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
-    const token = useContext(TokenContext).token;
     const { course } = useContext(CourseContext);
     const requests = useRequests();
     const [currentView, setCurrentView] = useState<boolean>(true);
@@ -160,90 +160,37 @@ export function Calendar() {
     };
 
     // Items for the calendar selector
-    const calendarTypes: { code: string, name: string; }[] = [
-        { code: "course", name: "Corso", },
-        { code: "classroom", name: "Aula" },
-        { code: "teacher", name: "Docente" },
-    ];
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
 
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
-    const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
-    const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
-    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
+    const [calendarType, setCalendarType] = useState<{ code: CalendarTypeCode, name: string; }>({ code: "course", name: "Corso" });
+    const [calendarSelection, setCalendarSelection] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
 
     const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    // Set calendar selector from URL
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-
-        const inputCourse = params.get("course");
-        const inputClassroom = params.get("classroom");
-
-        if (inputCourse || inputClassroom) {
-            if (inputCourse) {
-                requests.course.byId(parseInt(inputCourse)).then((course) => {
-                    console.log(course);
-                    if (!course) { throw new Error("Invalid course"); }
-                    setCalendarSelector({
-                        code: inputCourse,
-                        name: course.code
-                    });
-                }).catch(console.error);
-            } else if (inputClassroom) {
-                requests.classroom.byId(parseInt(inputClassroom)).then((classroom) => {
-                    if (!classroom) { throw new Error("Invalid classroom"); }
-                    setCalendarType(calendarTypes[1]); // Set calendar type to classroom
-                    setCalendarSelector({
-                        code: inputClassroom,
-                        name: classroom.name
-                    });
-                }).catch(console.error);
+    const onCalendarSelectionChange = async (type: { code: CalendarTypeCode, name: string; }, selection: CalendarSelection) => {
+        const getEvents = () => {
+            switch (type.code) {
+                case "course":
+                    return requests.event.byCourse(result[0], result[result.length - 1], parseInt(selection.code));
+                case "classroom":
+                    return requests.event.byClassroom(result[0], result[result.length - 1], parseInt(selection.code));
+                case "teacher":
+                    return requests.event.byTeacher(result[0], result[result.length - 1], selection.code);
             }
-        }
-    }, []);
+        };
 
-    useEffect(() => {
-
-        // If the calendar selector is empty, don't fetch anything
-        if (calendarSelector.code === "") return;
-
-        const start = result[0];
-        const end = result[result.length - 1];
-        end.setDate(end.getDate() + 1);
-        end.setHours(0, 0, 0, 0);
-
-        setEvents(null); // Show spinner
-
-        switch (calendarType.code) {
-            case "course":
-                requests.event.byCourse(start, end, Number(calendarSelector.code) || 0, true)
-                    .then(setEvents)
-                    .catch(console.error); // TODO Handle error
-                break;
-            case "classroom":
-                requests.event.byClassroom(start, end, Number(calendarSelector.code) || 0, true)
-                    .then(setEvents)
-                    .catch(console.error); // TODO Handle error
-                break;
-            case "teacher":
-                requests.event.byTeacher(start, end, calendarSelector.code, true)
-                    .then(setEvents)
-                    .catch(console.error); // TODO Handle error
-                break;
-            default:
-                console.error("Invalid calendar selector");
-                break;
-        }
-    }, [dateTime, currentView, calendarSelector]);
+        setCalendarType(type);
+        setCalendarSelection(selection);
+        setEvents(await getEvents());
+    };
 
     const renderCalendar = () =>
-        events && result.map((day) => {
-            const filteredEvents = events.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString());
+        result.map((day) => {
+            const filteredEvents = events?.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString()) || [];
 
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
@@ -294,68 +241,11 @@ export function Calendar() {
             );
         });
 
-    const renderFilters = () => {
-        // Get calendar selector list
-        useEffect(() => {
-            // Clear selectors, but only if the list is already populated (so always but the first time)
-            if (calendarSelectors.length > 0) {
-                setCalendarSelector({ code: "", name: "" });
-                setCalendarSelectors([]);
-            }
-
-            switch (calendarType.code) {
-                case "course":
-                    requests.course.all().then((courses) => {
-                        setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
-                    });
-                    break;
-                case "classroom":
-                    requests.classroom.all().then(classrooms => {
-                        setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
-                    });
-                    break;
-                case "teacher":
-                    requests.teacher.all().then(teachers => {
-                        setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
-                    }).catch(() => {
-                        console.error("Error while fetching teachers");
-                    });
-                    break;
-                default:
-                    console.error("Invalid calendar selector");
-                    break;
-            }
-        }, [calendarType, token]);
-
-        const onCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-            setCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
-        };
-
-        const onCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-            setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
-        };
-
-        return (
-            <>
-                <div className={globalStyles.horizontalList}>
-                    <Label>Calendario per</Label>
-                    <Select value={calendarType.code} onChange={onCalendarTypeChange}>
-                        {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
-                    </Select>
-                </div>
-
-                <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
-                    {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
-                </Combobox>
-            </>
-        );
-    };
-
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
-                {events && events[0] && course && (calendarType.code === "course" && course.id !== Number(calendarSelector.code)) ? <Subtitle2>{events[0].course.code + " " + events[0].course.name}</Subtitle2> : (calendarType.code === "classroom") && calendarSelector.name !== "" ? <Subtitle2>{"Lezioni Aula " + calendarSelector.name}</Subtitle2> : null}
+                <Subtitle2>Calendario per '{calendarType.code === "classroom" && "Aula "}{calendarSelection.name}'</Subtitle2>
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
@@ -372,11 +262,11 @@ export function Calendar() {
                             : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
                     </Card>
 
-                    {events ? (
-                        <div className={styles.calendarContainer}>
-                            <div className={styles.calendar}>{renderCalendar()}</div>
-                        </div>
-                    ) : <Spinner size="huge" />}
+                    {/* {events ? ( */}
+                    <div className={styles.calendarContainer}>
+                        <div className={styles.calendar}>{renderCalendar()}</div>
+                    </div>
+                    {/* ) : <Spinner size="huge" />} */}
                 </div>
 
                 <Drawer type={window.matchMedia('(max-width: 1000px)').matches ? "overlay" : "inline"} open={isDrawerOpen} onOpenChange={(_, { open }) => setIsDrawerOpen(open)} position="end" className={styles.drawer}>
@@ -395,7 +285,7 @@ export function Calendar() {
                     </DrawerHeader>
 
                     <DrawerBody>
-                        {renderFilters()}
+                        <CalendarSelector onSelectionChange={onCalendarSelectionChange} />
                     </DrawerBody>
                 </Drawer>
             </div>
