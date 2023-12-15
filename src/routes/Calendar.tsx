@@ -162,26 +162,26 @@ export function Calendar() {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
 
-        const input_course = params.get("course");
-        const input_classroom = params.get("classroom");
+        const inputCourse = params.get("course");
+        const inputClassroom = params.get("classroom");
 
-        if (input_course || input_classroom) {
-            if (input_course) {
-                requests.course.byId(Number(params.get("course"))).then((course) => {
+        if (inputCourse || inputClassroom) {
+            if (inputCourse) {
+                requests.course.byId(parseInt(inputCourse)).then((course) => {
                     console.log(course);
-                    if (!course[0]) { throw new Error("Invalid course"); }
+                    if (!course) { throw new Error("Invalid course"); }
                     setCalendarSelector({
-                        code: input_course,
-                        name: course[0].code
+                        code: inputCourse,
+                        name: course.code
                     });
                 }).catch(console.error);
-            } else if (input_classroom) {
-                requests.classroom.byId(Number(input_classroom)).then((classroom) => {
-                    if (!classroom[0]) { throw new Error("Invalid classroom"); }
+            } else if (inputClassroom) {
+                requests.classroom.byId(parseInt(inputClassroom)).then((classroom) => {
+                    if (!classroom) { throw new Error("Invalid classroom"); }
                     setCalendarType(calendarTypes[1]); // Set calendar type to classroom
                     setCalendarSelector({
-                        code: input_classroom,
-                        name: classroom[0].name
+                        code: inputClassroom,
+                        name: classroom.name
                     })
                 }).catch(console.error);
             }

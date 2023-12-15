@@ -2,7 +2,6 @@ import axios from "axios"
 import { apiUrl } from "../../config"
 
 export default function teacherRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
-
     return {
         all: async () => {
             return await axios({
@@ -21,5 +20,4 @@ export default function teacherRequests(token: string, setIsInvalid: (isInvalid:
             });
         }
     }
-
 }
