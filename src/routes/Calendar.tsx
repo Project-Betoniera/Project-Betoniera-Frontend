@@ -1,10 +1,10 @@
-import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Popover, PopoverTrigger, PopoverSurface, Label, Select, Combobox, SelectOnChangeData, Option } from "@fluentui/react-components";
+import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Popover, PopoverTrigger, PopoverSurface, Label, Select, Combobox, SelectOnChangeData, Option, Drawer, DrawerHeader, DrawerHeaderTitle, DrawerBody } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { useGlobalStyles } from "../globalStyles";
-import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, ArrowExportRegular } from "@fluentui/react-icons";
+import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, ArrowExportRegular, DismissRegular } from "@fluentui/react-icons";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
 import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
@@ -13,11 +13,23 @@ import { TokenContext } from "../context/TokenContext";
 import { RouterButton } from "../components/RouterButton";
 
 const useStyles = makeStyles({
+    drawerContainer: {
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: 1,
+        minHeight: 0,
+        ...shorthands.gap("0.5rem"),
+    },
+    drawer: {
+        ...shorthands.borderRadius(tokens.borderRadiusMedium)
+    },
     container: {
         display: "flex",
         flexDirection: "column",
         flexGrow: 1,
         ...shorthands.gap("0.5rem"),
+    },
+    sideMargin: {
         ...shorthands.margin("0", "1rem"),
     },
     toolbar: {
@@ -154,9 +166,16 @@ export function Calendar() {
         { code: "teacher", name: "Docente" },
     ];
 
+    const [now] = useState(new Date());
+    const [dateTime, setDateTime] = useState(new Date(now));
+
+    const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+    const [events, setEvents] = useState<EventDto[] | null>(null);
     const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
     const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
     const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
+
+    const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
     // Set calendar selector from URL
     useEffect(() => {
@@ -182,16 +201,11 @@ export function Calendar() {
                     setCalendarSelector({
                         code: inputClassroom,
                         name: classroom.name
-                    })
+                    });
                 }).catch(console.error);
             }
         }
     }, []);
-
-    const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date(now));
-    const [events, setEvents] = useState<EventDto[] | null>(null);
-    const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
     useEffect(() => {
 
@@ -293,12 +307,12 @@ export function Calendar() {
                 case "course":
                     requests.course.all().then((courses) => {
                         setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
-                    })
+                    });
                     break;
                 case "classroom":
                     requests.classroom.all().then(classrooms => {
                         setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
-                    })
+                    });
                     break;
                 case "teacher":
                     requests.teacher.all().then(teachers => {
@@ -330,46 +344,61 @@ export function Calendar() {
                     </Select>
                 </div>
 
-                <div className={globalStyles.horizontalList}>
-                    <Label className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Label>
-                    <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
-                        {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
-                    </Combobox>
-                </div>
+                <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
+                    {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
+                </Combobox>
             </>
-        )
+        );
     };
 
     return (
-        <div className={styles.container}>
+        <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
-                { events && events[0] && course && (calendarType.code === "course" && course.id !== Number(calendarSelector.code)) ? <Subtitle2>{events[0].course.code + " " + events[0].course.name}</Subtitle2> : (calendarType.code === "classroom") && calendarSelector.name !== "" ? <Subtitle2>{"Lezioni Aula " + calendarSelector.name}</Subtitle2> : null }
+                {events && events[0] && course && (calendarType.code === "course" && course.id !== Number(calendarSelector.code)) ? <Subtitle2>{events[0].course.code + " " + events[0].course.name}</Subtitle2> : (calendarType.code === "classroom") && calendarSelector.name !== "" ? <Subtitle2>{"Lezioni Aula " + calendarSelector.name}</Subtitle2> : null}
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
-                    <Popover>
-                        <PopoverTrigger>
-                            <Button icon={<SettingsRegular />} />
-                        </PopoverTrigger>
-                        <PopoverSurface>
-                            {renderFilters()}
-                        </PopoverSurface>
-                    </Popover>
+                    <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
                     <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 </div>
             </Card>
 
-            <Card className={styles.calendarHeader}>
-                {window.matchMedia('(max-width: 578px)').matches ?
-                    calendarLocal.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
-                    : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
-            </Card>
+            <div className={styles.drawerContainer}>
+                <div className={styles.container}>
 
-            {events ? (
-                <div className={styles.calendarContainer}>
-                    <div className={styles.calendar}>{renderCalendar()}</div>
+                    <Card className={styles.calendarHeader}>
+                        {window.matchMedia('(max-width: 578px)').matches ?
+                            calendarLocal.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
+                            : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
+                    </Card>
+
+                    {events ? (
+                        <div className={styles.calendarContainer}>
+                            <div className={styles.calendar}>{renderCalendar()}</div>
+                        </div>
+                    ) : <Spinner size="huge" />}
                 </div>
-            ) : <Spinner size="huge" />}
-        </div>
+
+                <Drawer type={window.matchMedia('(max-width: 1000px)').matches ? "overlay" : "inline"} open={isDrawerOpen} onOpenChange={(_, { open }) => setIsDrawerOpen(open)} position="end" className={styles.drawer}>
+                    <DrawerHeader>
+                        <DrawerHeaderTitle
+                            action={
+                                <Button
+                                    appearance="subtle"
+                                    aria-label="Close"
+                                    icon={<DismissRegular />}
+                                    onClick={() => setIsDrawerOpen(false)}
+                                />
+                            }
+                        > Imposta visualizzazione
+                        </DrawerHeaderTitle>
+                    </DrawerHeader>
+
+                    <DrawerBody>
+                        {renderFilters()}
+                    </DrawerBody>
+                </Drawer>
+            </div>
+        </div >
     );
 }
