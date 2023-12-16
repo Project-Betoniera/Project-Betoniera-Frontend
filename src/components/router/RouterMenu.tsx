@@ -1,9 +1,9 @@
 import { Button, Tab, TabList, TabListProps } from '@fluentui/react-components';
+import { ArrowExitFilled, BuildingFilled, CalendarFilled, HomeFilled, InfoFilled } from "@fluentui/react-icons";
 import { FunctionComponent, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled } from "@fluentui/react-icons";
-import { TokenContext } from '../context/TokenContext';
-import { CourseContext } from '../context/CourseContext';
+import { CourseContext } from '../../context/CourseContext';
+import { TokenContext } from '../../context/TokenContext';
 
 const menuItems = [
     {

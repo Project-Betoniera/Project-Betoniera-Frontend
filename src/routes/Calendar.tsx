@@ -1,17 +1,15 @@
-import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens, Spinner, Caption2, Label, Select, Combobox, SelectOnChangeData, Option, Drawer, DrawerHeader, DrawerHeaderTitle, DrawerBody, Body1 } from "@fluentui/react-components";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, CircleFilled, DismissRegular, SettingsRegular } from "@fluentui/react-icons";
+import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
-import { EventDto } from "../dto/EventDto";
-import { CourseContext } from "../context/CourseContext";
-import { useGlobalStyles } from "../globalStyles";
-import { CircleFilled, SettingsRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, ArrowExportRegular, DismissRegular } from "@fluentui/react-icons";
 import EventDetails from "../components/EventDetails";
-import useRequests from "../libraries/requests/requests";
+import { CalendarSelection, CalendarSelector, CalendarTypeCode } from "../components/calendar/CalendarSelector";
+import { RouterButton } from "../components/router/RouterButton";
+import { CourseContext } from "../context/CourseContext";
+import { EventDto } from "../dto/EventDto";
+import { useGlobalStyles } from "../globalStyles";
 import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
-import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import { TokenContext } from "../context/TokenContext";
-import { RouterButton } from "../components/RouterButton";
-import { CalendarSelection, CalendarSelector, CalendarTypeCode } from "../components/CalendarSelector";
+import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
     drawerContainer: {
@@ -187,6 +185,12 @@ export function Calendar() {
         setCalendarSelection(selection);
         setEvents(await getEvents());
     };
+
+    // Load default calendar on first render
+    useEffect(() => {
+        if (!course) return;
+        onCalendarSelectionChange(calendarType, { code: course.id.toString(), name: course.code });
+    }, []);
 
     const renderCalendar = () =>
         result.map((day) => {

@@ -1,5 +1,5 @@
-import { RouterButton } from "../components/RouterButton";
 import { Card, CardHeader, Display, Subtitle2, Title1, makeStyles, shorthands } from "@fluentui/react-components";
+import { RouterButton } from "../components/router/RouterButton";
 
 const useStyles = makeStyles({
     container: {

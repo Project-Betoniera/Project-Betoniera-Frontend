@@ -1,8 +1,8 @@
+import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
 import { FunctionComponent } from "react";
 import { EventDto } from "../dto/EventDto";
-import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
-import { RouterLink } from "./RouterLink";
+import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {
     /**

@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, Link } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
-import { hasPlausible } from "../plausible";
+import { hasPlausible } from "../../plausible";
 
 // This value should be updated when the content of the information dialog is updated
 const VERSION = 1;
@@ -32,7 +32,7 @@ export function PrivacyAlert() {
           <DialogTitle>Benvenuto!</DialogTitle>
           <DialogContent>
             Questo sito web usa <Link href="https://plausible.io" target="_blank">Plausible Analytics</Link> per raccogliere dati anonimi sulle visite.
-            <br/>
+            <br />
             Plausible Analytics <Link href="https://plausible.io/privacy" target="_blank">non raccoglie dati personali</Link> e non usa cookie di alcun tipo.
           </DialogContent>
           <DialogActions>

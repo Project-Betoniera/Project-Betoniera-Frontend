@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from "react";
-import { EventDto } from "../dto/EventDto";
-import { CourseContext } from "../context/CourseContext";
-import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
-import { useGlobalStyles } from "../globalStyles";
+import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
+import { CourseContext } from "../context/CourseContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
+import { ClassroomStatus } from "../dto/ClassroomStatus";
+import { EventDto } from "../dto/EventDto";
+import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
 export function Home() {

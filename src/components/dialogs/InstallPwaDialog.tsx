@@ -1,7 +1,7 @@
 import { Body1, Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle2, Tab, TabList, makeStyles, shorthands } from "@fluentui/react-components";
+import { LineHorizontal3Regular, MoreHorizontalRegular, MoreVerticalRegular, PhoneAddRegular, createFluentIcon } from "@fluentui/react-icons";
 import { useContext, useState } from "react";
-import { createFluentIcon, MoreHorizontalRegular, MoreVerticalRegular, LineHorizontal3Regular, PhoneAddRegular } from "@fluentui/react-icons";
-import { PwaContext } from "../context/PwaContext";
+import { PwaContext } from "../../context/PwaContext";
 
 const chromePath: string[] = [
     "M95.506,152.511c0,31.426,25.567,56.991,56.994,56.991c31.425,0,56.99-25.566,56.99-56.991 c0-31.426-25.565-56.993-56.99-56.993C121.073,95.518,95.506,121.085,95.506,152.511z",

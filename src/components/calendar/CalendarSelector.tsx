@@ -1,10 +1,10 @@
-import { Combobox, Label, Option, makeStyles, Select, SelectOnChangeData } from "@fluentui/react-components";
-import { useGlobalStyles } from "../globalStyles";
-import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
-import { TokenContext } from "../context/TokenContext";
-import { CourseContext } from "../context/CourseContext";
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import useRequests from "../libraries/requests/requests";
+import { Combobox, Label, Option, Select, SelectOnChangeData, makeStyles } from "@fluentui/react-components";
+import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
+import { CourseContext } from "../../context/CourseContext";
+import { TokenContext } from "../../context/TokenContext";
+import { useGlobalStyles } from "../../globalStyles";
+import useRequests from "../../libraries/requests/requests";
 
 export type CalendarTypeCode = "course" | "classroom" | "teacher";
 export type CalendarType = { code: CalendarTypeCode, name: string; };

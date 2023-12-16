@@ -1,15 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App.tsx";
-import "./main.css";
-import { TokenContextProvider } from "./context/TokenContext.tsx";
-import { CourseContextProvider } from "./context/CourseContext.tsx";
-import { ThemeContextProvider } from "./context/ThemeContext.tsx";
-import { ensurePlausible } from "./plausible.tsx";
-import { PwaContextProvider } from "./context/PwaContext.tsx";
-import { isBetaBuild } from "./config.ts";
-import { MessagesContextProvider } from "./context/MessagesContext.tsx";
 import { BrowserRouter } from "react-router-dom";
+import App from "./App.tsx";
+import { isBetaBuild } from "./config.ts";
+import { CourseContextProvider } from "./context/CourseContext.tsx";
+import { MessagesContextProvider } from "./context/MessagesContext.tsx";
+import { PwaContextProvider } from "./context/PwaContext.tsx";
+import { ThemeContextProvider } from "./context/ThemeContext.tsx";
+import { TokenContextProvider } from "./context/TokenContext.tsx";
+import "./main.css";
+import { ensurePlausible } from "./plausible.tsx";
 
 ensurePlausible();
 if (isBetaBuild) console.log("Beta build");
