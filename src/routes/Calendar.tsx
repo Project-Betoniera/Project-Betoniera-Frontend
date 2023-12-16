@@ -157,8 +157,6 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
-    // Items for the calendar selector
-
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
 
