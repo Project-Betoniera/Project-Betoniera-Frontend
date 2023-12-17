@@ -1,8 +1,11 @@
 import { Button, Input, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
 import { ArrowLeftFilled, ArrowRightFilled, CalendarTodayRegular } from "@fluentui/react-icons";
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { TimekeeperContext } from '../context/TimekeeperContext';
+import { TimekeeperListener } from '../libraries/timekeeper/timekeeper';
 
 type DateSelectorProps = {
+    autoUpdate: boolean;
     dateTime: Date;
     setDateTime: (dateTime: Date) => void;
     inputType: "date" | "datetime-local" | "month";
@@ -49,7 +52,7 @@ const useStyles = makeStyles({
 
 export const DateSelector: React.FC<DateSelectorProps> = (props) => {
     const styles = useStyles();
-    const { dateTime, setDateTime, inputType } = props;
+    const { autoUpdate, dateTime, setDateTime, inputType } = props;
     const [isToday, setIsToday] = useState(false);
     useEffect(() => {
         const now = new Date();
@@ -80,6 +83,24 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 throw new Error(`Invalid input type: ${props.inputType}`);
         }
     }, [dateTime]);
+
+    const { timekeeper } = useContext(TimekeeperContext);
+    useEffect(() => {
+        // Register new listener ONLY if autoUpdate is enabled and the current value is today
+        if (autoUpdate && isToday) {
+            const callback: TimekeeperListener = (date) => {
+                setDateTime(date);
+            };
+            timekeeper.addListener(
+                // If the input type is datetime-local, update the time every minute, else update it every hour
+                inputType === 'datetime-local' ? 'minute' : 'hour',
+                callback
+            );
+            return () => {
+                timekeeper.removeListener(callback);
+            }
+        }
+    }, [autoUpdate, isToday, inputType]);
 
     /**
      * Handles the click event of the arrow buttons

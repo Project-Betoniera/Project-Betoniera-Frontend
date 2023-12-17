@@ -203,7 +203,7 @@ export function Calendar() {
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
-                <DateSelector dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 
