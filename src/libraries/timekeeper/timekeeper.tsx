@@ -113,3 +113,4 @@ export default class Timekeeper {
         }
     }
 }
+export type { TimekeeperListener, TimePrecision };
