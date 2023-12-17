@@ -8,6 +8,7 @@ import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import useRequests from "../libraries/requests/requests";
+import { TimekeeperContext } from '../context/TimekeeperContext';
 
 export function Home() {
     const globalStyles = useGlobalStyles();
@@ -15,10 +16,17 @@ export function Home() {
     const requests = useRequests();
     const { course } = useContext(CourseContext);
 
-    const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date(now));
+    const [now, setNow] = useState(() => new Date());
+    const [dateTime, setDateTime] = useState(() => new Date());
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+
+    const { timekeeper } = useContext(TimekeeperContext);
+    useEffect(() => {
+        const updateTime = () => setNow(new Date());
+        timekeeper.addListener('minute', updateTime);
+        return () => timekeeper.removeListener(updateTime);
+    }, []);
 
     useEffect(() => {
         const start = new Date(dateTime); // Now
@@ -34,10 +42,12 @@ export function Home() {
     }, [dateTime]);
 
     useEffect(() => {
+        setClassrooms(null); // Show spinner
+
         requests.classroom.status(now)
             .then(setClassrooms)
             .catch(console.error); // TODO Handle error
-    }, []);
+    }, [now]);
 
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
