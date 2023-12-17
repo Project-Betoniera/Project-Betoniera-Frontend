@@ -1,6 +1,6 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
-import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
+import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import { useGlobalStyles } from '../globalStyles';
 import { TimekeeperContext } from '../context/TimekeeperContext';
@@ -53,6 +53,9 @@ const useStyles = makeStyles({
             }
         ],
     },
+    card: {
+        backgroundColor: tokens.colorBrandBackground2Hover
+    }
 });
 
 /**
@@ -108,7 +111,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
     if (props.as === 'card') {
         return (
-            <Card className={mergeClasses(globalStyles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
+            <Card className={mergeClasses(globalStyles.card, styles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
                 {content}
             </Card>
         );
