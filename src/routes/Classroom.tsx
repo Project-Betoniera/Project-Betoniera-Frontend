@@ -61,8 +61,7 @@ export function Classroom() {
     const styles = useStyles();
     const requests = useRequests();
 
-    const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date(now));
+    const [dateTime, setDateTime] = useState(() => new Date());
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
@@ -114,7 +113,7 @@ export function Classroom() {
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} now={now} />
+                <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} />
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;

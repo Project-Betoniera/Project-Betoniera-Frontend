@@ -41,7 +41,7 @@ export function Home() {
 
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
-            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} now={now} />
+            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
         ))
     ) : (
         <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>

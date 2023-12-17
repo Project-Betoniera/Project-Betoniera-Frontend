@@ -1,8 +1,9 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import { useGlobalStyles } from '../globalStyles';
+import { TimekeeperContext } from '../context/TimekeeperContext';
 
 export type EventDetailsProps = {
     /**
@@ -21,10 +22,6 @@ export type EventDetailsProps = {
      * The properties to hide. If not provided, all properties will be displayed.
     */
     hide?: ("time" | "subject" | "classroom" | "teacher" | "course")[];
-    /**
-     * The current date. Used to display "Ongoing" badge if the event is ongoing.
-     */
-    now?: Date;
     /**
      * Type of display. If not set, 'base' will be used.
      */
@@ -87,10 +84,18 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             title = "eventDetails";
     }
 
+    const [now, setNow] = useState(() => new Date());
+    const { timekeeper } = useContext(TimekeeperContext);
+    useEffect(() => {
+        const updateTime = () => setNow(new Date());
+        timekeeper.addListener('minute', updateTime);
+        return () => timekeeper.removeListener(updateTime);
+    }, []);
+
     const content = (
         <div className={styles.root}>
             <Subtitle2>{title}</Subtitle2>
-            {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
+            {now && props.event.start <= now && props.event.end > now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
                 {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
@@ -100,8 +105,6 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             </div>
         </div>
     );
-
-    const now = props.now || new Date();
 
     if (props.as === 'card') {
         return (

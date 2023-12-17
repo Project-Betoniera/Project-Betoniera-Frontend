@@ -165,7 +165,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <EventDetails as="card" key={event.id} event={event} title="subject" now={now} />
+                <EventDetails as="card" key={event.id} event={event} title="subject" />
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
