@@ -1,8 +1,8 @@
 import { Button, Input, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
 import { ArrowLeftFilled, ArrowRightFilled, CalendarTodayRegular } from "@fluentui/react-icons";
+import { useEffect, useState } from 'react';
 
 type DateSelectorProps = {
-    now: Date;
     dateTime: Date;
     setDateTime: (dateTime: Date) => void;
     inputType: "date" | "datetime-local" | "month";
@@ -49,7 +49,37 @@ const useStyles = makeStyles({
 
 export const DateSelector: React.FC<DateSelectorProps> = (props) => {
     const styles = useStyles();
-    const { now, dateTime, setDateTime, inputType } = props;
+    const { dateTime, setDateTime, inputType } = props;
+    const [isToday, setIsToday] = useState(false);
+    useEffect(() => {
+        const now = new Date();
+        switch (props.inputType) {
+            case "datetime-local": // compare with minute precision
+                setIsToday(
+                    now.getHours() === dateTime.getHours() &&
+                    now.getMinutes() === dateTime.getMinutes() &&
+                    now.getDate() === dateTime.getDate() &&
+                    now.getMonth() === dateTime.getMonth() &&
+                    now.getFullYear() === dateTime.getFullYear()
+                );
+                break;
+            case "date": // compare with day precision
+                setIsToday(
+                    now.getDate() === dateTime.getDate() &&
+                    now.getMonth() === dateTime.getMonth() &&
+                    now.getFullYear() === dateTime.getFullYear()
+                );
+                break;
+            case "month": // compare with month precision
+                setIsToday(
+                    now.getMonth() === dateTime.getMonth() &&
+                    now.getFullYear() === dateTime.getFullYear()
+                );
+                break;
+            default:
+                throw new Error(`Invalid input type: ${props.inputType}`);
+        }
+    }, [dateTime]);
 
     /**
      * Handles the click event of the arrow buttons
@@ -64,6 +94,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
             result.setDate(result.getDate() + value);
 
         // If the date is today, set the time to now, else set it to 00:00
+        const now = new Date();
         if (inputType === "date") result.toDateString() == now.toDateString() ?
             result.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()) :
             result.setHours(0, 0, 0, 0);
@@ -71,7 +102,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
         setDateTime(result);
     };
 
-    const onTodayButtonClick = () => { if (now.toDateString() !== dateTime.toDateString()) setDateTime(new Date(now)); };
+    const onTodayButtonClick = () => { if (!isToday) setDateTime(new Date()); };
 
     const selectorValue = inputType === "date" ?
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('T')[0] :
@@ -86,7 +117,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
             <div className={styles.dateSelector}>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
-                <Button className={styles.arrowButton} disabled={dateTime.toDateString() === now.toDateString()} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
+                <Button className={styles.arrowButton} disabled={isToday} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
                 {inputType === "month" ?
                     <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long", year: "numeric" }))}</Subtitle2> :
                     <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>}
