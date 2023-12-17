@@ -1,7 +1,8 @@
 import { FunctionComponent } from "react";
 import { EventDto } from "../dto/EventDto";
-import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import { useGlobalStyles } from '../globalStyles';
 
 export type EventDetailsProps = {
     /**
@@ -24,6 +25,10 @@ export type EventDetailsProps = {
      * The current date. Used to display "Ongoing" badge if the event is ongoing.
      */
     now?: Date;
+    /**
+     * Type of display. If not set, 'base' will be used.
+     */
+    as?: 'card' | 'base' | undefined;
 };
 
 const useStyles = makeStyles({
@@ -59,6 +64,7 @@ const useStyles = makeStyles({
  */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
     const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
@@ -81,7 +87,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             title = "eventDetails";
     }
 
-    return (
+    const content = (
         <div className={styles.root}>
             <Subtitle2>{title}</Subtitle2>
             {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
@@ -94,6 +100,18 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             </div>
         </div>
     );
+
+    const now = props.now || new Date();
+
+    if (props.as === 'card') {
+        return (
+            <Card className={mergeClasses(globalStyles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
+                {content}
+            </Card>
+        );
+    } else {
+        return content;
+    }
 };
 
 export default EventDetails;

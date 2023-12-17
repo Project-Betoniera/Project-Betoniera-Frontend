@@ -114,9 +114,7 @@ export function Classroom() {
             };
 
             const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
-                    <EventDetails event={event} title="subject" hide={["classroom"]} now={now} />
-                </Card>
+                <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} now={now} />
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;

@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { CourseContext } from "../context/CourseContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
-import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -41,9 +41,7 @@ export function Home() {
 
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
-            <Card className={mergeClasses(globalStyles.card, event.start <= now && event.end > now ? globalStyles.ongoing : "")} key={event.id}>
-                <EventDetails event={event} title="subject" hide={["course"]} now={now} />
-            </Card>
+            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} now={now} />
         ))
     ) : (
         <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
