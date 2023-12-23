@@ -1,5 +1,5 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import { Combobox, Label, Option, Select, SelectOnChangeData, makeStyles } from "@fluentui/react-components";
+import { Body1, Button, Combobox, Label, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../context/CourseContext";
 import { TokenContext } from "../../context/TokenContext";
@@ -15,7 +15,15 @@ export type CalendarSelectorProps = {
 };
 
 const useStyles = makeStyles({
-
+    main: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        ...shorthands.gap("0.5rem"),
+    },
+    wide: {
+        alignSelf: "stretch",
+    }
 });
 
 export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props: CalendarSelectorProps) => {
@@ -27,16 +35,20 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     const requests = useRequests();
 
     // Items for the various selectors
-    const calendarTypes: { code: CalendarTypeCode, name: string; }[] = [
+    const calendarTypes: CalendarType[] = [
         { code: "course", name: "Corso", },
         { code: "classroom", name: "Aula" },
         { code: "teacher", name: "Docente" },
     ];
+
     const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
 
     // Selected values
     const [calendarType, setCalendarType] = useState<CalendarType>(calendarTypes[0]);
     const [calendarSelector, setCalendarSelector] = useState<CalendarSelection>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code } : { code: "", name: "" });
+
+    const [calendars, setCalendars] = useState<{ code: string, name: string, color: string; }[]>([]);
+
 
     // Call the callback when the selection changes
     useEffect(() => {
@@ -84,21 +96,41 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
     };
 
-    return (
-        <div>
-            <div className={globalStyles.horizontalList}>
-                <Label>Calendario per</Label>
-                <Select value={calendarType.code} onChange={onCalendarTypeChange}>
-                    {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
-                </Select>
-            </div>
+    const addCalendar = () => {
+        // Check if the calendar is already present
+        if (calendars.find(item => item.code === calendarSelector.code)) {
+            return;
+        }
 
-            <div className={globalStyles.horizontalList}>
-                <Label className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Label>
-                <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
-                    {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
-                </Combobox>
-            </div>
+        // Get a random color
+        const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+
+        // Add the calendar
+        setCalendars([...calendars, { code: calendarSelector.code, name: calendarSelector.name, color: color }]);
+    };
+
+    return (
+        <div className={styles.main}>
+            <Body1>Calendario per</Body1>
+            <Select value={calendarType.code} onChange={onCalendarTypeChange}>
+                {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
+            </Select>
+
+            <Body1 className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Body1>
+            <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
+                {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
+            </Combobox>
+            <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
+
+
+            <Tree className={styles.wide}>
+                <TreeItem itemType="branch">
+                    <TreeItemLayout>Calendari</TreeItemLayout>
+                    <Tree>
+                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout>{item.name}</TreeItemLayout></TreeItem>)}
+                    </Tree>
+                </TreeItem>
+            </Tree>
         </div>
     );
 };
