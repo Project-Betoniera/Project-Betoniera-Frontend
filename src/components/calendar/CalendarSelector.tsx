@@ -109,7 +109,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         setCalendars([...calendars, { code: calendarSelector.code, name: calendarSelector.name, color: color, type: calendarType.code }]);
     };
 
-    const getTreeIcon = (type: string) => {
+    const getCalendarIcon = (type: string) => {
         switch (type) {
             case "course":
                 return(<BackpackFilled />);
@@ -136,11 +136,11 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
             <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
 
 
-            <Tree className={styles.wide}>
+            <Tree className={styles.wide} style={ calendars.length === 0 ? { display: "none" } : undefined }>
                 <TreeItem itemType="branch">
-                    <TreeItemLayout>Calendari</TreeItemLayout>
+                    <TreeItemLayout>Calendari selezionati</TreeItemLayout>
                     <Tree>
-                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getTreeIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setCalendars(calendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
+                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getCalendarIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setCalendars(calendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
                     </Tree>
                 </TreeItem>
             </Tree>
