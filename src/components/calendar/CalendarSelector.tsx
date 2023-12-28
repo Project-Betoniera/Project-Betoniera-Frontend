@@ -1,6 +1,6 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { Body1, Button, Combobox, Label, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
-import { BackpackFilled, BuildingFilled, PersonFilled } from "@fluentui/react-icons";
+import { BackpackFilled, BuildingFilled, PersonFilled, DismissFilled } from "@fluentui/react-icons";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../context/CourseContext";
 import { TokenContext } from "../../context/TokenContext";
@@ -140,7 +140,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
                 <TreeItem itemType="branch">
                     <TreeItemLayout>Calendari</TreeItemLayout>
                     <Tree>
-                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getTreeIcon(item.type)}>{item.name}</TreeItemLayout></TreeItem>)}
+                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getTreeIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setCalendars(calendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
                     </Tree>
                 </TreeItem>
             </Tree>
