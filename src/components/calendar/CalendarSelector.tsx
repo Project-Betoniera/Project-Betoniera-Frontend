@@ -1,5 +1,6 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { Body1, Button, Combobox, Label, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
+import { BackpackFilled, BuildingFilled, PersonFilled } from "@fluentui/react-icons";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../context/CourseContext";
 import { TokenContext } from "../../context/TokenContext";
@@ -47,8 +48,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     const [calendarType, setCalendarType] = useState<CalendarType>(calendarTypes[0]);
     const [calendarSelector, setCalendarSelector] = useState<CalendarSelection>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code } : { code: "", name: "" });
 
-    const [calendars, setCalendars] = useState<{ code: string, name: string, color: string; }[]>([]);
-
+    const [calendars, setCalendars] = useState<{ code: string, name: string, color: string, type: string }[]>([]);
 
     // Call the callback when the selection changes
     useEffect(() => {
@@ -106,7 +106,20 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
         // Add the calendar
-        setCalendars([...calendars, { code: calendarSelector.code, name: calendarSelector.name, color: color }]);
+        setCalendars([...calendars, { code: calendarSelector.code, name: calendarSelector.name, color: color, type: calendarType.code }]);
+    };
+
+    const getTreeIcon = (type: string) => {
+        switch (type) {
+            case "course":
+                return(<BackpackFilled />);
+            case "classroom":
+                return(<BuildingFilled />);
+            case "teacher":
+                return(<PersonFilled />);
+            default:
+                return undefined;
+        }
     };
 
     return (
@@ -127,7 +140,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
                 <TreeItem itemType="branch">
                     <TreeItemLayout>Calendari</TreeItemLayout>
                     <Tree>
-                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout>{item.name}</TreeItemLayout></TreeItem>)}
+                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getTreeIcon(item.type)}>{item.name}</TreeItemLayout></TreeItem>)}
                     </Tree>
                 </TreeItem>
             </Tree>
