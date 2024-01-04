@@ -9,7 +9,8 @@ import useRequests from "../../libraries/requests/requests";
 
 export type CalendarTypeCode = "course" | "classroom" | "teacher";
 export type CalendarType = { code: CalendarTypeCode, name: string; };
-export type CalendarSelection = { code: string, name: string; };
+
+export type CalendarSelection = { code: string, name: string, color: string, display: boolean, type: "course" | "classroom" | "teacher" };
 
 export type CalendarSelectorProps = {
     onSelectionChange: (type: CalendarType, selection: CalendarSelection) => void;
@@ -45,25 +46,25 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
 
     // Selected values
-    const [calendarType, setCalendarType] = useState<CalendarType>(calendarTypes[0]);
-    const [calendarSelector, setCalendarSelector] = useState<CalendarSelection>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code } : { code: "", name: "" });
+    const [currentCalendarType, setCurrentCalendarType] = useState<CalendarType>(calendarTypes[0]);
+    const [currentCalendarSelection, setCurrentCalendarSelection] = useState<CalendarSelection>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code, color: "", display: true, type: "course" } : { code: "", name: "", color: "", display: false, type: "course" });
 
-    const [calendars, setCalendars] = useState<{ code: string, name: string, color: string, type: string }[]>([]);
+    const [selectedCalendars, setSelectedCalendars] = useState<CalendarSelection[]>([]);
 
     // Call the callback when the selection changes
     useEffect(() => {
-        props.onSelectionChange(calendarType, calendarSelector);
-    }, [calendarType, calendarSelector]);
+        props.onSelectionChange(currentCalendarType, currentCalendarSelection);
+    }, [currentCalendarType, currentCalendarSelection]);
 
     // Get calendar selector list
     useEffect(() => {
         // Clear selectors, but only if the list is already populated (so always but the first time)
         if (calendarSelectors.length > 0) {
-            setCalendarSelector({ code: "", name: "" });
+            setCurrentCalendarSelection({ code: "", name: "", color: "", display: false, type: "course" });
             setCalendarSelectors([]);
         }
 
-        switch (calendarType.code) {
+        switch (currentCalendarType.code) {
             case "course":
                 requests.course.all().then(courses => {
                     setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
@@ -86,19 +87,19 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
                 console.error("Invalid calendar selector");
                 break;
         }
-    }, [calendarType, token]);
+    }, [currentCalendarType, token]);
 
-    const onCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
+    const onCurrentCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
+        setCurrentCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
     };
 
-    const onCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-        setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
+    const onCurrentCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
+        setCurrentCalendarSelection({ code: data.selectedOptions[0] || "", name: data.optionText || "", color: "", display: true, type: currentCalendarType.code });
     };
 
     const addCalendar = () => {
         // Check if the calendar is already present
-        if (calendars.find(item => item.code === calendarSelector.code)) {
+        if (selectedCalendars.find(item => item.code === currentCalendarSelection.code)) {
             return;
         }
 
@@ -106,7 +107,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
         // Add the calendar
-        setCalendars([...calendars, { code: calendarSelector.code, name: calendarSelector.name, color: color, type: calendarType.code }]);
+        setSelectedCalendars([...selectedCalendars, { code: currentCalendarSelection.code, name: currentCalendarSelection.name, color: color, display: true, type: currentCalendarType.code }]);
     };
 
     const getCalendarIcon = (type: string) => {
@@ -125,22 +126,22 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     return (
         <div className={styles.main}>
             <Body1>Calendario per</Body1>
-            <Select value={calendarType.code} onChange={onCalendarTypeChange}>
+            <Select value={currentCalendarType.code} onChange={onCurrentCalendarTypeChange}>
                 {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
             </Select>
 
-            <Body1 className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Body1>
-            <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
+            <Body1 className={globalStyles.horizontalList}>Scegli {currentCalendarType.name.toLowerCase()}</Body1>
+            <Combobox placeholder={`Cerca ${currentCalendarType.name.toLowerCase()}`} defaultValue={currentCalendarSelection.name} defaultSelectedOptions={[currentCalendarSelection.code]} onOptionSelect={onCurrentCalendarSelectorChange}>
                 {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
             </Combobox>
             <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
 
 
-            <Tree className={styles.wide} style={ calendars.length === 0 ? { display: "none" } : undefined }>
+            <Tree className={styles.wide} style={ selectedCalendars.length === 0 ? { display: "none" } : undefined }>
                 <TreeItem itemType="branch">
                     <TreeItemLayout>Calendari selezionati</TreeItemLayout>
                     <Tree>
-                        {calendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getCalendarIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setCalendars(calendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
+                        {selectedCalendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getCalendarIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setSelectedCalendars(selectedCalendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
                     </Tree>
                 </TreeItem>
             </Tree>
