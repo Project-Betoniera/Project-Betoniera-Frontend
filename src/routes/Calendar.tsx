@@ -3,7 +3,7 @@ import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, C
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CalendarSelection, CalendarSelector, CalendarTypeCode } from "../components/calendar/CalendarSelector";
+import { CalendarSelection, CalendarSelector } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 import { CourseContext } from "../context/CourseContext";
 import { EventDto } from "../dto/EventDto";
@@ -162,9 +162,7 @@ export function Calendar() {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
-
-    const [calendarType, setCalendarType] = useState<{ code: CalendarTypeCode, name: string; }>({ code: "course", name: "Corso" });
-    const [calendarSelection, setCalendarSelection] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
+    const [calendarTitle, setCalendarTitle] = useState<string>("");
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
@@ -190,21 +188,14 @@ export function Calendar() {
             });
 
             return requestedEvents;
-
-            /*
-            switch (selection.type) {
-                case "course":
-                    return requests.event.byCourse(result[0], result[result.length - 1], parseInt(selection.code));
-                case "classroom":
-                    return requests.event.byClassroom(result[0], result[result.length - 1], parseInt(selection.code));
-                case "teacher":
-                    return requests.event.byTeacher(result[0], result[result.length - 1], selection.code);
-            }
-            */
         };
 
-        //setCalendarType({ code: selection.type, name: selection.type === "course" ? "Corso" : selection.type === "classroom" ? "Aula" : "Docente" });
-        //setCalendarSelection(selection);
+        if (selection.length == 1) {
+            setCalendarTitle("Calendario " + selection[0].name);
+        } else { 
+            setCalendarTitle("Calendario Filtrato"); 
+        }
+
         setEvents(await getEvents());
     };
 
@@ -271,7 +262,7 @@ export function Calendar() {
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
-                <Subtitle2>Calendario per '{calendarType.code === "classroom" && "Aula "}{calendarSelection.name}'</Subtitle2>
+                <Subtitle2>{calendarTitle}</Subtitle2>
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />

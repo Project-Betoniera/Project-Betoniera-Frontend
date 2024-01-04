@@ -1,5 +1,5 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import { Body1, Button, Combobox, Label, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
+import { Body1, Button, Combobox, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
 import { BackpackFilled, BuildingFilled, PersonFilled, DismissFilled } from "@fluentui/react-icons";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../context/CourseContext";
@@ -7,8 +7,9 @@ import { TokenContext } from "../../context/TokenContext";
 import { useGlobalStyles } from "../../globalStyles";
 import useRequests from "../../libraries/requests/requests";
 
-export type CalendarTypeCode = "course" | "classroom" | "teacher";
-export type CalendarType = { code: CalendarTypeCode, name: string; };
+// TO-SEE: Is there a better way to do this?
+type CalendarTypeCode = "course" | "classroom" | "teacher";
+type CalendarType = { code: CalendarTypeCode, name: string; };
 
 export type CalendarSelection = { code: string, name: string, color: string, display: boolean, type: "course" | "classroom" | "teacher" };
 
