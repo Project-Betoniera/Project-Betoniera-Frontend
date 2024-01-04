@@ -166,10 +166,32 @@ export function Calendar() {
     const [calendarType, setCalendarType] = useState<{ code: CalendarTypeCode, name: string; }>({ code: "course", name: "Corso" });
     const [calendarSelection, setCalendarSelection] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
 
-    const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
+    const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    const onCalendarSelectionChange = async (selection: CalendarSelection) => {
+    const onCalendarSelectionChange = async (selection: CalendarSelection[]) => {
         const getEvents = () => {
+            const requestedEvents: EventDto[] = [];
+
+            selection.forEach(element => {
+                switch (element.type) {
+                    case "course":
+                        return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.code)).then((result) => {
+                            requestedEvents.push(...result);
+                        });
+                    case "classroom":
+                        return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.code)).then((result) => {
+                            requestedEvents.push(...result);
+                        });
+                    case "teacher":
+                        return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.code).then((result) => {
+                            requestedEvents.push(...result);
+                        });
+                }
+            });
+
+            return requestedEvents;
+
+            /*
             switch (selection.type) {
                 case "course":
                     return requests.event.byCourse(result[0], result[result.length - 1], parseInt(selection.code));
@@ -178,22 +200,23 @@ export function Calendar() {
                 case "teacher":
                     return requests.event.byTeacher(result[0], result[result.length - 1], selection.code);
             }
+            */
         };
 
-        setCalendarType({ code: selection.type, name: selection.type === "course" ? "Corso" : selection.type === "classroom" ? "Aula" : "Docente" });
-        setCalendarSelection(selection);
+        //setCalendarType({ code: selection.type, name: selection.type === "course" ? "Corso" : selection.type === "classroom" ? "Aula" : "Docente" });
+        //setCalendarSelection(selection);
         setEvents(await getEvents());
     };
 
     // Load default calendar on first render
     useEffect(() => {
         if (!course) return;
-        onCalendarSelectionChange({ code: course.id.toString(), name: course.code, color: "", display: true, type: "course" });
+        onCalendarSelectionChange([{ code: course.id.toString(), name: course.code, color: "", display: true, type: "course" }]);
     }, []);
 
     const renderCalendar = () =>
-        result.map((day) => {
-            const filteredEvents = events?.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString()) || [];
+        calendarView.map((day) => {
+            const filteredEvents = events ? events.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString()) : [];
 
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&

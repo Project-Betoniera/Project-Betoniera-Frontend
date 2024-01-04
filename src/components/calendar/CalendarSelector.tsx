@@ -13,7 +13,7 @@ export type CalendarType = { code: CalendarTypeCode, name: string; };
 export type CalendarSelection = { code: string, name: string, color: string, display: boolean, type: "course" | "classroom" | "teacher" };
 
 export type CalendarSelectorProps = {
-    onSelectionChange: (selection: CalendarSelection) => void;
+    onSelectionChange: (selection: CalendarSelection[]) => void;
 };
 
 const useStyles = makeStyles({
@@ -53,8 +53,8 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
 
     // Call the callback when the selection changes
     useEffect(() => {
-        props.onSelectionChange(currentCalendarSelection);
-    }, [currentCalendarType, currentCalendarSelection]);
+        props.onSelectionChange(selectedCalendars.length > 0 ? selectedCalendars : [currentCalendarSelection]);
+    }, [selectedCalendars]);
 
     // Get calendar selector list
     useEffect(() => {
