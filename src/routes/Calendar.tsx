@@ -162,14 +162,15 @@ export function Calendar() {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
+
     const [calendarType, setCalendarType] = useState<{ code: CalendarTypeCode, name: string; }>({ code: "course", name: "Corso" });
     const [calendarSelection, setCalendarSelection] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
 
     const result = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    const onCalendarSelectionChange = async (type: { code: CalendarTypeCode, name: string; }, selection: CalendarSelection) => {
+    const onCalendarSelectionChange = async (selection: CalendarSelection) => {
         const getEvents = () => {
-            switch (type.code) {
+            switch (selection.type) {
                 case "course":
                     return requests.event.byCourse(result[0], result[result.length - 1], parseInt(selection.code));
                 case "classroom":
@@ -179,7 +180,7 @@ export function Calendar() {
             }
         };
 
-        setCalendarType(type);
+        setCalendarType({ code: selection.type, name: selection.type === "course" ? "Corso" : selection.type === "classroom" ? "Aula" : "Docente" });
         setCalendarSelection(selection);
         setEvents(await getEvents());
     };
@@ -187,7 +188,7 @@ export function Calendar() {
     // Load default calendar on first render
     useEffect(() => {
         if (!course) return;
-        onCalendarSelectionChange(calendarType, { code: course.id.toString(), name: course.code });
+        onCalendarSelectionChange({ code: course.id.toString(), name: course.code, color: "", display: true, type: "course" });
     }, []);
 
     const renderCalendar = () =>
