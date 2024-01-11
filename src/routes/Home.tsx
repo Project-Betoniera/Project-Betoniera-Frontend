@@ -18,6 +18,7 @@ export function Home() {
 
     const [now, setNow] = useState(() => new Date());
     const [dateTime, setDateTime] = useState(() => new Date());
+    const [showEventsSideSpinner, setShowEventsSideSpinner] = useState(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
 
@@ -34,10 +35,13 @@ export function Home() {
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
 
-        setEvents(null); // Show spinner
+        // Clear current data and show spinner only if the side spinner is not already visible
+        if (!showEventsSideSpinner)
+            setEvents(null);
 
         requests.event.byCourse(start, end, course?.id || 0, true)
             .then(setEvents)
+            .then(() => setShowEventsSideSpinner(false))
             .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
@@ -103,8 +107,12 @@ export function Home() {
                     <CardHeader
                         header={<Title2>📚 {course?.code} - Lezioni</Title2>}
                         description={<><Subtitle2>{course?.name}</Subtitle2></>}
+                        action={showEventsSideSpinner ? <Spinner size="small" /> : undefined}
                     />
-                    <DateSelector autoUpdate={true} inputType="date" dateTime={dateTime} setDateTime={setDateTime} />
+                    <DateSelector autoUpdate={true} inputType="date" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                        setShowEventsSideSpinner(autoUpdated);
+                        setDateTime(newDateTime);
+                    }} />
                 </Card>
                 <div className={globalStyles.grid}>
                     {events ? (renderEvents()) : (<Spinner size="huge" />)}
