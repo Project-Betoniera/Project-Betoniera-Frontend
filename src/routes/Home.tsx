@@ -42,8 +42,6 @@ export function Home() {
     }, [dateTime]);
 
     useEffect(() => {
-        setClassrooms(null); // Show spinner
-
         requests.classroom.status(now)
             .then(setClassrooms)
             .catch(console.error); // TODO Handle error
