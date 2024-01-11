@@ -21,6 +21,7 @@ export function Home() {
     const [showEventsSideSpinner, setShowEventsSideSpinner] = useState(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+    const [showClassroomsSideSpinner, setShowClassroomsSideSpinner] = useState(false);
 
     const { timekeeper } = useContext(TimekeeperContext);
     useEffect(() => {
@@ -46,8 +47,13 @@ export function Home() {
     }, [dateTime]);
 
     useEffect(() => {
+        // Show side spinner spinner only if the main spinner is not already visible (classrooms == null)
+        if (classrooms !== null)
+            setShowClassroomsSideSpinner(true);
+
         requests.classroom.status(now)
             .then(setClassrooms)
+            .then(() => setShowClassroomsSideSpinner(false))
             .catch(console.error); // TODO Handle error
     }, [now]);
 
@@ -124,6 +130,7 @@ export function Home() {
                     <CardHeader
                         header={<Title2>🏫 Aule Libere</Title2>}
                         description={<Subtitle2>Alle {now.toLocaleTimeString([], { timeStyle: "short" })}</Subtitle2>}
+                        action={showClassroomsSideSpinner ? <Spinner size="small" /> : undefined}
                     />
                 </Card>
                 <div className={globalStyles.grid}>
