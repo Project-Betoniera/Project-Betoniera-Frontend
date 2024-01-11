@@ -165,9 +165,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)}>
-                    <EventDetails event={event} title="subject" now={now} />
-                </Card>
+                <EventDetails as="card" key={event.id} event={event} title="subject" />
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
@@ -203,7 +201,7 @@ export function Calendar() {
     return (
         <div className={styles.container}>
             <Card className={styles.toolbar}>
-                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={"month"} />
                 <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
             </Card>
 

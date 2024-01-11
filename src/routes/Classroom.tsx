@@ -8,6 +8,7 @@ import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
+import { ClassroomDto } from '../dto/ClassroomDto';
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -61,19 +62,22 @@ export function Classroom() {
     const styles = useStyles();
     const requests = useRequests();
 
-    const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date(now));
+    const [dateTime, setDateTime] = useState(() => new Date());
+    const [showSideSpinner, setShowSideSpinner] = useState(false);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
-    const [events, setEvents] = useState<EventDto[] | null>(null);
+    const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean } | null>(null);
     const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
     const [filteredClassrooms, setFilteredClassrooms] = useState<ClassroomStatus[]>([]);
 
     // Get new data when the date changes
     useEffect(() => {
-        setClassrooms(null); // Show spinner
+        // Clear current data and show spinner only if the side spinner is not already visible
+        if (!showSideSpinner)
+            setClassrooms(null);
 
         requests.classroom.status(dateTime)
             .then(setClassrooms)
+            .then(() => setShowSideSpinner(false))
             .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
@@ -94,31 +98,14 @@ export function Classroom() {
         }
     }, [filter, classrooms]);
 
+    const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
+        <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} />
+    )) : (<Subtitle2>Nessuna</Subtitle2>);
+
     const renderClassrooms = () => {
         return filteredClassrooms.length === 0 ? [
             <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
         ] : filteredClassrooms.map((item) => {
-            const getEvents = (isOpen: boolean) => {
-                if (!isOpen) return;
-
-                setEvents(null); // Show spinner
-
-                const start = new Date(dateTime);
-                start.setHours(0, 0, 0, 0);
-                const end = new Date(start);
-                end.setDate(end.getDate() + 1);
-
-                requests.event.byClassroom(start, end, item.classroom.id)
-                    .then(setEvents)
-                    .catch(console.error); // TODO Handle error
-            };
-
-            const renderEvents = () => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, event.start <= dateTime && event.end > dateTime ? globalStyles.ongoing : undefined)}>
-                    <EventDetails event={event} title="subject" hide={["classroom"]} now={now} />
-                </Card>
-            )) : (<Subtitle2>Nessuna</Subtitle2>);
-
             const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
             let changeTime = "";
 
@@ -130,35 +117,35 @@ export function Classroom() {
                 changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 
             return (
-                <Dialog key={item.classroom.id} modalType="modal" onOpenChange={(_event, data) => { getEvents(data.open); }}>
-                    <DialogTrigger>
-                        <Card className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)}>
-                            <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
-                            <div>
-                                <Body1>{status}</Body1>
-                                <br />
-                                <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
-                            </div>
-                        </Card>
-                    </DialogTrigger>
-                    <DialogSurface>
-                        <DialogBody>
-                            <DialogTitle>
-                                <Title3>Lezioni in Aula {item.classroom.name}</Title3>
-                                <br />
-                                <Subtitle2>📅 {dateTime.toLocaleDateString([], { dateStyle: "medium" })}</Subtitle2>
-                            </DialogTitle>
-                            <DialogContent className={globalStyles.list}>
-                                {events ? renderEvents() : <Spinner size="huge" />}
-                            </DialogContent>
-                            <DialogActions>
-                                <DialogTrigger>
-                                    <Button appearance="primary">Chiudi</Button>
-                                </DialogTrigger>
-                            </DialogActions>
-                        </DialogBody>
-                    </DialogSurface>
-                </Dialog>
+                <Card key={item.classroom.id} className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)} onClick={() => {
+                    setEventDialog({
+                        classroom: item.classroom,
+                        events: null,
+                        open: true
+                    });
+
+                    const start = new Date(dateTime);
+                    start.setHours(0, 0, 0, 0);
+                    const end = new Date(start);
+                    end.setDate(end.getDate() + 1);
+
+                    requests.event.byClassroom(start, end, item.classroom.id)
+                        .then(events => setEventDialog(eventDialog => {
+                            if (!eventDialog) return null;
+                            return {
+                                ...eventDialog,
+                                events,
+                            }
+                        }))
+                        .catch(console.error); // TODO Handle error
+                }}>
+                    <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
+                    <div>
+                        <Body1>{status}</Body1>
+                        <br />
+                        <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
+                    </div>
+                </Card>
             );
         });
     };
@@ -176,9 +163,13 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
+                    action={showSideSpinner ? <Spinner size="small" /> : undefined}
                 />
                 <CardFooter className={styles.toolbar}>
-                    <DateSelector inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                    <DateSelector autoUpdate={true} inputType="datetime-local" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                        setShowSideSpinner(autoUpdated);
+                        setDateTime(newDateTime);
+                    }} />
                     <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
                         <option value="all">Tutte</option>
                         <option value="free">Libere</option>
@@ -190,6 +181,34 @@ export function Classroom() {
             <div className={globalStyles.grid}>
                 {classrooms ? renderClassrooms() : <Spinner size="huge" />}
             </div>
+
+            {eventDialog && (
+                <Dialog modalType="modal" open={eventDialog.open} onOpenChange={(_, data) => setEventDialog(eventDialog => {
+                    if (!eventDialog) return null;
+                    return {
+                        ...eventDialog,
+                        open: data.open,
+                    }
+                })}>
+                    <DialogSurface>
+                        <DialogBody>
+                            <DialogTitle>
+                                <Title3>Lezioni in Aula {eventDialog.classroom.name}</Title3>
+                                <br />
+                                <Subtitle2>📅 {dateTime.toLocaleDateString([], { dateStyle: "medium" })}</Subtitle2>
+                            </DialogTitle>
+                            <DialogContent className={globalStyles.list}>
+                                {eventDialog.events === null ? <Spinner size="huge" /> : renderEvents()}
+                            </DialogContent>
+                            <DialogActions>
+                                <DialogTrigger>
+                                    <Button appearance="primary">Chiudi</Button>
+                                </DialogTrigger>
+                            </DialogActions>
+                        </DialogBody>
+                    </DialogSurface>
+                </Dialog>
+            )}
         </div>
     );
 }
