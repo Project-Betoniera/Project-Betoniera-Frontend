@@ -63,6 +63,7 @@ export function Classroom() {
     const requests = useRequests();
 
     const [dateTime, setDateTime] = useState(() => new Date());
+    const [showSideSpinner, setShowSideSpinner] = useState(false);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean } | null>(null);
     const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
@@ -70,10 +71,13 @@ export function Classroom() {
 
     // Get new data when the date changes
     useEffect(() => {
-        setClassrooms(null); // Show spinner
+        // Clear current data and show spinner only if the side spinner is not already visible
+        if (!showSideSpinner)
+            setClassrooms(null);
 
         requests.classroom.status(dateTime)
             .then(setClassrooms)
+            .then(() => setShowSideSpinner(false))
             .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
@@ -159,9 +163,13 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
+                    action={showSideSpinner ? <Spinner size="small" /> : undefined}
                 />
                 <CardFooter className={styles.toolbar}>
-                    <DateSelector autoUpdate={true} inputType="datetime-local" dateTime={dateTime} setDateTime={setDateTime} />
+                    <DateSelector autoUpdate={true} inputType="datetime-local" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                        setShowSideSpinner(autoUpdated);
+                        setDateTime(newDateTime);
+                    }} />
                     <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
                         <option value="all">Tutte</option>
                         <option value="free">Libere</option>
