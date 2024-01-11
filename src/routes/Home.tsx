@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
-import { CourseContext } from "../context/CourseContext";
+import { UserContext } from "../context/UserContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
@@ -14,7 +14,7 @@ export function Home() {
     const globalStyles = useGlobalStyles();
 
     const requests = useRequests();
-    const { course } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
 
     const [now, setNow] = useState(() => new Date());
     const [dateTime, setDateTime] = useState(() => new Date());

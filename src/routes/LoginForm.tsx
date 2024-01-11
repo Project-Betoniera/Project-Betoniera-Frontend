@@ -2,13 +2,13 @@ import { FormEvent, useContext, useState } from "react";
 import { TokenContext } from "../context/TokenContext";
 import axios from "axios";
 import { apiUrl, isBetaBuild } from "../config";
-import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
 import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle1, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
 import { makeStyles } from '@fluentui/react-components';
 import { shorthands } from '@fluentui/react-components';
 import { encode as toBase64 } from "base-64";
 import { useGlobalStyles } from "../globalStyles";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -64,7 +64,8 @@ export function LoginForm() {
     const setToken = useContext(TokenContext).setToken;
     const setRememberToken = useContext(TokenContext).setRemember;
     const setIsInvalidToken = useContext(TokenContext).setIsInvalid;
-    const { setCourse } = useContext(CourseContext);
+    const { setCourse } = useContext(UserContext).course;
+    const { setName: setUserName, setEmail: setUserEmail } = useContext(UserContext).user;
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -88,6 +89,8 @@ export function LoginForm() {
                 setRememberToken(remember);
                 setIsInvalidToken(false);
                 setCourse(response.data.course as CourseDto);
+                setUserName(response.data.user.name);
+                setUserEmail(response.data.user.email);
             } else {
                 throw new Error("Errore durante il login");
             }

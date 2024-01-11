@@ -33,7 +33,7 @@ const useStyles = makeStyles({
 function App() {
   const style = useStyles();
   const token = useContext(TokenContext).token;
-  const { theme } = useContext(ThemeContext);
+  const { themeValue } = useContext(ThemeContext);
 
   const toasterId = useId("app-toaster");
   const { dispatchToast } = useToastController(toasterId);
@@ -67,7 +67,7 @@ function App() {
   }, [location, token]);
 
   return (
-    <FluentProvider className={style.root} theme={theme}>
+    <FluentProvider className={style.root} theme={themeValue}>
       <Toaster toasterId={toasterId} />
       <PrivacyAlert />
       <OfflineDialog />

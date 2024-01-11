@@ -2,13 +2,14 @@ import { Button, Caption1, Card, CardHeader, DialogActions, Dialog, DialogBody, 
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import { EventDto } from "../dto/EventDto";
-import { CourseContext } from "../context/CourseContext";
+
 import { useGlobalStyles } from "../globalStyles";
 import { ArrowExportRegular, CircleFilled } from "@fluentui/react-icons";
 import { RouterButton } from "../components/RouterButton";
 import EventDetails from "../components/EventDetails";
 import useRequests from "../libraries/requests/requests";
 import { generateMonth } from "../libraries/calendarGenerator/calendarGenerator";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
     container: {
@@ -123,7 +124,7 @@ const useStyles = makeStyles({
 export function Calendar() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
-    const { course } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
     const requests = useRequests();
 
     // TODO Use proper localization

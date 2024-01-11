@@ -3,12 +3,12 @@ import { useGlobalStyles } from "../globalStyles";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import QRCode from 'qrcode';
 import { TokenContext } from "../context/TokenContext";
-import { CourseContext } from "../context/CourseContext";
 import { CourseDto } from "../dto/CourseDto";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import axios from "axios";
 import { apiUrl } from "../config";
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
     qrCode: {
@@ -21,7 +21,7 @@ export function CalendarExporter() {
     const styles = useStyles();
 
     const token = useContext(TokenContext).token;
-    const { course: userCourse } = useContext(CourseContext);
+    const { course: userCourse } = useContext(UserContext).course;
 
     // Items for the various selectors
     const calendarTypes: { code: string, name: string; }[] = [

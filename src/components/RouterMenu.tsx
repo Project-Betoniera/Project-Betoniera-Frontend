@@ -3,8 +3,8 @@ import { FunctionComponent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
 import { TokenContext } from '../context/TokenContext';
-import { CourseContext } from '../context/CourseContext';
 import { UserProfile } from './UserProfile';
+import { UserContext } from '../context/UserContext';
 
 const useStyles = makeStyles({
     drawer: {
@@ -46,13 +46,16 @@ const menuItems = [
 const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
     const styles = useStyles();
     const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
-    const { setCourse } = useContext(CourseContext);
+    const { setCourse } = useContext(UserContext).course;
+    const { setName: setUserName, setEmail: setUserEmail } = useContext(UserContext).user;
 
     const logout = () => {
         setToken(null);
         setRemember(false);
         setIsInvalid(false);
         setCourse(null);
+        setUserName(null);
+        setUserEmail(null);
     };
 
     useLocation();
@@ -88,10 +91,10 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                     );
                 })}
 
-                <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "User Profile" : ""}</Button>
+                <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
             </TabList>
 
-            <Drawer type={"overlay"} open={isUserDrawerOpen} onOpenChange={(_, { open }) => setIsUserDrawerOpen(open)} position="end" className={styles.drawer}>
+            <Drawer type={"overlay"} size={"medium"} open={isUserDrawerOpen} onOpenChange={(_, { open }) => setIsUserDrawerOpen(open)} position="end" className={styles.drawer}>
                 <DrawerHeader>
                     <DrawerHeaderTitle
                         action={

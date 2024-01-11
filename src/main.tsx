@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./main.css";
 import { TokenContextProvider } from "./context/TokenContext.tsx";
-import { CourseContextProvider } from "./context/CourseContext.tsx";
+import { UserContextProvider } from "./context/UserContext.tsx";
 import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { ensurePlausible } from "./plausible.tsx";
 import { PwaContextProvider } from "./context/PwaContext.tsx";
@@ -19,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeContextProvider>
       <TokenContextProvider>
-        <CourseContextProvider>
+        <UserContextProvider>
           <PwaContextProvider>
             <MessagesContextProvider>
               <TimekeeperContextProvider>
@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </TimekeeperContextProvider>
             </MessagesContextProvider>
           </PwaContextProvider>
-        </CourseContextProvider>
+        </UserContextProvider>
       </TokenContextProvider>
     </ThemeContextProvider>
   </React.StrictMode>,
