@@ -7,7 +7,7 @@ import { TimekeeperListener } from '../libraries/timekeeper/timekeeper';
 type DateSelectorProps = {
     autoUpdate: boolean;
     dateTime: Date;
-    setDateTime: (dateTime: Date) => void;
+    setDateTime: (dateTime: Date, autoUpdated: boolean) => void;
     inputType: "date" | "datetime-local" | "month";
 };
 
@@ -89,7 +89,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
         // Register new listener ONLY if autoUpdate is enabled and the current value is today
         if (autoUpdate && isToday) {
             const callback: TimekeeperListener = (date) => {
-                setDateTime(date);
+                setDateTime(date, true);
             };
             timekeeper.addListener(
                 // If the input type is datetime-local, update the time every minute, else update it every hour
@@ -120,10 +120,10 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
             result.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()) :
             result.setHours(0, 0, 0, 0);
 
-        setDateTime(result);
+        setDateTime(result, false);
     };
 
-    const onTodayButtonClick = () => { if (!isToday) setDateTime(new Date()); };
+    const onTodayButtonClick = () => { if (!isToday) setDateTime(new Date(), false); };
 
     const selectorValue = inputType === "date" ?
         new Date(dateTime.getTime() - (dateTime.getTimezoneOffset() * 60000)).toISOString().split('T')[0] :
@@ -141,7 +141,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 <Button className={styles.arrowButton} disabled={isToday} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
                 {inputType === "month" ?
                     <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long", year: "numeric" }))}</Subtitle2> :
-                    <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value)); }} value={selectorValue}></Input>}
+                    <Input className={styles.growOnMobile} type={inputType} onChange={(_event, data) => { data.value && setDateTime(new Date(data.value), false); }} value={selectorValue}></Input>}
             </div>
             <div className={mergeClasses(styles.dateSelector, styles.hideOnDesktop)}>
                 <Button className={mergeClasses(styles.arrowButton, styles.growOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
