@@ -111,7 +111,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
 
                 <DrawerBody className={styles.drawerBody}>
                     <UserProfile />
-                    <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                    <Button appearance="primary" icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
                 </DrawerBody>
             </Drawer>
         </>

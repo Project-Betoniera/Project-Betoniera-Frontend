@@ -2,7 +2,6 @@ import { Avatar, Option, Body1, Divider, Dropdown, Subtitle1, Subtitle2, makeSty
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
-import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 
 const useStyles = makeStyles({
     userContainer: {
