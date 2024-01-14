@@ -1,4 +1,4 @@
-import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Spinner, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, CircleFilled, DismissRegular, SettingsRegular } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -214,31 +214,33 @@ export function Calendar() {
     };
 
     const updateCalendar = async () => {
-        const getEvents = (selections: CalendarSelection[]) => {
+        const getEvents = async (selections: CalendarSelection[]) => {
             const requestedEvents: EventDto[] = [];
 
-            selections.forEach(element => {
+            for (let element of selections) {
+                let result: EventDto[];
+                let color: string;
                 switch (element.type) {
                     case "course":
-                        return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
-                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                            result.forEach((event) => event.color = color);
-                            requestedEvents.push(...result);
-                        });
+                        result = await requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id));
+                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                        result.forEach((event) => event.color = color);
+                        requestedEvents.push(...result);
+                        break;
                     case "classroom":
-                        return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
-                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                            result.forEach((event) => event.color = color);
-                            requestedEvents.push(...result);
-                        });
+                        result = await requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id));
+                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                        result.forEach((event) => event.color = color);
+                        requestedEvents.push(...result);
+                        break;
                     case "teacher":
-                        return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id).then((result) => {
-                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                            result.forEach((event) => event.color = color);
-                            requestedEvents.push(...result);
-                        });
+                        result = await requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id);
+                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                        result.forEach((event) => event.color = color);
+                        requestedEvents.push(...result);
+                        break;
                 }
-            });
+            };
 
             return requestedEvents;
         };
@@ -259,6 +261,7 @@ export function Calendar() {
     // Update calendar when selections change
     useEffect(() => {
         updateCalendar();
+        //console.log(events);
     }, [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections]);
 
     // Load default calendar on first render
@@ -341,11 +344,11 @@ export function Calendar() {
                             : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
                     </Card>
 
-                    {/* {events ? ( */}
-                    <div className={styles.calendarContainer}>
-                        <div className={styles.calendar}>{renderCalendar()}</div>
-                    </div>
-                    {/* ) : <Spinner size="huge" />} */}
+                    {events && typeof events !== null && events.length > 0 ? (
+                        <div className={styles.calendarContainer}>
+                            <div className={styles.calendar}>{renderCalendar()}</div>
+                        </div>
+                    ) : <Spinner size="huge" />}
                 </div>
 
                 <Drawer type={window.matchMedia('(max-width: 1000px)').matches ? "overlay" : "inline"} open={isDrawerOpen} onOpenChange={(_, { open }) => setIsDrawerOpen(open)} position="end" className={styles.drawer}>
