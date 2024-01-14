@@ -372,14 +372,14 @@ export function Calendar() {
             );
         });
 
-    const getCalendarIcon = (type: string) => {
+    const getCalendarIcon = (type: string, calendar: Calendar) => {
         switch (type) {
             case "course":
-                return (<BackpackFilled />);
+                return (<BackpackFilled style={{ color: calendar.color }} />);
             case "classroom":
-                return (<BuildingFilled />);
+                return (<BuildingFilled style={{ color: calendar.color }} />);
             case "teacher":
-                return (<PersonFilled />);
+                return (<PersonFilled style={{ color: calendar.color }} />);
             default:
                 return undefined;
         }
@@ -439,7 +439,7 @@ export function Calendar() {
                                     {courseCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
@@ -455,7 +455,7 @@ export function Calendar() {
                                     {classroomCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
@@ -471,7 +471,7 @@ export function Calendar() {
                                     {teacherCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
