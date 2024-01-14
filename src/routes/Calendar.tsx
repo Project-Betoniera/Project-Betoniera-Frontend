@@ -166,44 +166,105 @@ export function Calendar() {
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    const onCalendarSelectionChange = async (selection: CalendarSelection) => {
-        const getEvents = () => {
+    //- Calendar Selections Logic -//
+
+    // Current calendar selection (the one that will be added when the user clicks the "Aggiungi" button)
+    const [currentCalendarSelection, setCurrentCalendarSelection] = useState<CalendarSelection>();
+
+    // Calendar selections for each type
+    const [courseCalendarSelections, setCourseCalendarSelections] = useState<CalendarSelection[]>([]);
+    const [classroomCalendarSelections, setClassroomCalendarSelections] = useState<CalendarSelection[]>([]);
+    const [teacherCalendarSelections, setTeacherCalendarSelections] = useState<CalendarSelection[]>([]);
+
+    // Called when the user selects a new calendar with the `CalendarSelector` component
+    const onCalendarSelectionChange = (selection: CalendarSelection) => {
+        setCurrentCalendarSelection(selection);
+    };
+
+    // Add the current calendar selection to the list of selections
+    const addCalendar = async () => {
+        if (!currentCalendarSelection) return;
+
+        switch (currentCalendarSelection.type) {
+            case "course":
+                // Check if the calendar is already present
+                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
+                    return;
+                }
+
+                setCourseCalendarSelections([...courseCalendarSelections, currentCalendarSelection]);
+                break;
+            case "classroom":
+                // Check if the calendar is already present
+                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
+                    return;
+                }
+
+                setClassroomCalendarSelections([...classroomCalendarSelections, currentCalendarSelection]);
+                break;
+            case "teacher":
+                // Check if the calendar is already present
+                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
+                    return;
+                }
+
+                setTeacherCalendarSelections([...teacherCalendarSelections, currentCalendarSelection]);
+                break;
+        }
+    };
+
+    const updateCalendar = async () => {
+        const getEvents = (selections: CalendarSelection[]) => {
             const requestedEvents: EventDto[] = [];
 
-            switch (selection.type) {
-                case "course":
-                    return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
-                        result.forEach((event) => event.color = element.color);
-                        requestedEvents.push(...result);
-                    });
-                case "classroom":
-                    return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
-                        result.forEach((event) => event.color = element.color);
-                        requestedEvents.push(...result);
-                    });
-                case "teacher":
-                    return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id).then((result) => {
-                        result.forEach((event) => event.color = element.color);
-                        requestedEvents.push(...result);
-                    });
-            }
+            selections.forEach(element => {
+                switch (element.type) {
+                    case "course":
+                        return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
+                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                            result.forEach((event) => event.color = color);
+                            requestedEvents.push(...result);
+                        });
+                    case "classroom":
+                        return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
+                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                            result.forEach((event) => event.color = color);
+                            requestedEvents.push(...result);
+                        });
+                    case "teacher":
+                        return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id).then((result) => {
+                            const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+                            result.forEach((event) => event.color = color);
+                            requestedEvents.push(...result);
+                        });
+                }
+            });
 
             return requestedEvents;
         };
 
-        if (selection.length == 1) {
-            setCalendarTitle("Calendario " + selection[0].name);
+        // Merge all selections
+        const selections = [...courseCalendarSelections, ...classroomCalendarSelections, ...teacherCalendarSelections];
+
+        // Update calendar title
+        if (selections.length == 1) {
+            setCalendarTitle("Calendario " + selections[0].shortName);
         } else {
             setCalendarTitle("Calendario Filtrato");
         }
 
-        setEvents(await getEvents());
+        setEvents(await getEvents(selections));
     };
+
+    // Update calendar when selections change
+    useEffect(() => {
+        updateCalendar();
+    }, [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections]);
 
     // Load default calendar on first render
     useEffect(() => {
         if (!course) return;
-        onCalendarSelectionChange([{ id: course.id.toString(), name: course.code, color: "", display: true, type: "course" }]);
+        setCourseCalendarSelections([{ id: course.id.toString(), shortName: course.code, fullName: course.name, type: "course" }])
     }, []);
 
     const renderCalendar = () =>
@@ -304,6 +365,7 @@ export function Calendar() {
 
                     <DrawerBody>
                         <CalendarSelector onSelectionChange={onCalendarSelectionChange} />
+                        <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
                     </DrawerBody>
                 </Drawer>
             </div>
