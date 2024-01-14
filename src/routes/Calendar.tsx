@@ -287,13 +287,45 @@ export function Calendar() {
         }]);
     }, []);
 
+    // Get event color based on calendar selection it belongs to
+    const getEventColor = (event: EventDto) => {
+
+        // Merge all selections
+        const selections = [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections].flat();
+
+        let color: string | undefined = undefined;
+        for(let selection of selections) {
+            switch (selection.selection.type) {
+                case "course":
+                    if (selection.selection.id === event.course.id.toString()) {
+                        color = selection.color;
+                    }
+                    break;
+                case "classroom":
+                    if (selection.selection.id === event.classroom.id.toString()) {
+                        color = selection.color;
+                    }
+                    break;
+                case "teacher":
+                    if (selection.selection.id === event.teacher) {
+                        color = selection.color;
+                    }
+                    break;
+            }
+            if (color) break; // Stop searching if a color is found
+        };
+
+        return color;
+
+    };
+
     const renderCalendar = () =>
         calendarView.map((day) => {
             const filteredEvents = events ? events.filter((event) => event.start.toLocaleDateString() === day.toLocaleDateString()) : [];
 
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
-                    <Card key={event.id} className={styles.event}>
+                    <Card key={event.id} className={styles.event} style={{ backgroundColor: getEventColor(event) }}>
                         <Caption1 className={currentView ? styles.eventText : undefined}>{event.subject}</Caption1>
                         <div style={currentView ? { display: "none" } : undefined}>
                             <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
@@ -305,7 +337,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)}>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)} style={{ backgroundColor: getEventColor(event) }}>
                     <EventDetails event={event} title="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
