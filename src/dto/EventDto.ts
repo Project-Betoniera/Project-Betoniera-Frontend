@@ -9,5 +9,4 @@ export type EventDto = {
     classroom: ClassroomDto,
     course: CourseDto,
     subject: string,
-    color?: string,
 };

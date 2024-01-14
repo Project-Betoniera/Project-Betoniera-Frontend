@@ -1,5 +1,5 @@
-import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Spinner, Subtitle1, Subtitle2, Title3, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, CircleFilled, DismissRegular, SettingsRegular } from "@fluentui/react-icons";
+import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Spinner, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, CircleFilled, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -12,6 +12,11 @@ import { generateMonth, generateWeek } from "../libraries/calendarGenerator/cale
 import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
+    drawerBody: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem"
+    },
     drawerContainer: {
         display: "flex",
         flexDirection: "row",
@@ -139,8 +144,17 @@ const useStyles = makeStyles({
         overflowX: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
+    },
+    wide: {
+        alignSelf: "stretch",
     }
 });
+
+type Calendar = {
+    selection: CalendarSelection,
+    color: string,
+    enabled: boolean,
+};
 
 export function Calendar() {
     const globalStyles = useGlobalStyles();
@@ -166,77 +180,71 @@ export function Calendar() {
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    //- Calendar Selections Logic -//
+    //- Calendar Selection Logic -//
 
     // Current calendar selection (the one that will be added when the user clicks the "Aggiungi" button)
     const [currentCalendarSelection, setCurrentCalendarSelection] = useState<CalendarSelection>();
 
     // Calendar selections for each type
-    const [courseCalendarSelections, setCourseCalendarSelections] = useState<CalendarSelection[]>([]);
-    const [classroomCalendarSelections, setClassroomCalendarSelections] = useState<CalendarSelection[]>([]);
-    const [teacherCalendarSelections, setTeacherCalendarSelections] = useState<CalendarSelection[]>([]);
+    const [courseCalendarSelections, setCourseCalendarSelections] = useState<Calendar[]>([]);
+    const [classroomCalendarSelections, setClassroomCalendarSelections] = useState<Calendar[]>([]);
+    const [teacherCalendarSelections, setTeacherCalendarSelections] = useState<Calendar[]>([]);
 
     // Called when the user selects a new calendar with the `CalendarSelector` component
     const onCalendarSelectionChange = (selection: CalendarSelection) => {
         setCurrentCalendarSelection(selection);
     };
 
+    /**
+     * TODO Make a table with some colors that make sense 
+     * */
+    const getRandomColor = () => {
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+    };
+
     // Add the current calendar selection to the list of selections
     const addCalendar = async () => {
         if (!currentCalendarSelection) return;
 
+        const calendar: Calendar = {
+            selection: currentCalendarSelection,
+            color: getRandomColor(),
+            enabled: true
+        };
+
         switch (currentCalendarSelection.type) {
             case "course":
-                // Check if the calendar is already present
-                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
-                    return;
-                }
-
-                setCourseCalendarSelections([...courseCalendarSelections, currentCalendarSelection]);
+                if (courseCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
+                setCourseCalendarSelections([...courseCalendarSelections, calendar]);
                 break;
             case "classroom":
-                // Check if the calendar is already present
-                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
-                    return;
-                }
-
-                setClassroomCalendarSelections([...classroomCalendarSelections, currentCalendarSelection]);
+                if (classroomCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
+                setClassroomCalendarSelections([...classroomCalendarSelections, calendar]);
                 break;
             case "teacher":
-                // Check if the calendar is already present
-                if (courseCalendarSelections.find(item => item.id === currentCalendarSelection.id)) {
-                    return;
-                }
-
-                setTeacherCalendarSelections([...teacherCalendarSelections, currentCalendarSelection]);
+                if (teacherCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
+                setTeacherCalendarSelections([...teacherCalendarSelections, calendar]);
                 break;
         }
     };
 
     const updateCalendar = async () => {
-        const getEvents = async (selections: CalendarSelection[]) => {
+        const getEvents = async (calendars: Calendar[]) => {
             const requestedEvents: EventDto[] = [];
 
-            for (let element of selections) {
+            for (let calendar of calendars) {
                 let result: EventDto[];
-                let color: string;
-                switch (element.type) {
+                switch (calendar.selection.type) {
                     case "course":
-                        result = await requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id));
-                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                        result.forEach((event) => event.color = color);
+                        result = await requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(calendar.selection.id));
                         requestedEvents.push(...result);
                         break;
                     case "classroom":
-                        result = await requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id));
-                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                        result.forEach((event) => event.color = color);
+                        result = await requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(calendar.selection.id));
                         requestedEvents.push(...result);
                         break;
                     case "teacher":
-                        result = await requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id);
-                        color = `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
-                        result.forEach((event) => event.color = color);
+                        result = await requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], calendar.selection.id);
                         requestedEvents.push(...result);
                         break;
                 }
@@ -246,11 +254,11 @@ export function Calendar() {
         };
 
         // Merge all selections
-        const selections = [...courseCalendarSelections, ...classroomCalendarSelections, ...teacherCalendarSelections];
+        const selections = [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections].flat();
 
         // Update calendar title
         if (selections.length == 1) {
-            setCalendarTitle("Calendario " + selections[0].shortName);
+            setCalendarTitle("Calendario " + selections[0].selection.shortName);
         } else {
             setCalendarTitle("Calendario Filtrato");
         }
@@ -261,13 +269,22 @@ export function Calendar() {
     // Update calendar when selections change
     useEffect(() => {
         updateCalendar();
-        //console.log(events);
     }, [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections]);
 
     // Load default calendar on first render
+    // TODO Save custom view in local storage
     useEffect(() => {
         if (!course) return;
-        setCourseCalendarSelections([{ id: course.id.toString(), shortName: course.code, fullName: course.name, type: "course" }])
+        setCourseCalendarSelections([{
+            selection: {
+                id: course.id.toString(),
+                shortName: course.code,
+                fullName: course.name,
+                type: "course"
+            },
+            color: getRandomColor(),
+            enabled: true
+        }]);
     }, []);
 
     const renderCalendar = () =>
@@ -276,7 +293,7 @@ export function Calendar() {
 
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
-                    <Card key={event.id} className={styles.event} style={{ backgroundColor: event.color }}>
+                    <Card key={event.id} className={styles.event}>
                         <Caption1 className={currentView ? styles.eventText : undefined}>{event.subject}</Caption1>
                         <div style={currentView ? { display: "none" } : undefined}>
                             <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
@@ -288,7 +305,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)} style={{ backgroundColor: event.color }}>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)}>
                     <EventDetails event={event} title="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);
@@ -323,6 +340,19 @@ export function Calendar() {
             );
         });
 
+    const getCalendarIcon = (type: string) => {
+        switch (type) {
+            case "course":
+                return (<BackpackFilled />);
+            case "classroom":
+                return (<BuildingFilled />);
+            case "teacher":
+                return (<PersonFilled />);
+            default:
+                return undefined;
+        }
+    };
+
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
@@ -340,8 +370,8 @@ export function Calendar() {
 
                     <Card className={styles.calendarHeader}>
                         {window.matchMedia('(max-width: 578px)').matches ?
-                            calendarLocal.weekDaysAbbr.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })
-                            : calendarLocal.weekDays.map((day) => { return (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>); })}
+                            calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))
+                            : calendarLocal.weekDays.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))}
                     </Card>
 
                     {events && typeof events !== null && events.length > 0 ? (
@@ -366,9 +396,60 @@ export function Calendar() {
                         </DrawerHeaderTitle>
                     </DrawerHeader>
 
-                    <DrawerBody>
+                    <DrawerBody className={styles.drawerBody}>
                         <CalendarSelector onSelectionChange={onCalendarSelectionChange} />
                         <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
+
+                        <Tree className={styles.wide}>
+                            {courseCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                                <TreeItemLayout>Corsi</TreeItemLayout>
+                                <Tree>
+                                    {courseCalendarSelections.map(calendar =>
+                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
+                                            <TreeItemLayout
+                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                actions={<Button
+                                                    appearance="subtle"
+                                                    icon={<DismissFilled />}
+                                                    onClick={() => setCourseCalendarSelections(courseCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                {calendar.selection.shortName}
+                                            </TreeItemLayout>
+                                        </TreeItem>)}
+                                </Tree>
+                            </TreeItem>}
+                            {classroomCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                                <TreeItemLayout>Aule</TreeItemLayout>
+                                <Tree>
+                                    {classroomCalendarSelections.map(calendar =>
+                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
+                                            <TreeItemLayout
+                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                actions={<Button
+                                                    appearance="subtle"
+                                                    icon={<DismissFilled />}
+                                                    onClick={() => setClassroomCalendarSelections(classroomCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                {calendar.selection.shortName}
+                                            </TreeItemLayout>
+                                        </TreeItem>)}
+                                </Tree>
+                            </TreeItem>}
+                            {teacherCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                                <TreeItemLayout>Docenti</TreeItemLayout>
+                                <Tree>
+                                    {teacherCalendarSelections.map(calendar =>
+                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
+                                            <TreeItemLayout
+                                                iconBefore={getCalendarIcon(calendar.selection.type)}
+                                                actions={<Button
+                                                    appearance="subtle"
+                                                    icon={<DismissFilled />}
+                                                    onClick={() => setTeacherCalendarSelections(teacherCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                {calendar.selection.shortName}
+                                            </TreeItemLayout>
+                                        </TreeItem>)}
+                                </Tree>
+                            </TreeItem>}
+                        </Tree>
                     </DrawerBody>
                 </Drawer>
             </div>
