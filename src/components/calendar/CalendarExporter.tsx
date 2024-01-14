@@ -69,7 +69,7 @@ export function CalendarExporter() {
                 break;
             case "teacher":
                 requests.teacher.all().then(teachers => {
-                    setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
+                    setCalendarSelectors(teachers.map(item => ({ code: item.name, name: item.name, fullName: item.name })));
                 }).catch(() => {
                 });
                 break;

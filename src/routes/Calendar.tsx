@@ -166,37 +166,35 @@ export function Calendar() {
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
-    const onCalendarSelectionChange = async (selection: CalendarSelection[]) => {
+    const onCalendarSelectionChange = async (selection: CalendarSelection) => {
         const getEvents = () => {
             const requestedEvents: EventDto[] = [];
 
-            selection.forEach(element => {
-                switch (element.type) {
-                    case "course":
-                        return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.code)).then((result) => {
-                            result.forEach((event) => event.color = element.color);
-                            requestedEvents.push(...result);
-                        });
-                    case "classroom":
-                        return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.code)).then((result) => {
-                            result.forEach((event) => event.color = element.color);
-                            requestedEvents.push(...result);
-                        });
-                    case "teacher":
-                        return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.code).then((result) => {
-                            result.forEach((event) => event.color = element.color);
-                            requestedEvents.push(...result);
-                        });
-                }
-            });
+            switch (selection.type) {
+                case "course":
+                    return requests.event.byCourse(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
+                        result.forEach((event) => event.color = element.color);
+                        requestedEvents.push(...result);
+                    });
+                case "classroom":
+                    return requests.event.byClassroom(calendarView[0], calendarView[calendarView.length - 1], parseInt(element.id)).then((result) => {
+                        result.forEach((event) => event.color = element.color);
+                        requestedEvents.push(...result);
+                    });
+                case "teacher":
+                    return requests.event.byTeacher(calendarView[0], calendarView[calendarView.length - 1], element.id).then((result) => {
+                        result.forEach((event) => event.color = element.color);
+                        requestedEvents.push(...result);
+                    });
+            }
 
             return requestedEvents;
         };
 
         if (selection.length == 1) {
             setCalendarTitle("Calendario " + selection[0].name);
-        } else { 
-            setCalendarTitle("Calendario Filtrato"); 
+        } else {
+            setCalendarTitle("Calendario Filtrato");
         }
 
         setEvents(await getEvents());
@@ -205,7 +203,7 @@ export function Calendar() {
     // Load default calendar on first render
     useEffect(() => {
         if (!course) return;
-        onCalendarSelectionChange([{ code: course.id.toString(), name: course.code, color: "", display: true, type: "course" }]);
+        onCalendarSelectionChange([{ id: course.id.toString(), name: course.code, color: "", display: true, type: "course" }]);
     }, []);
 
     const renderCalendar = () =>
@@ -214,7 +212,7 @@ export function Calendar() {
 
             const renderPreviewEvents = (events: EventDto[]) => {
                 return events.map((event) => event.start.toLocaleDateString() === day.toLocaleDateString() &&
-                    <Card key={event.id} className={styles.event} style={{backgroundColor: event.color}}>
+                    <Card key={event.id} className={styles.event} style={{ backgroundColor: event.color }}>
                         <Caption1 className={currentView ? styles.eventText : undefined}>{event.subject}</Caption1>
                         <div style={currentView ? { display: "none" } : undefined}>
                             <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
@@ -226,7 +224,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)} style={{backgroundColor: event.color}}>
+                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)} style={{ backgroundColor: event.color }}>
                     <EventDetails event={event} title="subject" now={now} />
                 </Card>
             )) : (<Subtitle2>Nessuna</Subtitle2>);

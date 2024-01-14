@@ -1,20 +1,47 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import { Body1, Button, Combobox, Option, Select, SelectOnChangeData, Tree, TreeItem, TreeItemLayout, makeStyles, shorthands } from "@fluentui/react-components";
-import { BackpackFilled, BuildingFilled, PersonFilled, DismissFilled } from "@fluentui/react-icons";
+import { Body1, Combobox, Option, Select, SelectOnChangeData, makeStyles, shorthands } from "@fluentui/react-components";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
 import { CourseContext } from "../../context/CourseContext";
-import { TokenContext } from "../../context/TokenContext";
-import { useGlobalStyles } from "../../globalStyles";
 import useRequests from "../../libraries/requests/requests";
 
-// TO-SEE: Is there a better way to do this?
-type CalendarTypeCode = "course" | "classroom" | "teacher";
-type CalendarType = { code: CalendarTypeCode, name: string; };
+/**
+ * The available calendar types.
+ */
+export type CalendarType = "course" | "classroom" | "teacher";
 
-export type CalendarSelection = { code: string, name: string, color: string, display: boolean, type: "course" | "classroom" | "teacher" };
+/**
+ * A calendar selection is a calendar that can be selected by the user.
+ * This type is used to populate the calendar selection list.
+ */
+export type CalendarSelection = {
+    /**
+     * The internal ID used by the API to identify the calendar.
+     */
+    id: string,
+    /**
+     * The type of the calendar.
+     */
+    type: CalendarType,
+    /**
+     * A short name for the calendar. This is the text that will be displayed in the combobox when the option is selected.
+     */
+    shortName: string,
+    /**
+     * The full name of the calendar. This is the text that will be displayed in the combobox when browsing the options.
+     */
+    fullName: string,
+};
 
+/**
+ * Properties for the `CalendarSelector` component.
+ */
 export type CalendarSelectorProps = {
-    onSelectionChange: (selection: CalendarSelection[]) => void;
+    /**
+     * Called when a new calendar is selected
+     * @param selection The new selection
+     * @returns 
+     */
+    onSelectionChange: (selection: CalendarSelection) => void;
 };
 
 const useStyles = makeStyles({
@@ -29,123 +56,125 @@ const useStyles = makeStyles({
     }
 });
 
+/**
+ * A component that allows the user to select a calendar.  
+ * When a new calendar is selected, the `onSelectionChange` callback is called,
+ * passing the new selection as a parameter.
+ */
 export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props: CalendarSelectorProps) => {
-    const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
-    const token = useContext(TokenContext).token;
     const { course: userCourse } = useContext(CourseContext);
     const requests = useRequests();
 
-    // Items for the various selectors
-    const calendarTypes: CalendarType[] = [
+    // The available calendar types
+    const [calendarTypes] = useState<{ code: CalendarType, name: string; }[]>(() => [
         { code: "course", name: "Corso", },
         { code: "classroom", name: "Aula" },
         { code: "teacher", name: "Docente" },
-    ];
+    ]);
 
-    const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
+    // Available calendars for the current selected type (If the type is "course", the list will be populated with all the available courses, and so on)
+    const [calendarSelections, setCalendarSelections] = useState<CalendarSelection[]>([]);
 
-    // Selected values
-    const [currentCalendarType, setCurrentCalendarType] = useState<CalendarType>(calendarTypes[0]);
-    const [currentCalendarSelection, setCurrentCalendarSelection] = useState<CalendarSelection>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code, color: "", display: true, type: "course" } : { code: "", name: "", color: "", display: false, type: "course" });
+    // The current selected calendar type
+    const [currentType, setCurrentType] = useState<{ code: CalendarType, name: string; }>(calendarTypes[0]);
 
-    const [selectedCalendars, setSelectedCalendars] = useState<CalendarSelection[]>([]);
+    // The current selected calendar
+    const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
+        id: userCourse?.id.toString() || "" /* TODO Fix course type to not be null */,
+        type: "course",
+        shortName: userCourse?.code || "",
+        fullName: `${userCourse?.code} - ${userCourse?.name}` || ""
+    });
 
     // Call the callback when the selection changes
     useEffect(() => {
-        props.onSelectionChange(selectedCalendars.length > 0 ? selectedCalendars : [currentCalendarSelection]);
-    }, [selectedCalendars]);
+        props.onSelectionChange(currentSelection);
+    }, [currentSelection]);
 
-    // Get calendar selector list
-    useEffect(() => {
-        // Clear selectors, but only if the list is already populated (so always but the first time)
-        if (calendarSelectors.length > 0) {
-            setCurrentCalendarSelection({ code: "", name: "", color: "", display: false, type: "course" });
-            setCalendarSelectors([]);
+    /**
+     * Based on the current selected type, requests the available calendars.  
+     * This function handles which properties of the various calendar types are used to construct each calendar selection.
+     * Example:
+     * - If the current type is "course", the calendar selections will be constructed 
+     * using the course code as the `shortName` property and the course name as the `fullName` property, and so on.
+     * 
+     * All of this is necessary because each type ("course", "classroom" and "teacher") has different properties,
+     * but we need to use the same `CalendarSelection` type when populating the calendar selections list.
+    */
+    const updateCalendarSelections = () => {
+        // Clear available selections, but only if the list is already populated (so always but the first time)
+        if (calendarSelections.length > 0) {
+            setCurrentSelection({ id: "", type: "course", shortName: "", fullName: "" });
+            setCalendarSelections([]);
         }
 
-        switch (currentCalendarType.code) {
+        switch (currentType.code) {
             case "course":
-                requests.course.all().then(courses => {
-                    setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
-                }).catch(() => {
-                });
+                requests.course.all()
+                    .then(courses => {
+                        setCalendarSelections(courses.map(course => ({
+                            id: course.id.toString(),
+                            type: "course",
+                            shortName: course.code,
+                            fullName: `${course.code} - ${course.name}`
+                        })));
+                    })
+                    .catch(console.error);
                 break;
             case "classroom":
-                requests.classroom.all().then(classrooms => {
-                    setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
-                }).catch(() => {
-                });
+                requests.classroom.all()
+                    .then(classrooms => {
+                        setCalendarSelections(classrooms.map(classroom => ({
+                            id: classroom.id.toString(),
+                            type: "classroom",
+                            shortName: classroom.name,
+                            fullName: `Aula ${classroom.name}`
+                        })));
+                    })
+                    .catch(console.error);
                 break;
             case "teacher":
-                requests.teacher.all().then(teachers => {
-                    setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
-                }).catch(() => {
-                });
+                requests.teacher.all()
+                    .then(teachers => {
+                        setCalendarSelections(teachers.map(teacher => ({
+                            id: teacher.name,
+                            type: "teacher",
+                            shortName: teacher.name,
+                            fullName: teacher.name
+                        })));
+                    })
+                    .catch(console.error);
                 break;
             default:
                 console.error("Invalid calendar selector");
                 break;
         }
-    }, [currentCalendarType, token]);
+    };
+
+    // Update available calendar selections list
+    useEffect(() => updateCalendarSelections(), [currentType]);
 
     const onCurrentCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCurrentCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
+        setCurrentType(calendarTypes.find(item => item.code === data.value)!);
     };
 
-    const onCurrentCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-        setCurrentCalendarSelection({ code: data.selectedOptions[0] || "", name: data.optionText || "", color: "", display: true, type: currentCalendarType.code });
-    };
-
-    const addCalendar = () => {
-        // Check if the calendar is already present
-        if (selectedCalendars.find(item => item.code === currentCalendarSelection.code)) {
-            return;
-        }
-
-        // Get a random color
-        const color = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-
-        // Add the calendar
-        setSelectedCalendars([...selectedCalendars, { code: currentCalendarSelection.code, name: currentCalendarSelection.name, color: color, display: true, type: currentCalendarType.code }]);
-    };
-
-    const getCalendarIcon = (type: string) => {
-        switch (type) {
-            case "course":
-                return(<BackpackFilled />);
-            case "classroom":
-                return(<BuildingFilled />);
-            case "teacher":
-                return(<PersonFilled />);
-            default:
-                return undefined;
-        }
+    const onCurrentCalendarSelectionChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
+        setCurrentSelection(calendarSelections.find(selection => selection.id === data.optionValue)!);
     };
 
     return (
         <div className={styles.main}>
             <Body1>Calendario per</Body1>
-            <Select value={currentCalendarType.code} onChange={onCurrentCalendarTypeChange}>
+            <Select value={currentType.code} onChange={onCurrentCalendarTypeChange}>
                 {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
             </Select>
 
-            <Body1 className={globalStyles.horizontalList}>Scegli {currentCalendarType.name.toLowerCase()}</Body1>
-            <Combobox placeholder={`Cerca ${currentCalendarType.name.toLowerCase()}`} defaultValue={currentCalendarSelection.name} defaultSelectedOptions={[currentCalendarSelection.code]} onOptionSelect={onCurrentCalendarSelectorChange}>
-                {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
+            <Body1>Scegli {currentType.name.toLowerCase()}</Body1>
+            <Combobox placeholder={`Cerca ${currentType.name.toLowerCase()}`} defaultValue={currentSelection.shortName} defaultSelectedOptions={[currentSelection.id]} onOptionSelect={onCurrentCalendarSelectionChange}>
+                {calendarSelections.map(selection => <Option key={selection.id} value={selection.id} text={selection.shortName}>{selection.fullName}</Option>)}
             </Combobox>
-            <Button appearance="primary" onClick={addCalendar}>Aggiungi</Button>
-
-
-            <Tree className={styles.wide} style={ selectedCalendars.length === 0 ? { display: "none" } : undefined }>
-                <TreeItem itemType="branch">
-                    <TreeItemLayout>Calendari selezionati</TreeItemLayout>
-                    <Tree>
-                        {selectedCalendars.map(item => <TreeItem itemType="leaf" key={item.code}><TreeItemLayout iconBefore={getCalendarIcon(item.type)} actions={<Button appearance="subtle" icon={<DismissFilled/>} onClick={() => { setSelectedCalendars(selectedCalendars.filter((calendar) => calendar.code !== item.code)) }} />}>{item.name}</TreeItemLayout></TreeItem>)}
-                    </Tree>
-                </TreeItem>
-            </Tree>
         </div>
     );
 };
