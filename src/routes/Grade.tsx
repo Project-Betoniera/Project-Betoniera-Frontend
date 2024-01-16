@@ -92,7 +92,6 @@ export function Grade() {
                                 disabled={groups === null}
                                 value={selectedGroup ? selectedGroup.displayName : undefined}
                                 onOptionSelect={(_, option) => {
-                                    console.log(option.optionValue);
                                     if (option.optionValue === undefined)
                                         setSelectedGroup(undefined);
                                     else
