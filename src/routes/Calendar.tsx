@@ -282,7 +282,7 @@ export function Calendar() {
                 fullName: course.name,
                 type: "course"
             },
-            color: getRandomColor(),
+            color: tokens.colorBrandBackground2Hover,
             enabled: true
         }]);
     }, []);
