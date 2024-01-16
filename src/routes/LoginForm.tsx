@@ -61,6 +61,7 @@ export function LoginForm() {
 
     const setToken = useContext(TokenContext).setToken;
     const setRememberToken = useContext(TokenContext).setRemember;
+    const setIsInvalidToken = useContext(TokenContext).setIsInvalid;
     const { setCourse } = useContext(CourseContext);
 
     const [email, setEmail] = useState<string>("");
@@ -83,6 +84,7 @@ export function LoginForm() {
             if (response.status === 200) {
                 setToken(response.data.token);
                 setRememberToken(remember);
+                setIsInvalidToken(false);
                 setCourse(response.data.course as CourseDto);
             } else {
                 throw new Error("Errore durante il login");

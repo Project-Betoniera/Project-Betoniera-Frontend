@@ -1,7 +1,9 @@
-import { Body1, Body2, Subtitle2, makeStyles } from "@fluentui/react-components";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
+import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import { useGlobalStyles } from '../globalStyles';
+import { TimekeeperContext } from '../context/TimekeeperContext';
 import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {
@@ -26,9 +28,9 @@ export type EventDetailsProps = {
     */
     hide?: ("time" | "subject" | "classroom" | "teacher" | "course")[];
     /**
-     * The current date. Used to display "Ongoing" badge if the event is ongoing.
+     * Type of display. If not set, 'base' will be used.
      */
-    now?: Date;
+    as?: 'card' | 'base' | undefined;
 };
 
 const useStyles = makeStyles({
@@ -56,6 +58,9 @@ const useStyles = makeStyles({
             }
         ],
     },
+    card: {
+        backgroundColor: tokens.colorBrandBackground2Hover
+    },
     removeLinkStyle: {
         color: "inherit",
         ":hover": {
@@ -70,6 +75,7 @@ const useStyles = makeStyles({
  */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
     const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
@@ -92,10 +98,18 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             title = "eventDetails";
     }
 
-    return (
+    const [now, setNow] = useState(() => new Date());
+    const { timekeeper } = useContext(TimekeeperContext);
+    useEffect(() => {
+        const updateTime = () => setNow(new Date());
+        timekeeper.addListener('minute', updateTime);
+        return () => timekeeper.removeListener(updateTime);
+    }, []);
+
+    const content = (
         <div className={styles.root}>
             <Subtitle2>{title}</Subtitle2>
-            {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
+            {now && props.event.start <= now && props.event.end > now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
                 {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
@@ -105,6 +119,16 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             </div>
         </div>
     );
+
+    if (props.as === 'card') {
+        return (
+            <Card className={mergeClasses(globalStyles.card, styles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
+                {content}
+            </Card>
+        );
+    } else {
+        return content;
+    }
 };
 
 export default EventDetails;

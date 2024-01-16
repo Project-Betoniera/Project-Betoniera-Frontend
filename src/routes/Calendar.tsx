@@ -294,7 +294,7 @@ export function Calendar() {
         const selections = [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections].flat();
 
         let color: string | undefined = undefined;
-        for(let selection of selections) {
+        for (let selection of selections) {
             switch (selection.selection.type) {
                 case "course":
                     if (selection.selection.id === event.course.id.toString()) {
@@ -337,9 +337,7 @@ export function Calendar() {
             };
 
             const renderDetailedEvents = (events: EventDto[]) => events && events.length > 0 ? events.map((event) => (
-                <Card key={event.id} className={mergeClasses(globalStyles.eventCard, (event.start <= dateTime && event.end > dateTime) && globalStyles.ongoing)} style={{ backgroundColor: getEventColor(event) }}>
-                    <EventDetails event={event} title="subject" now={now} />
-                </Card>
+                <EventDetails as="card" key={event.id} event={event} title="subject" />
             )) : (<Subtitle2>Nessuna</Subtitle2>);
 
             return (
@@ -388,7 +386,7 @@ export function Calendar() {
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
-                <DateSelector now={now} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
                 <Subtitle2>{calendarTitle}</Subtitle2>
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>

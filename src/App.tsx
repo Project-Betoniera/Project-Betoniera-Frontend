@@ -72,7 +72,7 @@ function App() {
       <PrivacyAlert />
       <OfflineDialog />
       {token && <InstallPwaDialog />}
-      <InvalidTokenDialog />
+      {token && <InvalidTokenDialog />}
       <ProtocolHandler />
       <Routes>
         <Route path="/login" element={<LoginForm />} />

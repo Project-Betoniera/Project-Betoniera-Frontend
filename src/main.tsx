@@ -10,6 +10,7 @@ import { ThemeContextProvider } from "./context/ThemeContext.tsx";
 import { TokenContextProvider } from "./context/TokenContext.tsx";
 import "./main.css";
 import { ensurePlausible } from "./plausible.tsx";
+import { TimekeeperContextProvider } from './context/TimekeeperContext.tsx';
 
 ensurePlausible();
 if (isBetaBuild) console.log("Beta build");
@@ -21,9 +22,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <CourseContextProvider>
           <PwaContextProvider>
             <MessagesContextProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
+              <TimekeeperContextProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </TimekeeperContextProvider>
             </MessagesContextProvider>
           </PwaContextProvider>
         </CourseContextProvider>

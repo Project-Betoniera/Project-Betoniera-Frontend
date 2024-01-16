@@ -1,8 +1,9 @@
-import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2, mergeClasses } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { CourseContext } from "../context/CourseContext";
+import { TimekeeperContext } from '../context/TimekeeperContext';
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
@@ -15,10 +16,19 @@ export function Home() {
     const requests = useRequests();
     const { course } = useContext(CourseContext);
 
-    const [now] = useState(new Date());
-    const [dateTime, setDateTime] = useState(new Date(now));
+    const [now, setNow] = useState(() => new Date());
+    const [dateTime, setDateTime] = useState(() => new Date());
+    const [showEventsSideSpinner, setShowEventsSideSpinner] = useState(false);
     const [events, setEvents] = useState<EventDto[] | null>(null);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+    const [showClassroomsSideSpinner, setShowClassroomsSideSpinner] = useState(false);
+
+    const { timekeeper } = useContext(TimekeeperContext);
+    useEffect(() => {
+        const updateTime = () => setNow(new Date());
+        timekeeper.addListener('minute', updateTime);
+        return () => timekeeper.removeListener(updateTime);
+    }, []);
 
     useEffect(() => {
         const start = new Date(dateTime); // Now
@@ -26,24 +36,30 @@ export function Home() {
         end.setDate(end.getDate() + 1);
         end.setHours(0, 0, 0, 0);
 
-        setEvents(null); // Show spinner
+        // Clear current data and show spinner only if the side spinner is not already visible
+        if (!showEventsSideSpinner)
+            setEvents(null);
 
         requests.event.byCourse(start, end, course?.id || 0, true)
             .then(setEvents)
+            .then(() => setShowEventsSideSpinner(false))
             .catch(console.error); // TODO Handle error
     }, [dateTime]);
 
     useEffect(() => {
+        // Show side spinner spinner only if the main spinner is not already visible (classrooms == null)
+        if (classrooms !== null)
+            setShowClassroomsSideSpinner(true);
+
         requests.classroom.status(now)
             .then(setClassrooms)
+            .then(() => setShowClassroomsSideSpinner(false))
             .catch(console.error); // TODO Handle error
-    }, []);
+    }, [now]);
 
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
-            <Card className={mergeClasses(globalStyles.card, event.start <= now && event.end > now ? globalStyles.ongoing : "")} key={event.id}>
-                <EventDetails event={event} title="subject" hide={["course"]} now={now} />
-            </Card>
+            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
         ))
     ) : (
         <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
@@ -97,8 +113,12 @@ export function Home() {
                     <CardHeader
                         header={<Title2>📚 {course?.code} - Lezioni</Title2>}
                         description={<><Subtitle2>{course?.name}</Subtitle2></>}
+                        action={showEventsSideSpinner ? <Spinner size="small" /> : undefined}
                     />
-                    <DateSelector inputType="day" dateTime={dateTime} setDateTime={setDateTime} now={now} />
+                    <DateSelector autoUpdate={true} inputType="day" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                        setShowEventsSideSpinner(autoUpdated);
+                        setDateTime(newDateTime);
+                    }} />
                 </Card>
                 <div className={globalStyles.grid}>
                     {events ? (renderEvents()) : (<Spinner size="huge" />)}
@@ -110,6 +130,7 @@ export function Home() {
                     <CardHeader
                         header={<Title2>🏫 Aule Libere</Title2>}
                         description={<Subtitle2>Alle {now.toLocaleTimeString([], { timeStyle: "short" })}</Subtitle2>}
+                        action={showClassroomsSideSpinner ? <Spinner size="small" /> : undefined}
                     />
                 </Card>
                 <div className={globalStyles.grid}>
