@@ -16,6 +16,7 @@ import InstallPwaDialog from "./components/InstallPwaDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Calendar } from "./routes/Calendar";
+import { Grade } from './routes/Grade';
 import InvalidTokenDialog from "./components/InvalidTokenDialog";
 
 const useStyles = makeStyles({
@@ -81,6 +82,7 @@ function App() {
           <Route path="/classroom" element={<Classroom />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/calendar-sync" element={<CalendarExport />} />
+          <Route path="/grade" element={<Grade />} />
           <Route path="/about" element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>
