@@ -94,9 +94,9 @@ export function Grade() {
                                 onOptionSelect={(_, option) => {
                                     console.log(option.optionValue);
                                     if (option.optionValue === undefined)
-                                    setSelectedGroup(undefined);
-                                else
-                                setSelectedGroup(groups?.find(g => g.displayName === option.optionValue));
+                                        setSelectedGroup(undefined);
+                                    else
+                                        setSelectedGroup(groups?.find(g => g.displayName === option.optionValue));
                             }}
                             >
                                 {groups !== undefined && groups.map(group => (
