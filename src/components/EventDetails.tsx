@@ -20,6 +20,10 @@ export type EventDetailsProps = {
     */
     customTitle?: string;
     /**
+     * The background color of the card. If not provided, the default background color will be used.
+     */
+    backgroundColor?: string;
+    /**
      * Whether to make the course label a link to see the calendar of the course. Defaults to `false`.
     */
     linkToCalendar?: boolean;
@@ -100,6 +104,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
     const [now, setNow] = useState(() => new Date());
     const { timekeeper } = useContext(TimekeeperContext);
+
     useEffect(() => {
         const updateTime = () => setNow(new Date());
         timekeeper.addListener('minute', updateTime);
@@ -120,15 +125,16 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
         </div>
     );
 
-    if (props.as === 'card') {
-        return (
-            <Card className={mergeClasses(globalStyles.card, styles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
-                {content}
-            </Card>
-        );
-    } else {
-        return content;
-    }
+    return props.as === 'card' ? (
+        <Card
+            // TODO Find a better way to set background color
+            style={{ backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover }}
+            className={mergeClasses(globalStyles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}
+        >
+            {content}
+
+        </Card>
+    ) : content;
 };
 
 export default EventDetails;
