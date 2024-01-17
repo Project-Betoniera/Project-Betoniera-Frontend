@@ -73,6 +73,15 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                     now.getFullYear() === dateTime.getFullYear()
                 );
                 break;
+            case "week": // compare with week precision
+                const firstDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 1, 0, 0, 0, 0);
+                const lastDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 8, 0, 0, 0, 0);
+
+                setIsToday(
+                    now.getTime() > firstDayOfTheWeek.getTime() &&
+                    now.getTime() < lastDayOfTheWeek.getTime()
+                );
+                break;
             case "month": // compare with month precision
                 setIsToday(
                     now.getMonth() === dateTime.getMonth() &&
