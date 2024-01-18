@@ -227,10 +227,23 @@ export function Calendar() {
     };
 
     /**
-     * TODO Make a table with some colors that make sense 
+     * Returns a random color from the internal color palette
      * */
     function getRandomColor() {
-        return `#${Math.floor(Math.random() * 16777215).toString(16)}`; // Generate a random color
+        const colors = [
+            tokens.colorPaletteRedBackground2,
+            tokens.colorPaletteDarkOrangeBackground2,
+            tokens.colorPaletteYellowBackground2,
+            tokens.colorPaletteGreenBackground2,
+            tokens.colorPaletteBlueBackground2,
+            tokens.colorPalettePurpleBackground2,
+            tokens.colorPaletteBerryBackground2,
+            tokens.colorPaletteMarigoldBackground2,
+        ];
+
+        const choice = Math.floor(Math.random() * colors.length);
+
+        return colors[choice]; // Generate a random color
     }
 
     /**
