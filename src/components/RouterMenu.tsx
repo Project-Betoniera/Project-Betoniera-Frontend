@@ -5,6 +5,7 @@ import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled
 import { TokenContext } from '../context/TokenContext';
 import { UserProfile } from './UserProfile';
 import { UserContext } from '../context/UserContext';
+import { RouterButton } from './RouterButton';
 
 const useStyles = makeStyles({
     drawer: {
@@ -17,6 +18,11 @@ const useStyles = makeStyles({
         height: '100%',
 
         marginBottom: '1rem',
+    },
+    displayColumn: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem",
     }
 });
 
@@ -40,11 +46,6 @@ const menuItems = [
         displayName: 'Voti',
         path: '/grade',
         icon: <TaskListSquareLtrFilled />,
-    },
-    {
-        displayName: 'About',
-        path: '/about',
-        icon: <InfoFilled />,
     }
 ];
 
@@ -116,7 +117,10 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
 
                 <DrawerBody className={styles.drawerBody}>
                     <UserProfile />
-                    <Button appearance="primary" icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                    <div className={styles.displayColumn}>
+                        <RouterButton as="a" appearance="secondary" icon={<InfoFilled />} aria-description="about">About</RouterButton>
+                        <Button appearance="primary" icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                    </div>
                 </DrawerBody>
             </Drawer>
         </>
