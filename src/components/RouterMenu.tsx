@@ -1,4 +1,4 @@
-import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle2, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, TaskListSquareLtrFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
@@ -118,7 +118,8 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                 <DrawerBody className={styles.drawerBody}>
                     <UserProfile />
                     <div className={styles.displayColumn}>
-                        <RouterButton as="a" appearance="secondary" icon={<InfoFilled />} aria-description="about">About</RouterButton>
+                        {/* TO-FIND-A-SOLUTION: Find a way to close the drawer after clicking the about page RouterButton! Check mobile version for reason! */}
+                        <RouterButton as="a" appearance="secondary" href="/about" icon={<InfoFilled />} aria-description="about">Informazioni</RouterButton>
                         <Button appearance="primary" icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
                     </div>
                 </DrawerBody>
