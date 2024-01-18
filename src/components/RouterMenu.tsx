@@ -1,7 +1,7 @@
 import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
+import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, TaskListSquareLtrFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
 import { TokenContext } from '../context/TokenContext';
 import { UserProfile } from './UserProfile';
 import { UserContext } from '../context/UserContext';
@@ -35,6 +35,11 @@ const menuItems = [
         displayName: 'Calendario',
         path: '/calendar',
         icon: <CalendarFilled />,
+    },
+    {
+        displayName: 'Voti',
+        path: '/grade',
+        icon: <TaskListSquareLtrFilled />,
     },
     {
         displayName: 'About',

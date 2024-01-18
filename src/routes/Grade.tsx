@@ -1,0 +1,147 @@
+
+import { Card, CardHeader, Combobox, Spinner, Subtitle1, Subtitle2, Title2, Option, DataGrid, createTableColumn, DataGridBody, DataGridHeader, DataGridRow, DataGridCell, DataGridHeaderCell } from "@fluentui/react-components";
+import { useGlobalStyles } from "../globalStyles";
+import { useEffect, useState } from 'react';
+import { GradeDto, GradeGroupDto } from '../dto/GradeDto';
+import useRequests from '../libraries/requests/requests';
+
+export function Grade() {
+    const requests = useRequests();
+    const globalStyles = useGlobalStyles();
+
+    const [groups, setGroups] = useState<GradeGroupDto[] | undefined>(undefined);
+    const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>(undefined);
+    const [grades, setGrades] = useState<GradeDto[] | undefined>(undefined);
+
+    useEffect(() => {
+        requests.grade.groups()
+            .then(g => new Promise<GradeGroupDto[]>(r => setTimeout(() => r(g), 100)))
+            .then(setGroups)
+            .then(() => setSelectedGroup(undefined));
+    }, []);
+
+    useEffect(() => {
+        setGrades(undefined);
+
+        if (selectedGroup !== undefined)
+            requests.grade.forGroup(selectedGroup.code)
+                .then(setGrades);
+    }, [selectedGroup]);
+
+    const dataGridColumns = [
+        createTableColumn<GradeDto>({
+            columnId: 'moduleCode',
+            compare: (a, b) => {
+                return a.module.code.localeCompare(b.module.code);
+            },
+            renderHeaderCell: () => {
+                return 'Codice modulo';
+            },
+            renderCell: (item) => {
+                return item.module.code;
+            },
+        }),
+        createTableColumn<GradeDto>({
+            columnId: 'moduleName',
+            compare: (a, b) => {
+                return a.module.name.localeCompare(b.module.name);
+            },
+            renderHeaderCell: () => {
+                return 'Modulo';
+            },
+            renderCell: (item) => {
+                return item.module.name;
+            },
+        }),
+        createTableColumn<GradeDto>({
+            columnId: 'grade',
+            compare: (a, b) => {
+                const aGrade = a.grade === null ? 0 : a.grade;
+                const bGrade = b.grade === null ? 0 : b.grade
+                return aGrade - bGrade;
+            },
+            renderHeaderCell: () => {
+                return 'Valutazione';
+            },
+            renderCell: (item) => {
+                if (item.grade === null) {
+                    return (<i>Nessuna valutazione</i>);
+                } else {
+                    return item.grade;
+                }
+            },
+        }),
+    ];
+
+    return (
+        <>
+            <div className={globalStyles.container}>
+                <Card className={globalStyles.card}>
+                    <CardHeader
+                        header={<Title2>✅ Voti</Title2>}
+                        description={<Subtitle2>Vedi i tuoi voti</Subtitle2>}
+                    />
+                </Card>
+                <div className={globalStyles.list}>
+                    <Card className={globalStyles.card}>
+                        <Subtitle1>Seleziona anno</Subtitle1>
+                        {groups === undefined ? (
+                            <Spinner size="medium" />
+                        ) : (
+                            <Combobox
+                                disabled={groups === null}
+                                value={selectedGroup ? selectedGroup.displayName : undefined}
+                                onOptionSelect={(_, option) => {
+                                    if (option.optionValue === undefined)
+                                        setSelectedGroup(undefined);
+                                    else
+                                        setSelectedGroup(groups?.find(g => g.displayName === option.optionValue));
+                            }}
+                            >
+                                {groups !== undefined && groups.map(group => (
+                                    <Option key={group.code} value={group.displayName}>
+                                        {group.displayName}
+                                    </Option>
+                                ))}
+                            </Combobox>
+                        )}
+                    </Card>
+                    {(selectedGroup !== undefined || grades !== undefined) && (
+                        <Card className={globalStyles.card}>
+                            {
+                                grades === undefined ? (
+                                    <Spinner size="huge" />
+                                ) : (
+                                    <DataGrid
+                                        items={grades}
+                                        columns={dataGridColumns}
+                                        sortable
+                                    >
+                                        <DataGridHeader>
+                                            <DataGridRow>
+                                                {({ renderHeaderCell }) => (
+                                                    <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
+                                                )}
+                                            </DataGridRow>
+                                        </DataGridHeader>
+                                        <DataGridBody<GradeDto>>
+                                            {({ item, rowId }) => (
+                                                <DataGridRow<GradeDto>
+                                                    key={rowId}
+                                                >
+                                                    {({ renderCell }) => (
+                                                        <DataGridCell>{renderCell(item)}</DataGridCell>
+                                                    )}
+                                                </DataGridRow>
+                                            )}
+                                        </DataGridBody>
+                                    </DataGrid>
+                                )
+                            }
+                        </Card>
+                    )}
+                </div>
+            </div>
+        </>
+    );
+}
