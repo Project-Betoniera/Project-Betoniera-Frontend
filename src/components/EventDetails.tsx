@@ -125,11 +125,12 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
         </div>
     );
 
+    const isOngoning = props.event.start <= now && props.event.end > now;
     return props.as === 'card' ? (
         <Card
             // TODO Find a better way to set background color
-            style={{ backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover }}
-            className={mergeClasses(globalStyles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}
+            style={!isOngoning ? { backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover } : undefined}
+            className={mergeClasses(globalStyles.card, isOngoning && globalStyles.ongoing)}
         >
             {content}
 
