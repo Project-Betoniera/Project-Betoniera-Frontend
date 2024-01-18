@@ -1,4 +1,5 @@
 import { Avatar, Option, Body1, Divider, Dropdown, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { CheckmarkStarburstFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
@@ -46,7 +47,7 @@ const useStyles = makeStyles({
 
 export const UserProfile: React.FC = () => {
     const styles = useStyles();
-    const { name, email } = useContext(UserContext).user;
+    const { name, email, isAdmin } = useContext(UserContext).user;
     const { course } = useContext(UserContext).course;
     const { theme, setTheme } = useContext(ThemeContext);
 
@@ -59,7 +60,7 @@ export const UserProfile: React.FC = () => {
     return (
         <div>
             <div className={styles.userContainer}>
-                <Avatar size={48} />
+                <Avatar size={48} badge={isAdmin ? { icon: <CheckmarkStarburstFilled color="gold"/>, size: "medium" } : undefined}/>
                 <div className={styles.userInfo}>
                     <Subtitle1 className={styles.text}>{name}</Subtitle1>
                     <Body1 className={styles.text}>{email}</Body1>
@@ -69,6 +70,10 @@ export const UserProfile: React.FC = () => {
             <Divider />
             <div className={styles.profileMenu}>
                 <div>
+                    <Subtitle2>Admin</Subtitle2>
+                    <div className={styles.displayRow}>
+
+                    </div>
                     <Subtitle2>Tema</Subtitle2>
                     <div className={styles.displayRow}>
                         <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
