@@ -1,5 +1,4 @@
-
-import { Card, CardHeader, Combobox, Spinner, Subtitle1, Subtitle2, Title2, Option, DataGrid, createTableColumn, DataGridBody, DataGridHeader, DataGridRow, DataGridCell, DataGridHeaderCell } from "@fluentui/react-components";
+import { Card, CardHeader, Spinner, Title2, DataGrid, createTableColumn, DataGridBody, DataGridHeader, DataGridRow, DataGridCell, DataGridHeaderCell, TabList, Tab, Subtitle2 } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
 import { useEffect, useState } from 'react';
 import { GradeDto, GradeGroupDto } from '../dto/GradeDto';
@@ -10,14 +9,13 @@ export function Grade() {
     const globalStyles = useGlobalStyles();
 
     const [groups, setGroups] = useState<GradeGroupDto[] | undefined>(undefined);
-    const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>(undefined);
+    const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>({ code: 'PRI', displayName: 'Primo Anno' });
     const [grades, setGrades] = useState<GradeDto[] | undefined>(undefined);
 
     useEffect(() => {
         requests.grade.groups()
             .then(g => new Promise<GradeGroupDto[]>(r => setTimeout(() => r(g), 100)))
             .then(setGroups)
-            .then(() => setSelectedGroup(undefined));
     }, []);
 
     useEffect(() => {
@@ -67,7 +65,7 @@ export function Grade() {
                 if (item.grade === null) {
                     return (<i>Nessuna valutazione</i>);
                 } else {
-                    return item.grade;
+                    return item.grade + ' / ' + 30;
                 }
             },
         }),
@@ -78,34 +76,25 @@ export function Grade() {
             <div className={globalStyles.container}>
                 <Card className={globalStyles.card}>
                     <CardHeader
-                        header={<Title2>✅ Voti</Title2>}
-                        description={<Subtitle2>Vedi i tuoi voti</Subtitle2>}
+                        header={<Title2>💯 Voti</Title2>}
+                        description={<Subtitle2>Visualizza i tuoi voti</Subtitle2>}
                     />
+                    <TabList
+                        disabled={groups === null}
+                        selectedValue={selectedGroup ? selectedGroup.displayName : undefined}
+                        onTabSelect={(_, option) => {
+                            if (option.value === undefined)
+                                setSelectedGroup(undefined);
+                            else
+                                setSelectedGroup(groups?.find(g => g.displayName === option.value));
+                        }}
+                    >
+                        {groups !== undefined && groups.map(group => (
+                            <Tab key={group.code} value={group.displayName}>{group.displayName}</Tab>
+                        ))}
+                    </TabList>
                 </Card>
                 <div className={globalStyles.list}>
-                    <Card className={globalStyles.card}>
-                        <Subtitle1>Seleziona anno</Subtitle1>
-                        {groups === undefined ? (
-                            <Spinner size="medium" />
-                        ) : (
-                            <Combobox
-                                disabled={groups === null}
-                                value={selectedGroup ? selectedGroup.displayName : undefined}
-                                onOptionSelect={(_, option) => {
-                                    if (option.optionValue === undefined)
-                                        setSelectedGroup(undefined);
-                                    else
-                                        setSelectedGroup(groups?.find(g => g.displayName === option.optionValue));
-                            }}
-                            >
-                                {groups !== undefined && groups.map(group => (
-                                    <Option key={group.code} value={group.displayName}>
-                                        {group.displayName}
-                                    </Option>
-                                ))}
-                            </Combobox>
-                        )}
-                    </Card>
                     {(selectedGroup !== undefined || grades !== undefined) && (
                         <Card className={globalStyles.card}>
                             {
