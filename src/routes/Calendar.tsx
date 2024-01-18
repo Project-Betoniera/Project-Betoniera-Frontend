@@ -265,8 +265,10 @@ export function Calendar() {
         }
     };
 
+    /**
+     * Updates the calendar title based on the current calendar selections
+     */
     function updateCalendarTitle() {
-        // Update calendar title
         if (currentSelections.length == 1) {
             const calendar = currentSelections[0];
             setCalendarTitle(`Calendario per ${calendar.selection.type === "classroom" ? calendar.selection.fullName : calendar.selection.shortName}`);
@@ -303,7 +305,6 @@ export function Calendar() {
                 break;
         }
     };
-
 
     /**
      * Renders the various cards for each day of the month/week in the current calendar view.  
@@ -478,10 +479,10 @@ export function Calendar() {
                         <CalendarSelector onSelectionChange={onCalendarSelectionChange} />
                         <Button appearance="primary" onClick={onAddCalendarClick}>Aggiungi</Button>
 
-                        <Tree className={mergeClasses(styles.wide, styles.scroll)}>
+                        <Tree className={mergeClasses(styles.wide, styles.scroll)} aria-label="main tree">
                             {courseCalendarSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Corsi</TreeItemLayout>
-                                <Tree>
+                                <Tree aria-label="course tree">
                                     {courseCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
@@ -497,7 +498,7 @@ export function Calendar() {
                             </TreeItem>}
                             {classroomCalendarSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Aule</TreeItemLayout>
-                                <Tree>
+                                <Tree aria-label="classroom tree">
                                     {classroomCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
@@ -513,7 +514,7 @@ export function Calendar() {
                             </TreeItem>}
                             {teacherCalendarSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Docenti</TreeItemLayout>
-                                <Tree>
+                                <Tree aria-label="teachers tree">
                                     {teacherCalendarSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
