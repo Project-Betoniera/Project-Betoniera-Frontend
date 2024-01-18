@@ -8,6 +8,8 @@ export const UserContext = createContext({
         setName: (value: string | null) => { console.log(value); },
         email: null as string | null,
         setEmail: (value: string | null) => { console.log(value); },
+        isAdmin: false as boolean | null,
+        setIsAdmin: (value: boolean | null) => { console.log(value); }
     },
     course: {
         course: null as CourseDto | null, 
@@ -19,6 +21,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
 
     const [name, setName] = useState<string | null>(localStorage.getItem("name"));
     const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(typeof localStorage.getItem("isAdmin") === "string" ? Boolean(localStorage.getItem("isAdmin")) : null);
 
     const remember = useContext(TokenContext).remember;
     const [course, setCourse] = useState<CourseDto | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
@@ -40,13 +43,18 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
             localStorage.setItem("email", email);
         else
             localStorage.removeItem("email");
-    }, [course, name]);
+        if (isAdmin !== null && remember)
+            localStorage.setItem("isAdmin", isAdmin.toString());
+        else
+            localStorage.removeItem("isAdmin");
+    }, [course, name, email, isAdmin]);
 
     return (
         <UserContext.Provider value={{
             user: {
                 name, setName,
                 email, setEmail,
+                isAdmin, setIsAdmin
             },
             course: {
                 course, setCourse

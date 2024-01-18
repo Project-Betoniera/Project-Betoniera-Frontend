@@ -65,7 +65,7 @@ export function LoginForm() {
     const setRememberToken = useContext(TokenContext).setRemember;
     const setIsInvalidToken = useContext(TokenContext).setIsInvalid;
     const { setCourse } = useContext(UserContext).course;
-    const { setName: setUserName, setEmail: setUserEmail } = useContext(UserContext).user;
+    const { setName: setUserName, setEmail: setUserEmail, setIsAdmin: setIsUserAdmin } = useContext(UserContext).user;
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -91,6 +91,7 @@ export function LoginForm() {
                 setCourse(response.data.course as CourseDto);
                 setUserName(response.data.user.name);
                 setUserEmail(response.data.user.email);
+                setIsUserAdmin(response.data.user.isAdmin);
             } else {
                 throw new Error("Errore durante il login");
             }

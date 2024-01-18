@@ -1,4 +1,4 @@
-import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle2, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
 import { FunctionComponent, useContext, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, TaskListSquareLtrFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
@@ -53,7 +53,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
     const styles = useStyles();
     const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
     const { setCourse } = useContext(UserContext).course;
-    const { setName: setUserName, setEmail: setUserEmail } = useContext(UserContext).user;
+    const { setName: setUserName, setEmail: setUserEmail, setIsAdmin: setIsUserAdmin } = useContext(UserContext).user;
 
     const logout = () => {
         setToken(null);
@@ -62,6 +62,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
         setCourse(null);
         setUserName(null);
         setUserEmail(null);
+        setIsUserAdmin(null);
     };
 
     useLocation();
