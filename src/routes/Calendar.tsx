@@ -490,6 +490,7 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
+                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
@@ -518,6 +519,7 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
+                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
@@ -546,6 +548,7 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
+                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
