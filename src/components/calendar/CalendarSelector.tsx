@@ -68,17 +68,17 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     const requests = useRequests();
 
     // The available calendar types
-    const [calendarTypes] = useState<{ code: CalendarType, name: string; }[]>(() => [
+    const [types] = useState<{ code: CalendarType, name: string; }[]>(() => [
         { code: "course", name: "Corso", },
         { code: "classroom", name: "Aula" },
         { code: "teacher", name: "Docente" },
     ]);
 
     // Available calendars for the current selected type (If the type is "course", the list will be populated with all the available courses, and so on)
-    const [calendarSelections, setCalendarSelections] = useState<CalendarSelection[]>([]);
+    const [selections, setSelections] = useState<CalendarSelection[]>([]);
 
     // The current selected calendar type
-    const [currentType, setCurrentType] = useState<{ code: CalendarType, name: string; }>(calendarTypes[0]);
+    const [currentType, setCurrentType] = useState<{ code: CalendarType, name: string; }>(types[0]);
 
     // The current selected calendar
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -87,18 +87,6 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         shortName: userCourse?.code || "",
         fullName: `${userCourse?.code} - ${userCourse?.name}` || ""
     });
-
-    // Call the callback when the selection changes
-    useEffect(() => {
-        // Ignore empty selection
-        if (currentSelection.id === "" &&
-            currentSelection.shortName === "" &&
-            currentSelection.fullName === "")
-            return;
-
-        // If selection is not empty, call the callback
-        props.onSelectionChange(currentSelection);
-    }, [currentSelection]);
 
     /**
      * Based on the current selected type, requests the available calendars.  
@@ -110,18 +98,18 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
      * All of this is necessary because each type ("course", "classroom" and "teacher") has different properties,
      * but we need to use the same `CalendarSelection` type when populating the calendar selections list.
     */
-    const updateCalendarSelections = () => {
+    function updateAvailableSelections() {
         // Clear available selections, but only if the list is already populated (so always but the first time)
-        if (calendarSelections.length > 0) {
+        if (selections.length > 0) {
             setCurrentSelection({ id: "", type: "course", shortName: "", fullName: "" });
-            setCalendarSelections([]);
+            setSelections([]);
         }
 
         switch (currentType.code) {
             case "course":
                 requests.course.all()
                     .then(courses => {
-                        setCalendarSelections(courses.map(course => ({
+                        setSelections(courses.map(course => ({
                             id: course.id.toString(),
                             type: "course",
                             shortName: course.code,
@@ -133,7 +121,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
             case "classroom":
                 requests.classroom.all()
                     .then(classrooms => {
-                        setCalendarSelections(classrooms.map(classroom => ({
+                        setSelections(classrooms.map(classroom => ({
                             id: classroom.id.toString(),
                             type: "classroom",
                             shortName: classroom.name,
@@ -145,7 +133,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
             case "teacher":
                 requests.teacher.all()
                     .then(teachers => {
-                        setCalendarSelections(teachers.map(teacher => ({
+                        setSelections(teachers.map(teacher => ({
                             id: teacher.name,
                             type: "teacher",
                             shortName: teacher.name,
@@ -160,29 +148,51 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
         }
     };
 
-    // Update available calendar selections list
-    useEffect(() => updateCalendarSelections(), [currentType]);
-
-    const onCurrentCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCurrentType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
-    };
-
-    const onCurrentCalendarSelectionChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-        const selection = calendarSelections.find(selection => selection.id === data.optionValue);
+    /**
+     * Called when a new calendar is selected in the combobox.  
+     * If the selection is not valid, it doesn't get set,
+     * and the old selection is kept.
+     */
+    function onCurrentSelectionChange(_event: SelectionEvents, data: OptionOnSelectData) {
+        const selection = selections.find(selection => selection.id === data.optionValue);
         if (!selection) return;
         setCurrentSelection(selection);
     };
 
+    /**
+     * Called when the user selects a new calendar type in the combobox.  
+     * If for some reason the current selection is not valid,
+     * the selection is reset to the first available one.
+     */
+    function onCurrentTypeChange(_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) {
+        setCurrentType(types.find(item => item.code === data.value) || types[0]);
+    };
+
+    // Update available calendar selections list
+    useEffect(updateAvailableSelections, [currentType]);
+
+    // Calls the callback function if a new valid calendar selection is selected
+    useEffect(() => {
+        // Ignore empty selection
+        if (currentSelection.id === "" &&
+            currentSelection.shortName === "" &&
+            currentSelection.fullName === "")
+            return;
+
+        // If selection is not empty, call the callback
+        props.onSelectionChange(currentSelection);
+    }, [currentSelection]);
+
     return (
         <div className={styles.main}>
             <Body1>Calendario per</Body1>
-            <Select value={currentType.code} onChange={onCurrentCalendarTypeChange}>
-                {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
+            <Select value={currentType.code} onChange={onCurrentTypeChange}>
+                {types.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
             </Select>
 
             <Body1>Scegli {currentType.name.toLowerCase()}</Body1>
-            <Combobox placeholder={`Cerca ${currentType.name.toLowerCase()}`} defaultValue={currentSelection.shortName} defaultSelectedOptions={[currentSelection.id]} onOptionSelect={onCurrentCalendarSelectionChange}>
-                {calendarSelections.map(selection => <Option key={selection.id} value={selection.id} text={selection.shortName}>{selection.fullName}</Option>)}
+            <Combobox placeholder={`Cerca ${currentType.name.toLowerCase()}`} defaultValue={currentSelection.shortName} defaultSelectedOptions={[currentSelection.id]} onOptionSelect={onCurrentSelectionChange}>
+                {selections.map(selection => <Option key={selection.id} value={selection.id} text={selection.shortName}>{selection.fullName}</Option>)}
             </Combobox>
         </div>
     );
