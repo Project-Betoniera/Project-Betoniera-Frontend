@@ -1,5 +1,5 @@
-import { Body1, Button, Subtitle2, makeStyles } from "@fluentui/react-components";
-import { ArrowSyncCircleFilled, HandRightRegular } from "@fluentui/react-icons";
+import { Badge, Body1, Button, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled } from "@fluentui/react-icons";
 import { useEffect, useState } from "react";
 import useRequests from "../libraries/requests/requests";
 import { Status } from "../dto/StatusDto";
@@ -75,9 +75,9 @@ export default function AdminPanel() {
         <>
             <div className={styles.container}>
                 <Subtitle2>Admin Panel</Subtitle2>
-                {status?.lastRefreshError && <Body1>ERROR during last cache refresh!</Body1>}
+                {status?.lastRefreshError && <Badge appearance="filled" color="severe">Errore durante l'ultimo aggiornamento!</Badge>}
                 <Body1>Ultimo aggiornamento: {status?.lastRefresh.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</Body1>
-                <Button appearance="primary" icon={!isUpdating ? <ArrowSyncCircleFilled /> : <HandRightRegular className={styles.blinkAnimation} />} disabled={isUpdating} onClick={updateCache}>{!isUpdating ? "Update Cache NOW!" : "Update in Progress..."}</Button>
+                <Button appearance="primary" icon={!isUpdating ? <ArrowSyncCircleFilled /> : <HandRightRegular className={styles.blinkAnimation} />} disabled={isUpdating} onClick={updateCache}>{!isUpdating ? "Aggiorna ORA!" : "Aggiornamento in corso..."}</Button>
             </div>
         </>
     );
