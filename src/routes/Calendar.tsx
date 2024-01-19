@@ -493,6 +493,7 @@ export function Calendar() {
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="enable/disable calendar"
                                                         icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
                                                         onClick={() => setCourseSelections(courseSelections.map((item) => {
                                                             if (item.selection.id === calendar.selection.id) {
@@ -502,6 +503,7 @@ export function Calendar() {
                                                         }))} />
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="remove calendar"
                                                         icon={<DismissFilled />}
                                                         onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
@@ -519,6 +521,7 @@ export function Calendar() {
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="enable/disable calendar"
                                                         icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
                                                         onClick={() => setClassroomSelections(classroomSelections.map((item) => {
                                                             if (item.selection.id === calendar.selection.id) {
@@ -528,6 +531,7 @@ export function Calendar() {
                                                         }))} />
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="remove calendar"
                                                         icon={<DismissFilled />}
                                                         onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
@@ -545,6 +549,7 @@ export function Calendar() {
                                                 actions={<>
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="enable/disable calendar"
                                                         icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
                                                         onClick={() => setTeacherSelections(teacherSelections.map((item) => {
                                                             if (item.selection.id === calendar.selection.id) {
@@ -554,6 +559,7 @@ export function Calendar() {
                                                         }))} />
                                                     <Button
                                                         appearance="subtle"
+                                                        aria-label="remove calendar"
                                                         icon={<DismissFilled />}
                                                         onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
