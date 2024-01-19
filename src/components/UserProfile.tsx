@@ -60,7 +60,7 @@ export const UserProfile: React.FC = () => {
     return (
         <div>
             <div className={styles.userContainer}>
-                <Avatar size={48} badge={isAdmin ? { icon: <CheckmarkStarburstFilled color="gold"/>, size: "medium" } : undefined}/>
+                <Avatar size={48} badge={isAdmin ? { icon: <CheckmarkStarburstFilled color="gold" />, size: "medium" } : undefined} />
                 <div className={styles.userInfo}>
                     <Subtitle1 className={styles.text}>{name}</Subtitle1>
                     <Body1 className={styles.text}>{email}</Body1>
@@ -70,9 +70,11 @@ export const UserProfile: React.FC = () => {
             <Divider />
             <div className={styles.profileMenu}>
                 <div>
-                    <Subtitle2>Admin</Subtitle2>
-                    <div className={styles.displayRow}>
-
+                    <div style={{ display: isAdmin ? "unset" :"none" }}>
+                        <Subtitle2>Admin</Subtitle2>
+                        <div className={styles.displayRow}>
+                            <Body1>{isAdmin ? "You are an ADMIN!" : "No..."}</Body1>
+                        </div>
                     </div>
                     <Subtitle2>Tema</Subtitle2>
                     <div className={styles.displayRow}>
