@@ -3,6 +3,7 @@ import { CheckmarkStarburstFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
+import AdminPanel from "./AdminPanel";
 
 const useStyles = makeStyles({
     userContainer: {
@@ -71,10 +72,7 @@ export const UserProfile: React.FC = () => {
             <div className={styles.profileMenu}>
                 <div>
                     <div style={{ display: isAdmin ? "unset" :"none" }}>
-                        <Subtitle2>Admin</Subtitle2>
-                        <div className={styles.displayRow}>
-                            <Body1>{isAdmin ? "You are an ADMIN!" : "No..."}</Body1>
-                        </div>
+                        <AdminPanel />
                     </div>
                     <Subtitle2>Tema</Subtitle2>
                     <div className={styles.displayRow}>
