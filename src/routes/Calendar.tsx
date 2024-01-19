@@ -1,5 +1,5 @@
 import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled } from "@fluentui/react-icons";
+import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled, EyeFilled, EyeOffFilled } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -490,10 +490,20 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                actions={<Button
-                                                    appearance="subtle"
-                                                    icon={<DismissFilled />}
-                                                    onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                actions={<>
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
+                                                        onClick={() => setCourseSelections(courseSelections.map((item) => {
+                                                            if (item.selection.id === calendar.selection.id) {
+                                                                item.enabled = !item.enabled;
+                                                            }
+                                                            return item;
+                                                        }))} />
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={<DismissFilled />}
+                                                        onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
@@ -506,10 +516,20 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                actions={<Button
-                                                    appearance="subtle"
-                                                    icon={<DismissFilled />}
-                                                    onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                actions={<>
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
+                                                        onClick={() => setClassroomSelections(classroomSelections.map((item) => {
+                                                            if (item.selection.id === calendar.selection.id) {
+                                                                item.enabled = !item.enabled;
+                                                            }
+                                                            return item;
+                                                        }))} />
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={<DismissFilled />}
+                                                        onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
@@ -522,10 +542,20 @@ export function Calendar() {
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                actions={<Button
-                                                    appearance="subtle"
-                                                    icon={<DismissFilled />}
-                                                    onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                actions={<>
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
+                                                        onClick={() => setTeacherSelections(teacherSelections.map((item) => {
+                                                            if (item.selection.id === calendar.selection.id) {
+                                                                item.enabled = !item.enabled;
+                                                            }
+                                                            return item;
+                                                        }))} />
+                                                    <Button
+                                                        appearance="subtle"
+                                                        icon={<DismissFilled />}
+                                                        onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
