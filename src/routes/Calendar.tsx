@@ -280,18 +280,15 @@ export function Calendar() {
     /** 
      * Add the current calendar selection to the list of selections
      * */
-    function onAddCalendarClick() {
+    async function onAddCalendarClick() {
         if (!currentSelection) return;
 
         const calendar: Calendar = {
-            events: [], // Initialize events to an empty array
+            events: await getEvents(currentSelection),
             selection: currentSelection,
             color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
             enabled: true
         };
-
-        // Get events for the current calendar selection
-        getEvents(currentSelection).then(result => { calendar.events = result; });
 
         switch (currentSelection.type) {
             case "course":
@@ -436,7 +433,7 @@ export function Calendar() {
     };
 
     // Load the user default calendar on first render (user course)
-    useEffect(onAddCalendarClick, []);
+    useEffect(() => { onAddCalendarClick(); }, []);
 
     // Update calendar title when calendar selections change
     useEffect(updateCalendarTitle, [mergedSelections]);
