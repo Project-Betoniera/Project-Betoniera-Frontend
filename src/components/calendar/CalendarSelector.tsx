@@ -90,6 +90,13 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
 
     // Call the callback when the selection changes
     useEffect(() => {
+        // Ignore empty selection
+        if (currentSelection.id === "" &&
+            currentSelection.shortName === "" &&
+            currentSelection.fullName === "")
+            return;
+
+        // If selection is not empty, call the callback
         props.onSelectionChange(currentSelection);
     }, [currentSelection]);
 
@@ -157,11 +164,13 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     useEffect(() => updateCalendarSelections(), [currentType]);
 
     const onCurrentCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCurrentType(calendarTypes.find(item => item.code === data.value)!);
+        setCurrentType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
     };
 
     const onCurrentCalendarSelectionChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-        setCurrentSelection(calendarSelections.find(selection => selection.id === data.optionValue)!);
+        const selection = calendarSelections.find(selection => selection.id === data.optionValue);
+        if (!selection) return;
+        setCurrentSelection(selection);
     };
 
     return (
