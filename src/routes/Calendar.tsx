@@ -14,7 +14,7 @@ const useStyles = makeStyles({
     drawerBody: {
         display: "flex",
         flexDirection: "column",
-        rowGap: "0.5rem"
+        rowGap: "0.5rem",
     },
     drawerContainer: {
         display: "flex",
@@ -24,7 +24,7 @@ const useStyles = makeStyles({
         ...shorthands.gap("0.5rem"),
     },
     drawer: {
-        ...shorthands.borderRadius(tokens.borderRadiusMedium)
+        ...shorthands.borderRadius(tokens.borderRadiusMedium),
     },
     container: {
         display: "flex",
@@ -43,8 +43,8 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 578px)": {
             justifyContent: "stretch",
             flexDirection: "column",
-            alignItems: "unset"
-        }
+            alignItems: "unset",
+        },
     },
     toolbarButtons: {
         display: "flex",
@@ -53,12 +53,12 @@ const useStyles = makeStyles({
         justifyContent: "flex-end",
         "@media (max-width: 578px)": {
             justifyContent: "space-between",
-        }
+        },
     },
     syncButton: {
         "@media screen and (max-width: 578px)": {
             flexGrow: 1,
-        }
+        },
     },
     calendarHeader: {
         display: "grid",
@@ -68,7 +68,7 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 578px)": {
             ...shorthands.margin("0.2rem"),
             columnGap: "0.2rem",
-        }
+        },
     },
     headerItem: {
         textAlign: "center",
@@ -78,7 +78,7 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         flexGrow: "1",
-        minHeight: "14rem"
+        minHeight: "14rem",
     },
     calendar: {
         position: "absolute",
@@ -98,24 +98,24 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 578px)": {
             ...shorthands.gap("0"),
             ...shorthands.padding("0.2rem"),
-        }
+        },
     },
     todayBadge: {
         backgroundColor: tokens.colorBrandBackground,
         ":hover": {
-            backgroundColor: tokens.colorBrandBackgroundHover
+            backgroundColor: tokens.colorBrandBackgroundHover,
         },
-        color: "white"
+        color: "white",
     },
     eventIndicator: {
         "@media (min-width: 351px)": {
             display: "none",
-        }
+        },
     },
     verticalEventIndicator: {
         "@media (max-width: 350px), (min-height: 601px)": {
             display: "none",
-        }
+        },
     },
     eventContainer: {
         display: "flex",
@@ -160,7 +160,7 @@ const useStyles = makeStyles({
         gridAutoFlow: "column",
         gridAutoColumns: "1fr",
         columnGap: "1rem",
-        ...shorthands.margin("0.5rem")
+        ...shorthands.margin("0.5rem"),
     },
     dialogCalendarView: {
         display: "flex",
@@ -171,7 +171,7 @@ const useStyles = makeStyles({
         display: "grid",
         gridAutoRows: "1fr",
         rowGap: "0.5rem",
-    }
+    },
 });
 
 type Calendar = {
@@ -192,7 +192,7 @@ export function Calendar() {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
         weekDays: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
-        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
+        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"],
     };
 
     const [now] = useState(new Date());
@@ -204,7 +204,7 @@ export function Calendar() {
     const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
-    const [currentCalendarSelection, setCurrentCalendarSelection] = useState<CalendarSelection>({
+    const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
         id: course?.id.toString() || "",
         type: "course",
         shortName: course?.code || "",
@@ -212,18 +212,18 @@ export function Calendar() {
     });
 
     // Calendar selections for each type
-    const [courseCalendarSelections, setCourseCalendarSelections] = useState<Calendar[]>([]);
-    const [classroomCalendarSelections, setClassroomCalendarSelections] = useState<Calendar[]>([]);
-    const [teacherCalendarSelections, setTeacherCalendarSelections] = useState<Calendar[]>([]);
+    const [courseSelections, setCourseSelections] = useState<Calendar[]>([]);
+    const [classroomSelections, setClassroomSelections] = useState<Calendar[]>([]);
+    const [teacherSelections, setTeacherSelections] = useState<Calendar[]>([]);
 
     // Merged calendar selections
-    const currentSelections = [courseCalendarSelections, classroomCalendarSelections, teacherCalendarSelections].flat();
+    const mergedSelections = [courseSelections, classroomSelections, teacherSelections].flat();
 
     /**
      * Called when the user selects a new calendar with the `CalendarSelector` component 
      * */
     function onCalendarSelectionChange(selection: CalendarSelection) {
-        setCurrentCalendarSelection(selection);
+        setCurrentSelection(selection);
     };
 
     /**
@@ -269,8 +269,8 @@ export function Calendar() {
      * Updates the calendar title based on the current calendar selections
      */
     function updateCalendarTitle() {
-        if (currentSelections.length == 1) {
-            const calendar = currentSelections[0];
+        if (mergedSelections.length == 1) {
+            const calendar = mergedSelections[0];
             setCalendarTitle(`Calendario per ${calendar.selection.type === "classroom" ? calendar.selection.fullName : calendar.selection.shortName}`);
         } else {
             setCalendarTitle("Visualizzazione personalizzata");
@@ -280,28 +280,31 @@ export function Calendar() {
     /** 
      * Add the current calendar selection to the list of selections
      * */
-    async function onAddCalendarClick() {
-        if (!currentCalendarSelection) return;
+    function onAddCalendarClick() {
+        if (!currentSelection) return;
 
         const calendar: Calendar = {
-            events: await getEvents(currentCalendarSelection),
-            selection: currentCalendarSelection,
-            color: parseInt(currentCalendarSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
+            events: [], // Initialize events to an empty array
+            selection: currentSelection,
+            color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
             enabled: true
         };
 
-        switch (currentCalendarSelection.type) {
+        // Get events for the current calendar selection
+        getEvents(currentSelection).then(result => { calendar.events = result; });
+
+        switch (currentSelection.type) {
             case "course":
-                if (courseCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
-                setCourseCalendarSelections([...courseCalendarSelections, calendar]);
+                if (courseSelections.find(item => item.selection.id === currentSelection.id)) return;
+                setCourseSelections([...courseSelections, calendar]);
                 break;
             case "classroom":
-                if (classroomCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
-                setClassroomCalendarSelections([...classroomCalendarSelections, calendar]);
+                if (classroomSelections.find(item => item.selection.id === currentSelection.id)) return;
+                setClassroomSelections([...classroomSelections, calendar]);
                 break;
             case "teacher":
-                if (teacherCalendarSelections.find(item => item.selection.id === currentCalendarSelection.id)) return;
-                setTeacherCalendarSelections([...teacherCalendarSelections, calendar]);
+                if (teacherSelections.find(item => item.selection.id === currentSelection.id)) return;
+                setTeacherSelections([...teacherSelections, calendar]);
                 break;
         }
     };
@@ -317,7 +320,7 @@ export function Calendar() {
          * If more calendars are selected, the events are rendered in the order of the calendars.
          */
         function renderPreviewEvents(day: Date) {
-            return currentSelections
+            return mergedSelections
                 // Filter out disabled calendars
                 .filter(calendar => calendar.enabled)
                 // Cycle through all enabled calendars
@@ -355,7 +358,7 @@ export function Calendar() {
         function renderDetailedEvents(day: Date) {
             return (
                 <div className={styles.dialogCalendarViewsContainer}>
-                    {currentSelections
+                    {mergedSelections
                         // Filter out disabled calendars
                         .filter(calendar => calendar.enabled)
                         // Cycle through all enabled calendars
@@ -416,24 +419,27 @@ export function Calendar() {
         });
     };
 
-    const getCalendarIcon = (type: string, calendar: Calendar) => {
+    /**
+     * Returns the appropriate icon for the specified calendar type
+     */
+    function getCalendarIcon(type: string, calendar: Calendar) {
         switch (type) {
             case "course":
-                return (<BackpackFilled style={{ color: calendar.color }} />);
+                return (<BackpackFilled color={calendar.color} />);
             case "classroom":
-                return (<BuildingFilled style={{ color: calendar.color }} />);
+                return (<BuildingFilled color={calendar.color} />);
             case "teacher":
-                return (<PersonFilled style={{ color: calendar.color }} />);
+                return (<PersonFilled color={calendar.color} />);
             default:
                 return undefined;
         }
     };
 
-    // Load the user default calendar (user course)
-    useEffect(() => { onAddCalendarClick(); }, []);
+    // Load the user default calendar on first render (user course)
+    useEffect(onAddCalendarClick, []);
 
     // Update calendar title when calendar selections change
-    useEffect(() => { updateCalendarTitle(); }, [currentSelections]);
+    useEffect(updateCalendarTitle, [mergedSelections]);
 
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
@@ -480,49 +486,49 @@ export function Calendar() {
                         <Button appearance="primary" onClick={onAddCalendarClick}>Aggiungi</Button>
 
                         <Tree className={mergeClasses(styles.wide, styles.scroll)} aria-label="main tree">
-                            {courseCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                            {courseSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Corsi</TreeItemLayout>
                                 <Tree aria-label="course tree">
-                                    {courseCalendarSelections.map(calendar =>
+                                    {courseSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
-                                                    onClick={() => setCourseCalendarSelections(courseCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                    onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
                                 </Tree>
                             </TreeItem>}
-                            {classroomCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                            {classroomSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Aule</TreeItemLayout>
                                 <Tree aria-label="classroom tree">
-                                    {classroomCalendarSelections.map(calendar =>
+                                    {classroomSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
-                                                    onClick={() => setClassroomCalendarSelections(classroomCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                    onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
                                 </Tree>
                             </TreeItem>}
-                            {teacherCalendarSelections.length > 0 && <TreeItem itemType="branch">
+                            {teacherSelections.length > 0 && <TreeItem itemType="branch">
                                 <TreeItemLayout>Docenti</TreeItemLayout>
                                 <Tree aria-label="teachers tree">
-                                    {teacherCalendarSelections.map(calendar =>
+                                    {teacherSelections.map(calendar =>
                                         <TreeItem itemType="leaf" key={calendar.selection.id}>
                                             <TreeItemLayout
                                                 iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
                                                 actions={<Button
                                                     appearance="subtle"
                                                     icon={<DismissFilled />}
-                                                    onClick={() => setTeacherCalendarSelections(teacherCalendarSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
+                                                    onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} />}>
                                                 {calendar.selection.shortName}
                                             </TreeItemLayout>
                                         </TreeItem>)}
