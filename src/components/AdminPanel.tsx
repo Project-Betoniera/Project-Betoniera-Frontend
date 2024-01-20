@@ -18,7 +18,7 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column",
         overflowY: "scroll",
-        ...shorthands.margin("0", "0.5rem", "0.5rem", "0.5rem"),
+        ...shorthands.margin("0rem", "0.5rem", "0rem", "0.5rem"),
         ...shorthands.gap("0.5rem")
     },
     form: {
@@ -126,7 +126,7 @@ export default function AdminPanel() {
 
         function removeMessage(message: MessageDto) {
             setRequestInProgress(true);
-            
+
             // Reset form if the message being deleted is the one currently being modified
             if (message.id === messageId) resetForm();
 
