@@ -1,6 +1,6 @@
 import { Badge, Body1, Button, Checkbox, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider, Field, Input, Label, Link, MessageBar, MessageBarActions, MessageBarBody, MessageBarGroup, MessageBarTitle, Select, Subtitle2, makeStyles, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled, CommentEditFilled, DismissRegular } from "@fluentui/react-icons";
-import { useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import useRequests from "../libraries/requests/requests";
 import { Status } from "../dto/StatusDto";
 import { MessagesContext } from "../context/MessagesContext";
@@ -148,7 +148,9 @@ export default function AdminPanel() {
             });
         }
 
-        function addMessage() {
+        function addMessage(e: FormEvent) {
+            e.preventDefault();
+
             if (!title || !matchPath || !intent) return setFormError(true);
             setRequestInProgress(true);
 
@@ -165,7 +167,9 @@ export default function AdminPanel() {
             });
         }
 
-        function modifyMessage() {
+        function modifyMessage(e: FormEvent) {
+            e.preventDefault();
+
             setRequestInProgress(true);
             if (!messageId || !title || !matchPath || !intent) return setFormError(true);
 
