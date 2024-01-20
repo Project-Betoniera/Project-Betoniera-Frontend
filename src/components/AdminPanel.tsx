@@ -1,4 +1,4 @@
-import { Badge, Body1, Button, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { Badge, Body1, Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Subtitle2, makeStyles } from "@fluentui/react-components";
 import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled } from "@fluentui/react-icons";
 import { useEffect, useState } from "react";
 import useRequests from "../libraries/requests/requests";
@@ -33,6 +33,7 @@ export default function AdminPanel() {
 
     const [status, setStatus] = useState<Status>();
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isMessagesDialogOpen, setIsMessagesDialogOpen] = useState(false);
 
     useEffect(() => {
         getStatus();
@@ -71,12 +72,34 @@ export default function AdminPanel() {
         });
     };
 
+    function messagesDialog() {
+        return (
+            <Dialog modalType="alert" open={isMessagesDialogOpen} onOpenChange={(_event, data) => { setIsMessagesDialogOpen(data.open) }}>
+                <DialogSurface>
+                    <DialogBody>
+                        <DialogTitle>Gestisci Messaggi</DialogTitle>
+                        <DialogContent>
+                            <Body1>TODO</Body1>
+                        </DialogContent>
+                    </DialogBody>
+                    <DialogActions>
+                        <DialogTrigger>
+                            <Button appearance="primary">Chiudi</Button>
+                        </DialogTrigger>
+                    </DialogActions>
+                </DialogSurface>
+            </Dialog>
+        );
+    }
+
     return (
         <>
             <div className={styles.container}>
                 <Subtitle2>Admin Panel</Subtitle2>
                 {status?.lastRefreshError && <Badge appearance="filled" color="severe">Errore durante l'ultimo aggiornamento!</Badge>}
                 <Body1>Ultimo aggiornamento: {status?.lastRefresh.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</Body1>
+                <Button appearance="secondary" icon={<CommentNoteFilled />} onClick={() => setIsMessagesDialogOpen(true)}>Gestisci Messaggi</Button>
+                {messagesDialog()}
                 <Button appearance="primary" icon={!isUpdating ? <ArrowSyncCircleFilled /> : <HandRightRegular className={styles.blinkAnimation} />} disabled={isUpdating} onClick={updateCache}>{!isUpdating ? "Aggiorna ORA!" : "Aggiornamento in corso..."}</Button>
             </div>
         </>
