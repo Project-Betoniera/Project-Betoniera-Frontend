@@ -126,6 +126,10 @@ export default function AdminPanel() {
 
         function removeMessage(message: MessageDto) {
             setRequestInProgress(true);
+            
+            // Reset form if the message being deleted is the one currently being modified
+            if (message.id === messageId) resetForm();
+
             requests.message.delete(message.id).then((response) => {
                 if (response) {
                     getMessages();
