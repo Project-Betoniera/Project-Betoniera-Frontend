@@ -1,4 +1,4 @@
-import { Avatar, Option, Body1, Divider, Dropdown, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { Avatar, Body1, Divider, Dropdown, Option, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
 import { CheckmarkStarburstFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
@@ -56,7 +56,7 @@ export const UserProfile: React.FC = () => {
         "auto": "Automatico",
         "light": "Chiaro",
         "dark": "Scuro",
-    }
+    };
 
     return (
         <div>
@@ -70,18 +70,16 @@ export const UserProfile: React.FC = () => {
             </div>
             <Divider />
             <div className={styles.profileMenu}>
-                <div>
-                    <div style={{ display: isAdmin ? "unset" :"none" }}>
-                        <AdminPanel />
-                    </div>
-                    <Subtitle2>Tema</Subtitle2>
-                    <div className={styles.displayRow}>
-                        <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
-                            <Option value="auto" text="Automatico">Automatico</Option>
-                            <Option value="light" text="Chiaro">Chiaro</Option>
-                            <Option value="dark" text="Scuro">Scuro</Option>
-                        </Dropdown>
-                    </div>
+                <div style={{ display: isAdmin ? "unset" : "none" }}>
+                    <AdminPanel />
+                </div>
+                <Subtitle2>Tema</Subtitle2>
+                <div className={styles.displayRow}>
+                    <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
+                        <Option value="auto" text="Automatico">Automatico</Option>
+                        <Option value="light" text="Chiaro">Chiaro</Option>
+                        <Option value="dark" text="Scuro">Scuro</Option>
+                    </Dropdown>
                 </div>
             </div>
         </div>

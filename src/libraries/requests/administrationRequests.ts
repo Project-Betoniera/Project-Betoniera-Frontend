@@ -25,22 +25,20 @@ export default function administrationRequests(token: string, setIsInvalid: (isI
                 return parseStatus(response.data);
             }).catch((error: AxiosError) => {
                 if (error.response?.status === 401) setIsInvalid(true);
-                return {} as Status;
+                throw error;
             });
         },
-        update: async (): Promise<Boolean> => {
-            return await axios({
+        update: async (): Promise<void> => {
+            await axios({
                 url: new URL("admin/update", apiUrl).toString(),
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
-            }).then((response) => {
-                return response.status === 200;
             }).catch((error: AxiosError) => {
                 if (error.response?.status === 401) setIsInvalid(true);
-                return false;
+                throw error;
             });
         }
-    }
+    };
 }

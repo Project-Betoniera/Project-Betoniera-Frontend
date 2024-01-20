@@ -78,7 +78,6 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                 {...props}
                 appearance="transparent"
                 size="large"
-
                 onTabSelect={(_, data) => {
                     if (typeof data.value !== 'string')
                         throw new Error('Invalid tab value');
@@ -119,9 +118,21 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                 <DrawerBody className={styles.drawerBody}>
                     <UserProfile />
                     <div className={styles.displayColumn}>
-                        {/* TO-FIND-A-SOLUTION: Find a way to close the drawer after clicking the about page RouterButton! Check mobile version for reason! */}
-                        <RouterButton as="a" appearance="secondary" href="/about" icon={<InfoFilled />} aria-description="about">Informazioni</RouterButton>
-                        <Button appearance="primary" icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                        {/* TODO Find a way to close the drawer after clicking the about page RouterButton! Check mobile version for reason! */}
+                        <RouterButton
+                            as="a"
+                            appearance="secondary"
+                            href="/about"
+                            icon={<InfoFilled />}
+                            onClick={() => { setIsUserDrawerOpen(false); }}
+                            aria-description="about"
+                        >Informazioni</RouterButton>
+                        <Button
+                            appearance="primary"
+                            icon={<ArrowExitFilled />}
+                            onClick={logout}
+                            aria-description="logout"
+                        >Logout</Button>
                     </div>
                 </DrawerBody>
             </Drawer>

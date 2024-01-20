@@ -38,21 +38,6 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column"
     },
-    blinkAnimation: {
-        animationDuration: "1s",
-        animationIterationCount: "infinite",
-        animationDirection: "alternate",
-        animationName: [
-            {
-                from: {
-                    opacity: 0,
-                },
-                to: {
-                    opacity: 1,
-                },
-            }
-        ],
-    },
     card: {
         backgroundColor: tokens.colorBrandBackground2Hover
     }
@@ -98,7 +83,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     const content = (
         <div className={styles.root}>
             <Subtitle2>{title}</Subtitle2>
-            {now && props.event.start <= now && props.event.end > now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
+            {now && props.event.start <= now && props.event.end > now && <Body2 className={globalStyles.blink}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
                 {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}

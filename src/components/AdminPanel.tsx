@@ -1,11 +1,12 @@
 import { Badge, Body1, Button, Checkbox, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider, Field, Input, Label, Link, MessageBar, MessageBarActions, MessageBarBody, MessageBarGroup, MessageBarTitle, Select, Subtitle2, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled, CommentEditFilled, DismissRegular } from "@fluentui/react-icons";
+import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled, CommentEditFilled, DismissRegular, EraserFilled, AddCircleFilled, EditFilled } from "@fluentui/react-icons";
 import { FormEvent, useContext, useEffect, useState } from "react";
 import useRequests from "../libraries/requests/requests";
 import { Status } from "../dto/StatusDto";
 import { MessagesContext } from "../context/MessagesContext";
 import { useGlobalStyles } from "../globalStyles";
 import { MessageDto } from "../dto/MessageDto";
+import { TimekeeperContext } from "../context/TimekeeperContext";
 
 const useStyles = makeStyles({
     container: {
@@ -13,24 +14,10 @@ const useStyles = makeStyles({
         flexDirection: "column",
         rowGap: "0.5rem",
     },
-    blinkAnimation: {
-        animationDuration: "1s",
-        animationIterationCount: "infinite",
-        animationDirection: "alternate",
-        animationName: [
-            {
-                from: {
-                    opacity: 0,
-                },
-                to: {
-                    opacity: 1,
-                },
-            }
-        ],
-    },
     messageBarGroup: {
         display: "flex",
         flexDirection: "column",
+        overflowY: "scroll",
         ...shorthands.margin("0", "0.5rem", "0.5rem", "0.5rem"),
         ...shorthands.gap("0.5rem")
     },
@@ -47,49 +34,53 @@ export default function AdminPanel() {
     const styles = useStyles();
     const requests = useRequests();
 
+    const { timekeeper } = useContext(TimekeeperContext);
+
     const [status, setStatus] = useState<Status>();
     const [isUpdating, setIsUpdating] = useState(false);
     const [isMessagesDialogOpen, setIsMessagesDialogOpen] = useState(false);
 
+    // Get status on first render
     useEffect(() => {
-        getStatus();
+        requests.administration.status()
+            .then(setStatus)
+            .catch(console.error);
     }, []);
 
-    async function getStatus() {
-        await requests.administration.status().then((response) => {
-            setStatus(response);
-        }).catch((error) => {
-            console.error(error);
-        });
-    }
+    // Update "isUpdating" state when the status changes
+    useEffect(() => {
+        if (isUpdating === status?.isUpdating) return;
+        setIsUpdating(status?.isUpdating ?? false);
+    }, [status]);
 
+    // When a manual cache update is triggered,
+    // check the status every second until the update is completed
+    useEffect(() => {
+        if (!isUpdating) return;
+
+        /**
+         * Checks the cache refresh status.  
+         * If the cache is not updating anymore,
+         * updates the "status" state accordingly and stops listening.
+         */
+        async function checkCacheRefreshStatus() {
+            requests.administration.status().then(setStatus);
+        }
+
+        timekeeper.addListener("second", checkCacheRefreshStatus);
+        return () => timekeeper.removeListener(checkCacheRefreshStatus);
+    }, [isUpdating]);
+
+    /**
+     * Sends an update request to the server and updates the "isUpdating" state accordingly.
+     */
     function updateCache() {
         setIsUpdating(true);
-        requests.administration.update().then((response) => {
-            if (response) {
-                // Wait for the cache to be updated...
-                async function checkStatus() {
-                    const result = await requests.administration.status();
-                    console.log("Waiting for cache update...")
-
-                    if (result.isUpdating === true) {
-                        setTimeout(checkStatus, 1000);
-                    } else {
-                        getStatus();
-                        setIsUpdating(false);
-                    }
-                }
-                checkStatus();
-            } else {
-                setIsUpdating(false);
-            }
-        }).catch((error) => {
-            console.error(error);
-        });
+        requests.administration.update();
     };
 
+    // TODO Document
     function messagesDialog() {
-
         const { messages, setMessages } = useContext(MessagesContext);
         const [formError, setFormError] = useState<boolean>(false);
         const [requestInProgress, setRequestInProgress] = useState<boolean>(false);
@@ -106,11 +97,11 @@ export default function AdminPanel() {
         function setMessageInForm(message: MessageDto) {
             setMessageId(message.id);
             setTitle(message.title);
-            setBody(message.body ? message.body : "");
+            setBody(message.body ?? "");
             setIntent(message.intent);
             setMatchPath(message.matchPath);
-            setLink(message.link ? message.link : "");
-            setLinkText(message.linkText ? message.linkText : "");
+            setLink(message.link ?? "");
+            setLinkText(message.linkText ?? "");
             setIsDismissable(message.isDismissable);
         }
 
@@ -137,7 +128,6 @@ export default function AdminPanel() {
             setRequestInProgress(true);
             requests.message.delete(message.id).then((response) => {
                 if (response) {
-                    console.log("Message", message.id, "deleted");
                     getMessages();
                 } else {
                     console.error("Error while deleting message", message.id, "from database", response);
@@ -156,7 +146,6 @@ export default function AdminPanel() {
 
             requests.message.create({ id: 999, title, body: body === "" ? undefined : body, intent, matchPath, isDismissable, link: link === "" ? undefined : link, linkText: linkText === "" ? undefined : linkText }).then((response) => {
                 if (response) {
-                    console.log("Message added");
                     getMessages();
                 } else {
                     console.error("Error while adding message to database", response);
@@ -175,7 +164,6 @@ export default function AdminPanel() {
 
             requests.message.update({ id: messageId, title, body: body === "" ? undefined : body, intent, matchPath, isDismissable, link: link === "" ? undefined : link, linkText: linkText === "" ? undefined : linkText }).then((response) => {
                 if (response) {
-                    console.log("Message", messageId, "modified");
                     getMessages();
                 } else {
                     console.error("Error while modifying message", messageId, "from database", response);
@@ -187,10 +175,10 @@ export default function AdminPanel() {
         }
 
         return (
-            <Dialog modalType="alert" open={isMessagesDialogOpen} onOpenChange={(_event, data) => { setIsMessagesDialogOpen(data.open) }}>
+            <Dialog modalType="alert" open={isMessagesDialogOpen} onOpenChange={(_event, data) => { setIsMessagesDialogOpen(data.open); }}>
                 <DialogSurface>
                     <DialogBody>
-                        <DialogTitle>Gestisci Messaggi</DialogTitle>
+                        <DialogTitle>Gestisci messaggi</DialogTitle>
                         <DialogContent className={globalStyles.list}>
 
                             {messages.length > 0 && <MessageBarGroup className={styles.messageBarGroup} animate="both">
@@ -213,7 +201,7 @@ export default function AdminPanel() {
 
                             <Divider />
 
-                            <Subtitle2>{!messageId ? "Aggiungi Messaggio" : "Modifica Messaggio N." + messageId}</Subtitle2>
+                            <Subtitle2>{!messageId ? "Aggiungi messaggio" : "Modifica messaggio con ID " + messageId}</Subtitle2>
                             <form onSubmit={!messageId ? addMessage : modifyMessage} className={styles.form}>
                                 <Field label="Titolo" required validationState={formError ? "error" : "none"}>
                                     <Input type="text" required placeholder="Titolo" value={title} onChange={(e) => { setTitle(e.target.value); }} />
@@ -242,8 +230,8 @@ export default function AdminPanel() {
                                     <Checkbox checked={isDismissable} onChange={() => setIsDismissable(!isDismissable)} />
                                     Dismissable
                                 </Label>
-                                <Button appearance="primary" disabled={requestInProgress} type="submit">{!messageId ? "Aggiungi" : "Modifica"}</Button>
-                                <Button appearance="secondary" disabled={requestInProgress} onClick={resetForm}>Rimuovi Selezioni</Button>
+                                <Button appearance="primary" disabled={requestInProgress} type="submit" icon={messageId ? <EditFilled /> : <AddCircleFilled />}>{!messageId ? "Aggiungi" : "Modifica"}</Button>
+                                <Button appearance="secondary" disabled={requestInProgress} onClick={resetForm} icon={<EraserFilled />}>Cancella</Button>
                             </form>
 
                         </DialogContent>
@@ -259,15 +247,13 @@ export default function AdminPanel() {
     }
 
     return (
-        <>
-            <div className={styles.container}>
-                <Subtitle2>Admin Panel</Subtitle2>
-                {status?.lastRefreshError && <Badge appearance="filled" color="severe">Errore durante l'ultimo aggiornamento!</Badge>}
-                <Body1>Ultimo aggiornamento: {status?.lastRefresh.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</Body1>
-                <Button appearance="secondary" icon={<CommentNoteFilled />} onClick={() => setIsMessagesDialogOpen(true)}>Gestisci Messaggi</Button>
-                {messagesDialog()}
-                <Button appearance="primary" icon={!isUpdating ? <ArrowSyncCircleFilled /> : <HandRightRegular className={styles.blinkAnimation} />} disabled={isUpdating} onClick={updateCache}>{!isUpdating ? "Aggiorna ORA!" : "Aggiornamento in corso..."}</Button>
-            </div>
-        </>
+        <div className={styles.container}>
+            <Subtitle2>Pannello amministratore</Subtitle2>
+            {status?.lastRefreshError && <Badge appearance="filled" color="severe">Errore durante l'ultimo aggiornamento</Badge>}
+            <Body1>Ultimo aggiornamento: {status?.lastRefresh.toLocaleDateString([], { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</Body1>
+            <Button appearance="secondary" icon={<CommentNoteFilled />} onClick={() => setIsMessagesDialogOpen(true)}>Gestisci messaggi</Button>
+            {messagesDialog()}
+            <Button appearance="primary" icon={!isUpdating ? <ArrowSyncCircleFilled /> : <HandRightRegular className={globalStyles.blink} />} disabled={isUpdating} onClick={updateCache}>{!isUpdating ? "Forza aggiornamento cache" : "Aggiornamento cache in corso..."}</Button>
+        </div>
     );
 }

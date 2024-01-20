@@ -1,14 +1,14 @@
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { DateSelector } from "../components/DateSelector";
+import EventDetails from "../components/EventDetails";
+import { ThemeContext } from "../context/ThemeContext";
+import { ClassroomDto } from '../dto/ClassroomDto';
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
-import { ThemeContext } from "../context/ThemeContext";
-import { DateSelector } from "../components/DateSelector";
-import EventDetails from "../components/EventDetails";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
-import { ClassroomDto } from '../dto/ClassroomDto';
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -58,14 +58,14 @@ export function Classroom() {
     const { theme } = useContext(ThemeContext);
 
     const globalStyles = useGlobalStyles();
-    const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
+    const themeStyles = theme === "light" ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
     const requests = useRequests();
 
     const [dateTime, setDateTime] = useState(() => new Date());
     const [showSideSpinner, setShowSideSpinner] = useState(false);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
-    const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean } | null>(null);
+    const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean; } | null>(null);
     const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
     const [filteredClassrooms, setFilteredClassrooms] = useState<ClassroomStatus[]>([]);
 
@@ -135,7 +135,7 @@ export function Classroom() {
                             return {
                                 ...eventDialog,
                                 events,
-                            }
+                            };
                         }))
                         .catch(console.error); // TODO Handle error
                 }}>
@@ -188,7 +188,7 @@ export function Classroom() {
                     return {
                         ...eventDialog,
                         open: data.open,
-                    }
+                    };
                 })}>
                     <DialogSurface>
                         <DialogBody>
