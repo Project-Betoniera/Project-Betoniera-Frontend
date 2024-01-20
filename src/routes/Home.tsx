@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from "react";
-import { EventDto } from "../dto/EventDto";
-import { CourseContext } from "../context/CourseContext";
-import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
-import { useGlobalStyles } from "../globalStyles";
+import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { ClassroomDto } from "../dto/ClassroomDto";
-import useRequests from "../libraries/requests/requests";
+import { CourseContext } from "../context/CourseContext";
 import { TimekeeperContext } from '../context/TimekeeperContext';
+import { ClassroomDto } from "../dto/ClassroomDto";
+import { ClassroomStatus } from "../dto/ClassroomStatus";
+import { EventDto } from "../dto/EventDto";
+import { useGlobalStyles } from "../globalStyles";
+import useRequests from "../libraries/requests/requests";
 
 export function Home() {
     const globalStyles = useGlobalStyles();
@@ -100,7 +100,7 @@ export function Home() {
                     </Card>
                 </PopoverTrigger>
                 <PopoverSurface>
-                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
                 </PopoverSurface>
             </Popover>
         );
@@ -115,7 +115,7 @@ export function Home() {
                         description={<><Subtitle2>{course?.name}</Subtitle2></>}
                         action={showEventsSideSpinner ? <Spinner size="small" /> : undefined}
                     />
-                    <DateSelector autoUpdate={true} inputType="date" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                    <DateSelector autoUpdate={true} inputType="day" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
                         setShowEventsSideSpinner(autoUpdated);
                         setDateTime(newDateTime);
                     }} />

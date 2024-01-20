@@ -1,11 +1,11 @@
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { DateSelector } from "../components/DateSelector";
+import EventDetails from "../components/EventDetails";
+import { ThemeContext } from "../context/ThemeContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
-import { ThemeContext } from "../context/ThemeContext";
-import { DateSelector } from "../components/DateSelector";
-import EventDetails from "../components/EventDetails";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
 import { ClassroomDto } from '../dto/ClassroomDto';
@@ -65,7 +65,7 @@ export function Classroom() {
     const [dateTime, setDateTime] = useState(() => new Date());
     const [showSideSpinner, setShowSideSpinner] = useState(false);
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
-    const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean } | null>(null);
+    const [eventDialog, setEventDialog] = useState<{ classroom: ClassroomDto, events: EventDto[] | null, open: boolean; } | null>(null);
     const [filter, setFilter] = useState<"all" | "free" | "busy">("all");
     const [filteredClassrooms, setFilteredClassrooms] = useState<ClassroomStatus[]>([]);
 
@@ -106,6 +106,7 @@ export function Classroom() {
         return filteredClassrooms.length === 0 ? [
             <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
         ] : filteredClassrooms.map((item) => {
+
             const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
             let changeTime = "";
 
@@ -135,7 +136,7 @@ export function Classroom() {
                             return {
                                 ...eventDialog,
                                 events,
-                            }
+                            };
                         }))
                         .catch(console.error); // TODO Handle error
                 }}>
@@ -166,7 +167,7 @@ export function Classroom() {
                     action={showSideSpinner ? <Spinner size="small" /> : undefined}
                 />
                 <CardFooter className={styles.toolbar}>
-                    <DateSelector autoUpdate={true} inputType="datetime-local" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                    <DateSelector autoUpdate={true} inputType="hour" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
                         setShowSideSpinner(autoUpdated);
                         setDateTime(newDateTime);
                     }} />
@@ -188,7 +189,7 @@ export function Classroom() {
                     return {
                         ...eventDialog,
                         open: data.open,
-                    }
+                    };
                 })}>
                     <DialogSurface>
                         <DialogBody>

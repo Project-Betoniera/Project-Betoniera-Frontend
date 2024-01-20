@@ -1,5 +1,5 @@
-import { RefAttributes, FunctionComponent } from "react";
 import { Link as FluentLink, LinkProps } from "@fluentui/react-components";
+import { FunctionComponent, RefAttributes } from "react";
 import { useNavigate } from "react-router";
 
 export const RouterLink: FunctionComponent<LinkProps & RefAttributes<HTMLAnchorElement> & { as?: 'a'; }> = (props) => {

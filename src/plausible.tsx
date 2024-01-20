@@ -25,4 +25,4 @@ function ensurePlausible() {
   document.head.appendChild(script);
 }
 
-export { hasPlausible, ensurePlausible };
+export { ensurePlausible, hasPlausible };

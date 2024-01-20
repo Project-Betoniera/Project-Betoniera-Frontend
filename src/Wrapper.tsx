@@ -1,12 +1,12 @@
-import { Outlet } from "react-router";
 import { Body1, Button, Card, Link, MessageBar, MessageBarActions, MessageBarBody, MessageBarGroup, MessageBarTitle, Subtitle1, Title1, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { useGlobalStyles } from "./globalStyles";
-import RouterMenu from "./components/RouterMenu";
-import { useContext, useEffect, useState } from "react";
-import { PwaContext } from "./context/PwaContext";
 import { AlertOffRegular, ArrowDownloadFilled, DismissRegular } from "@fluentui/react-icons";
+import { useContext, useEffect, useState } from "react";
+import { Outlet } from "react-router";
+import RouterMenu from "./components/router/RouterMenu";
 import { isBetaBuild } from "./config";
 import { MessagesContext } from "./context/MessagesContext";
+import { PwaContext } from "./context/PwaContext";
+import { useGlobalStyles } from "./globalStyles";
 
 const useStyles = makeStyles({
     header: {
