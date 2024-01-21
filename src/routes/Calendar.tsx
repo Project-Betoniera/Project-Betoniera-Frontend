@@ -192,7 +192,7 @@ export function Calendar() {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
         weekDays: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
-        weekDaysAbbr: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"] // .getDay() returns 0 for Sunday...
+        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
     const [now] = useState(new Date());
@@ -202,7 +202,7 @@ export function Calendar() {
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
-    console.log(generateShortWeek(dateTime));
+    //console.log(calendarView[0].toLocaleDateString([], {weekday:"short"}), calendarLocal.weekDaysAbbr[0]);
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -453,14 +453,16 @@ export function Calendar() {
 
             <div className={styles.drawerContainer}>
                 <div className={styles.container}>
-                    <Card className={styles.calendarHeader} style={ !currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length +", 1fr)" } : undefined }>
+                    <Card className={styles.calendarHeader} style={!currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>
                         {window.matchMedia('(max-width: 578px)').matches ?
-                            calendarLocal.weekDaysAbbr.map((day) => ( !currentView ? calendarView.map((genDay) => (genDay.getDay() === calendarLocal.weekDaysAbbr.indexOf(day) && <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>)) : <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1> ))
+                            currentView ?
+                                calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>)) :
+                                calendarView.map((day) => (<Subtitle1 key={day.getTime()} className={styles.headerItem}>{day.toLocaleDateString([], { weekday: "short" }).charAt(0).toUpperCase() + day.toLocaleDateString([], { weekday: "short" }).slice(1)}</Subtitle1>))
                             : calendarLocal.weekDays.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))}
                     </Card>
 
                     <div className={styles.calendarContainer}>
-                        <div className={styles.calendar} style={ !currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length +", 1fr)" } : undefined }>{renderCurrentCalendarView()}</div>
+                        <div className={styles.calendar} style={!currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>{renderCurrentCalendarView()}</div>
                     </div>
                 </div>
 
