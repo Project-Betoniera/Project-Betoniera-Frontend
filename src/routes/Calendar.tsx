@@ -315,16 +315,22 @@ export function Calendar() {
     async function addCalendar(calendar: Calendar) {
         switch (calendar.selection.type) {
             case "course":
-                if (courseSelections.find(item => item.selection.id === calendar.selection.id)) return;
-                setCourseSelections([...courseSelections, calendar]);
+                setCourseSelections(previous => {
+                    if (previous.find(item => item.selection.id === calendar.selection.id)) return previous;
+                    return [...previous, calendar]
+                });
                 break;
             case "classroom":
-                if (classroomSelections.find(item => item.selection.id === calendar.selection.id)) return;
-                setClassroomSelections([...classroomSelections, calendar]);
+                setClassroomSelections(previous => {
+                    if (previous.find(item => item.selection.id === calendar.selection.id)) return previous;
+                    return [...previous, calendar];
+                });
                 break;
             case "teacher":
-                if (teacherSelections.find(item => item.selection.id === calendar.selection.id)) return;
-                setTeacherSelections([...teacherSelections, calendar]);
+                setTeacherSelections(previous => {
+                    if (previous.find(item => item.selection.id === calendar.selection.id)) return previous;
+                    return [...previous, calendar];
+                });
                 break;
         }
     }
