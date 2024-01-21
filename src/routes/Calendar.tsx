@@ -205,7 +205,6 @@ export function Calendar() {
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
-    console.log(generateShortWeek(dateTime));
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
