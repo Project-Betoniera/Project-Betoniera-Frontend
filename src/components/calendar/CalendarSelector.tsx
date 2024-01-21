@@ -56,6 +56,78 @@ const useStyles = makeStyles({
     }
 });
 
+const selectionCache: { [type in CalendarType]: CalendarSelection[] | Promise<CalendarSelection[]> | undefined } = {
+    course: undefined,
+    classroom: undefined,
+    teacher: undefined,
+}
+
+/**
+ * Requests the available calendars for a specific calendar type.  
+ * This function handles which properties of the various calendar types are used to construct each calendar selection.
+ * Example:
+ * - If the current type is "course", the calendar selections will be constructed 
+ * using the course code as the `shortName` property and the course name as the `fullName` property, and so on.
+ * 
+ * All of this is necessary because each type ("course", "classroom" and "teacher") has different properties,
+ * but we need to use the same `CalendarSelection` type when populating the calendar selections list.
+ * 
+ * This function will return cached values if they have already been generated, and it ensures that values are loaded and generated only once even if called multiple times in a short timeframe.
+*/
+export function getCalendarSelections(requests: ReturnType<typeof useRequests>, type: CalendarType): Promise<CalendarSelection[]> {
+    const existingCache = selectionCache[type];
+    if (existingCache instanceof Promise) {
+        return existingCache;
+    } else if (existingCache !== undefined) {
+        return Promise.resolve(existingCache);
+    } else {
+        return selectionCache[type] = (async () => {
+            let result: CalendarSelection[];
+
+            switch (type) {
+                case "course":
+                    result = await requests.course.all()
+                        .then(courses => 
+                            courses.map(course => ({
+                                id: course.id.toString(),
+                                type: "course",
+                                shortName: course.code,
+                                fullName: `${course.code} - ${course.name}`
+                            }))
+                        );
+                    break;
+                case "classroom":
+                    result = await requests.classroom.all()
+                        .then(classrooms => 
+                            classrooms.map(classroom => ({
+                                id: classroom.id.toString(),
+                                type: "classroom",
+                                shortName: classroom.name,
+                                fullName: `Aula ${classroom.name}`
+                            }))
+                        );
+                    break;
+                case "teacher":
+                    result = await requests.teacher.all()
+                        .then(teachers => 
+                            teachers.map(teacher => ({
+                                id: teacher.name,
+                                type: "teacher",
+                                shortName: teacher.name,
+                                fullName: teacher.name
+                            }))
+                        );
+                    break;
+                default:
+                    throw new Error("Invalid calendar selector");
+            }
+
+            selectionCache[type] = result;
+            return result;
+        })();
+    }
+}
+
 /**
  * A component that allows the user to select a calendar.  
  * When a new calendar is selected, the `onSelectionChange` callback is called,
@@ -89,14 +161,7 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
     });
 
     /**
-     * Based on the current selected type, requests the available calendars.  
-     * This function handles which properties of the various calendar types are used to construct each calendar selection.
-     * Example:
-     * - If the current type is "course", the calendar selections will be constructed 
-     * using the course code as the `shortName` property and the course name as the `fullName` property, and so on.
-     * 
-     * All of this is necessary because each type ("course", "classroom" and "teacher") has different properties,
-     * but we need to use the same `CalendarSelection` type when populating the calendar selections list.
+     * Retrieves and updates the available calendar selections for the current selected type.
     */
     function updateAvailableSelections() {
         // Clear available selections, but only if the list is already populated (so always but the first time)
@@ -105,47 +170,9 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
             setSelections([]);
         }
 
-        switch (currentType.code) {
-            case "course":
-                requests.course.all()
-                    .then(courses => {
-                        setSelections(courses.map(course => ({
-                            id: course.id.toString(),
-                            type: "course",
-                            shortName: course.code,
-                            fullName: `${course.code} - ${course.name}`
-                        })));
-                    })
-                    .catch(console.error);
-                break;
-            case "classroom":
-                requests.classroom.all()
-                    .then(classrooms => {
-                        setSelections(classrooms.map(classroom => ({
-                            id: classroom.id.toString(),
-                            type: "classroom",
-                            shortName: classroom.name,
-                            fullName: `Aula ${classroom.name}`
-                        })));
-                    })
-                    .catch(console.error);
-                break;
-            case "teacher":
-                requests.teacher.all()
-                    .then(teachers => {
-                        setSelections(teachers.map(teacher => ({
-                            id: teacher.name,
-                            type: "teacher",
-                            shortName: teacher.name,
-                            fullName: teacher.name
-                        })));
-                    })
-                    .catch(console.error);
-                break;
-            default:
-                console.error("Invalid calendar selector");
-                break;
-        }
+        getCalendarSelections(requests, currentType.code)
+            .then(setSelections)
+            .catch(console.error);
     };
 
     /**
