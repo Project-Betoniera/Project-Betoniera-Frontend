@@ -30,7 +30,16 @@ export function generateWeek(inputDate: Date) {
     const weekView: Date[] = [];
 
     // Get first day of the result array (Monday)
-    const firstDayOfTheWeek = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate() - inputDate.getDay() + 1);
+    //const firstDayOfTheWeek = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate() - inputDate.getDay() + 1);
+
+    //const firstDayOfTheWeek = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate() - (inputDate.getDay() === 6 ? 0 : inputDate.getDay() + 1));
+
+    const firstDayOfTheWeek = new Date(inputDate.getFullYear(), inputDate.getMonth(), inputDate.getDate());
+    if (firstDayOfTheWeek.getDay() !== 1) {
+        while (firstDayOfTheWeek.getDay() !== 1) {
+            firstDayOfTheWeek.setDate(firstDayOfTheWeek.getDate() - 1);
+        }
+    }
 
     // Fill the array with the days of the week
     const newDay = new Date(firstDayOfTheWeek);

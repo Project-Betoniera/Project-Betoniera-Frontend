@@ -74,8 +74,14 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 );
                 break;
             case "week": // compare with week precision
-                const firstDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 1, 0, 0, 0, 0);
-                const lastDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 8, 0, 0, 0, 0);
+                const firstDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), 0, 0, 0, 0);
+                if (firstDayOfTheWeek.getDay() !== 1) {
+                    while (firstDayOfTheWeek.getDay() !== 1) {
+                        firstDayOfTheWeek.setDate(firstDayOfTheWeek.getDate() - 1);
+                    }
+                }
+
+                const lastDayOfTheWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 6, 0, 0, 0, 0);
 
                 setIsToday(
                     now.getTime() > firstDayOfTheWeek.getTime() &&
