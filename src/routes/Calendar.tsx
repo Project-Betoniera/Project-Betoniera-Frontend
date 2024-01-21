@@ -9,6 +9,7 @@ import { CourseContext } from "../context/CourseContext";
 import { EventDto } from "../dto/EventDto";
 import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import useRequests from "../libraries/requests/requests";
+import { useSearchParams } from "react-router-dom";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -187,6 +188,8 @@ export function Calendar() {
     const requests = useRequests();
     const [currentView, setCurrentView] = useState<boolean>(true);
 
+    const [ searchParams, setSearchParams ] = useSearchParams();
+
     // TODO Use proper localization
     const calendarLocal = {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
@@ -276,6 +279,34 @@ export function Calendar() {
         } else {
             setCalendarTitle("Visualizzazione personalizzata");
         }
+    }
+
+    /**
+     * Updates search parameters based on current calendar selections
+     */
+    function updateSearchParameters() {
+        const newSearchParams = new URLSearchParams();
+        for (const selection of courseSelections) {
+            newSearchParams.append(
+                "course",
+                `${selection.selection.id}${selection.enabled ? "" : ".disabled"}`
+            );
+        }
+        for (const selection of classroomSelections) {
+            newSearchParams.append(
+                "classroom",
+                `${selection.selection.id}${selection.enabled ? "" : ".disabled"}`
+            );
+        }
+        for (const selection of teacherSelections) {
+            newSearchParams.append(
+                "teacher",
+                `${selection.selection.id}${selection.enabled ? "" : ".disabled"}`
+            );
+        }
+        setSearchParams(newSearchParams, {
+            replace: true,
+        });
     }
 
     /**
@@ -450,8 +481,11 @@ export function Calendar() {
     // Load the user default calendar on first render (user course)
     useEffect(() => { onAddCalendarClick(); }, []);
 
-    // Update calendar title when calendar selections change
-    useEffect(updateCalendarTitle, [mergedSelections]);
+    // Update calendar title and search parameters when calendar selections change
+    useEffect(() => {
+        updateCalendarTitle();
+        updateSearchParameters();
+    }, [courseSelections, classroomSelections, teacherSelections]);
 
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
