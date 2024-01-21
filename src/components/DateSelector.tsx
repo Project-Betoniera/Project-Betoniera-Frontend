@@ -8,7 +8,7 @@ type DateSelectorProps = {
     autoUpdate: boolean;
     dateTime: Date;
     setDateTime: (dateTime: Date, autoUpdated: boolean) => void;
-    inputType: "month" | "week" | "day" | "hour";
+    inputType: "month" | "week" | "shortWeek" | "day" | "hour";
 };
 
 const useStyles = makeStyles({
@@ -82,6 +82,15 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                     now.getTime() < lastDayOfTheWeek.getTime()
                 );
                 break;
+            case "shortWeek": // compare with 3-day week precision
+                const firstDayOfTheShortWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate(), 0, 0, 0, 0);
+                const lastDayOfTheShortWeek = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate() - dateTime.getDay() + 2, 0, 0, 0, 0);
+
+                setIsToday(
+                    now.getTime() > firstDayOfTheShortWeek.getTime() &&
+                    now.getTime() < lastDayOfTheShortWeek.getTime()
+                );
+                break;
             case "month": // compare with month precision
                 setIsToday(
                     now.getMonth() === dateTime.getMonth() &&
@@ -125,6 +134,9 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
             case "week":
                 result.setDate(result.getDate() + (value * 7));
                 break;
+            case "shortWeek":
+                result.setDate(result.getDate() + (value * 3));
+                break;
             case "day":
             case "hour":
                 result.setDate(result.getDate() + value);
@@ -157,6 +169,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
             case "month":
                 return "month";
             case "week":
+            case "shortWeek":
             case "day":
                 return "date";
             case "hour":
@@ -172,7 +185,7 @@ export const DateSelector: React.FC<DateSelectorProps> = (props) => {
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowLeftFilled />} onClick={() => onArrowButtonClick(-1)}></Button>
                 <Button className={mergeClasses(styles.arrowButton, styles.hideOnMobile)} icon={<ArrowRightFilled />} onClick={() => onArrowButtonClick(1)}></Button>
                 <Button className={styles.arrowButton} disabled={isToday} onClick={onTodayButtonClick} icon={<CalendarTodayRegular />}></Button>
-                {inputType === "month" || inputType === "week" ?
+                {inputType === "month" || inputType === "week" || inputType === "shortWeek" ?
                     <Subtitle2>{firstCharUppercase(dateTime.toLocaleString([], { month: "long", year: "numeric" }))}</Subtitle2> :
                     <Input
                         className={styles.growOnMobile}

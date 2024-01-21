@@ -7,7 +7,7 @@ import { CalendarSelection, CalendarSelector } from "../components/calendar/Cale
 import { RouterButton } from "../components/router/RouterButton";
 import { CourseContext } from "../context/CourseContext";
 import { EventDto } from "../dto/EventDto";
-import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
+import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
@@ -192,7 +192,7 @@ export function Calendar() {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
         weekDays: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
-        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"],
+        weekDaysAbbr: ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab"] // .getDay() returns 0 for Sunday...
     };
 
     const [now] = useState(new Date());
@@ -201,7 +201,8 @@ export function Calendar() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
-    const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
+    const calendarView = currentView ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
+    console.log(generateShortWeek(dateTime));
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -441,7 +442,7 @@ export function Calendar() {
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
-                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : window.matchMedia('(max-width: 578px)').matches ? "shortWeek" : "week"} />
                 <Subtitle2>{calendarTitle}</Subtitle2>
                 <div className={styles.toolbarButtons}>
                     <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
@@ -452,14 +453,14 @@ export function Calendar() {
 
             <div className={styles.drawerContainer}>
                 <div className={styles.container}>
-                    <Card className={styles.calendarHeader}>
+                    <Card className={styles.calendarHeader} style={ !currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length +", 1fr)" } : undefined }>
                         {window.matchMedia('(max-width: 578px)').matches ?
-                            calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))
+                            calendarLocal.weekDaysAbbr.map((day) => ( !currentView ? calendarView.map((genDay) => (genDay.getDay() === calendarLocal.weekDaysAbbr.indexOf(day) && <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>)) : <Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1> ))
                             : calendarLocal.weekDays.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))}
                     </Card>
 
                     <div className={styles.calendarContainer}>
-                        <div className={styles.calendar}>{renderCurrentCalendarView()}</div>
+                        <div className={styles.calendar} style={ !currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length +", 1fr)" } : undefined }>{renderCurrentCalendarView()}</div>
                     </div>
                 </div>
 

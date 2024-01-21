@@ -41,3 +41,19 @@ export function generateWeek(inputDate: Date) {
 
     return weekView;
 }
+
+export function generateShortWeek(inputDate: Date) {
+    const weekView: Date[] = [];
+
+    // Get first day of the result array (Monday)
+    const firstDayOfTheWeek = inputDate;
+
+    // Fill the array with the days of the week
+    const newDay = new Date(firstDayOfTheWeek);
+    for (let i = 0; i < 3; i++) {
+        weekView.push(new Date(newDay));
+        newDay.setDate(newDay.getDate() + 1);
+    }
+
+    return weekView;
+}
