@@ -278,33 +278,47 @@ export function Calendar() {
         }
     }
 
+    /**
+     * Add a Calendar object to the list of selections
+     */
+    async function addCalendar(calendar: Calendar) {
+        switch (calendar.selection.type) {
+            case "course":
+                if (courseSelections.find(item => item.selection.id === calendar.selection.id)) return;
+                setCourseSelections([...courseSelections, calendar]);
+                break;
+            case "classroom":
+                if (classroomSelections.find(item => item.selection.id === calendar.selection.id)) return;
+                setClassroomSelections([...classroomSelections, calendar]);
+                break;
+            case "teacher":
+                if (teacherSelections.find(item => item.selection.id === calendar.selection.id)) return;
+                setTeacherSelections([...teacherSelections, calendar]);
+                break;
+        }
+    }
+
+    /**
+     * Creates a Calendar object from a CalendarSelection
+     */
+    async function createCalendar(selection: CalendarSelection): Promise<Calendar> {
+        return {
+            events: await getEvents(selection),
+            selection: selection,
+            color: parseInt(selection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
+            enabled: true
+        };
+    }
+
     /** 
      * Add the current calendar selection to the list of selections
      * */
     async function onAddCalendarClick() {
         if (!currentSelection) return;
 
-        const calendar: Calendar = {
-            events: await getEvents(currentSelection),
-            selection: currentSelection,
-            color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
-            enabled: true
-        };
+        const calendar = await createCalendar(currentSelection);
 
-        switch (currentSelection.type) {
-            case "course":
-                if (courseSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setCourseSelections([...courseSelections, calendar]);
-                break;
-            case "classroom":
-                if (classroomSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setClassroomSelections([...classroomSelections, calendar]);
-                break;
-            case "teacher":
-                if (teacherSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setTeacherSelections([...teacherSelections, calendar]);
-                break;
-        }
+        await addCalendar(calendar);
     };
 
     /**
