@@ -391,7 +391,7 @@ export function Calendar() {
                     <DialogTrigger>
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
                             <CardHeader header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
-                            <div className={styles.eventContainer}>
+                            <div className={styles.eventContainer} style={window.matchMedia('(max-width: 578px)').matches && !currentView ? {overflowY: "auto"} : undefined}>
                                 {/* TODO Show skeletons when loading events */}
                                 {renderPreviewEvents(day)}
                             </div>
