@@ -99,7 +99,7 @@ export function Classroom() {
     }, [filter, classrooms]);
 
     const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
-        <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} />
+        <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
     )) : (<Subtitle2>Nessuna</Subtitle2>);
 
     const renderClassrooms = () => {
