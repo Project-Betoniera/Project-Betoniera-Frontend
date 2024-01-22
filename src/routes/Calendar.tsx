@@ -218,13 +218,8 @@ export function Calendar() {
         fullName: `${course?.code} - ${course?.name}` || "",
     });
 
-    // Calendar selections for each type
-    const [courseSelections, setCourseSelections] = useState<Calendar[]>([]);
-    const [classroomSelections, setClassroomSelections] = useState<Calendar[]>([]);
-    const [teacherSelections, setTeacherSelections] = useState<Calendar[]>([]);
-
-    // Merged calendar selections
-    const mergedSelections = [courseSelections, classroomSelections, teacherSelections].flat();
+    // Calendars on the view
+    const [calendars, setCalendars] = useState<Calendar[]>([]);
 
     /**
      * Called when the user selects a new calendar with the `CalendarSelector` component 
@@ -274,8 +269,8 @@ export function Calendar() {
      * Updates the calendar title based on the current calendar selections
      */
     function updateCalendarTitle() {
-        if (mergedSelections.length == 1) {
-            const calendar = mergedSelections[0];
+        if (calendars.length == 1) {
+            const calendar = calendars[0];
             setCalendarTitle(`Calendario per ${calendar.selection.type === "classroom" ? calendar.selection.fullName : calendar.selection.shortName}`);
         } else {
             setCalendarTitle("Visualizzazione personalizzata");
@@ -283,7 +278,7 @@ export function Calendar() {
     }
 
     /** 
-     * Add the current calendar selection to the list of selections
+     * Add the current calendar to the calendars list
      * */
     async function onAddCalendarClick() {
         if (!currentSelection) return;
@@ -295,20 +290,7 @@ export function Calendar() {
             enabled: true
         };
 
-        switch (currentSelection.type) {
-            case "course":
-                if (courseSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setCourseSelections([...courseSelections, calendar]);
-                break;
-            case "classroom":
-                if (classroomSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setClassroomSelections([...classroomSelections, calendar]);
-                break;
-            case "teacher":
-                if (teacherSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setTeacherSelections([...teacherSelections, calendar]);
-                break;
-        }
+        setCalendars([...calendars, calendar]);
     };
 
     /**
@@ -322,7 +304,7 @@ export function Calendar() {
          * If more calendars are selected, the events are rendered in the order of the calendars.
          */
         function renderPreviewEvents(day: Date) {
-            return mergedSelections
+            return calendars
                 // Filter out disabled calendars
                 .filter(calendar => calendar.enabled)
                 // Cycle through all enabled calendars
@@ -360,7 +342,7 @@ export function Calendar() {
         function renderDetailedEvents(day: Date) {
             return (
                 <div className={styles.dialogCalendarViewsContainer}>
-                    {mergedSelections
+                    {calendars
                         // Filter out disabled calendars
                         .filter(calendar => calendar.enabled)
                         // Cycle through all enabled calendars
@@ -388,7 +370,7 @@ export function Calendar() {
         }
 
         function countEvents(day: Date) {
-            return mergedSelections
+            return calendars
                 // Filter out disabled calendars
                 .filter(calendar => calendar.enabled)
                 // Cycle through all enabled calendars
@@ -461,26 +443,6 @@ export function Calendar() {
      * @param type The type of tree to render
      */
     function renderTree(type: CalendarType) {
-        /**
-         * @returns The appropriate calendar selection state based on the specified type
-         */
-        function getSelections() {
-            let result: [Calendar[], React.Dispatch<React.SetStateAction<Calendar[]>>];
-
-            switch (type) {
-                case "course":
-                    result = [courseSelections, setCourseSelections];
-                    break;
-                case "classroom":
-                    result = [classroomSelections, setClassroomSelections];
-                    break;
-                case "teacher":
-                    result = [teacherSelections, setTeacherSelections];
-                    break;
-            }
-
-            return result;
-        }
 
         /**
          * @returns The appropriate tree title for the specified calendar type
@@ -496,17 +458,18 @@ export function Calendar() {
             }
         }
 
-        const [selections, setSelections] = getSelections();
+        // Filter out calendars that are not of the specified type
+        const filtered = calendars.filter((calendar) => calendar.selection.type === type);
 
-        return selections.length > 0 && <TreeItem itemType="branch">
+        return filtered.length > 0 && <TreeItem itemType="branch">
             <TreeItemLayout>{getTreeTitle()}</TreeItemLayout>
             <Tree aria-label={`${type} tree`}>
-                {selections.map(calendar => {
+                {filtered.map(calendar => {
                     /**
                      * Called when the user clicks the eye button on a calendar
                      */
                     function onEnableDisableButtonClick() {
-                        setSelections(selections.map((item) => {
+                        setCalendars(calendars.map((item) => {
                             if (item.selection.id === calendar.selection.id) item.enabled = !item.enabled;
                             return item;
                         }));
@@ -527,7 +490,7 @@ export function Calendar() {
                                         appearance="subtle"
                                         aria-label="remove calendar"
                                         icon={<DismissFilled />}
-                                        onClick={() => setSelections(selections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
+                                        onClick={() => setCalendars(calendars.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
                                 {calendar.selection.shortName}
                             </TreeItemLayout>
                         </TreeItem>
@@ -541,7 +504,7 @@ export function Calendar() {
     useEffect(() => { onAddCalendarClick(); }, []);
 
     // Update calendar title when calendar selections change
-    useEffect(updateCalendarTitle, [mergedSelections]);
+    useEffect(updateCalendarTitle, [calendars]);
 
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
