@@ -3,7 +3,7 @@ import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, D
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CalendarSelection, CalendarSelector } from "../components/calendar/CalendarSelector";
+import { CalendarSelection, CalendarSelector, CalendarType } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 import { CourseContext } from "../context/CourseContext";
 import { EventDto } from "../dto/EventDto";
@@ -209,7 +209,6 @@ export function Calendar() {
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
     const calendarView = currentView ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
-    //console.log(calendarView[0].toLocaleDateString([], {weekday:"short"}), calendarLocal.weekDaysAbbr[0]);
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -459,6 +458,87 @@ export function Calendar() {
         }
     };
 
+    /**
+     * Renders the tree view for the specified calendar type
+     * @param type The type of tree to render
+     */
+    function renderTree(type: CalendarType) {
+        /**
+         * @returns The appropriate calendar selection state based on the specified type
+         */
+        function getSelections() {
+            let result: [Calendar[], React.Dispatch<React.SetStateAction<Calendar[]>>];
+
+            switch (type) {
+                case "course":
+                    result = [courseSelections, setCourseSelections];
+                    break;
+                case "classroom":
+                    result = [classroomSelections, setClassroomSelections];
+                    break;
+                case "teacher":
+                    result = [teacherSelections, setTeacherSelections];
+                    break;
+            }
+
+            return result;
+        }
+
+        /**
+         * @returns The appropriate tree title for the specified calendar type
+         */
+        function getTreeTitle() {
+            switch (type) {
+                case "course":
+                    return "Corsi";
+                case "classroom":
+                    return "Aule";
+                case "teacher":
+                    return "Docenti";
+            }
+        }
+
+        const [selections, setSelections] = getSelections();
+
+        return selections.length > 0 && <TreeItem itemType="branch">
+            <TreeItemLayout>{getTreeTitle()}</TreeItemLayout>
+            <Tree aria-label={`${type} tree`}>
+                {selections.map(calendar => {
+                    /**
+                     * Called when the user clicks the eye button on a calendar
+                     */
+                    function onEnableDisableButtonClick() {
+                        setSelections(selections.map((item) => {
+                            if (item.selection.id === calendar.selection.id) item.enabled = !item.enabled;
+                            return item;
+                        }));
+                    };
+
+                    return (
+                        <TreeItem itemType="leaf" key={calendar.selection.id}>
+                            <TreeItemLayout
+                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
+                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
+                                actions={<>
+                                    <Button
+                                        appearance="subtle"
+                                        aria-label="enable/disable calendar"
+                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
+                                        onClick={onEnableDisableButtonClick} />
+                                    <Button
+                                        appearance="subtle"
+                                        aria-label="remove calendar"
+                                        icon={<DismissFilled />}
+                                        onClick={() => setSelections(selections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
+                                {calendar.selection.shortName}
+                            </TreeItemLayout>
+                        </TreeItem>
+                    );
+                })}
+            </Tree>
+        </TreeItem>;
+    }
+
     // Load the user default calendar on first render (user course)
     useEffect(() => { onAddCalendarClick(); }, []);
 
@@ -512,93 +592,9 @@ export function Calendar() {
                         <Button appearance="primary" onClick={onAddCalendarClick}>Aggiungi</Button>
 
                         <Tree className={mergeClasses(styles.wide, styles.scroll)} aria-label="main tree">
-                            {courseSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Corsi</TreeItemLayout>
-                                <Tree aria-label="course tree">
-                                    {courseSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setCourseSelections(courseSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
-                            {classroomSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Aule</TreeItemLayout>
-                                <Tree aria-label="classroom tree">
-                                    {classroomSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setClassroomSelections(classroomSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
-                            {teacherSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Docenti</TreeItemLayout>
-                                <Tree aria-label="teachers tree">
-                                    {teacherSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setTeacherSelections(teacherSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
+                            {renderTree("course")}
+                            {renderTree("classroom")}
+                            {renderTree("teacher")}
                         </Tree>
                     </DrawerBody>
                 </Drawer>
