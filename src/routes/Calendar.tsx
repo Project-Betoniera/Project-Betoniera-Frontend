@@ -254,19 +254,17 @@ export function Calendar() {
     }
 
     /**
-     * Returns the list of events for the in-view week/month of the calendar selection passed as parameter
+     * Returns the list of events for the in-view week/month for the specified calendar.  
+     * The `from` and `to` parameters can be used to specify a custom range of dates to get events for.
      */
-    async function getEvents(selection: CalendarSelection) {
-        const startDate = calendarView[0];
-        const endDate = calendarView[calendarView.length - 1];
-
-        switch (selection.type) {
+    async function getEvents(id: string, type: CalendarType, from: Date = calendarView[0], to: Date = calendarView[calendarView.length - 1]) {
+        switch (type) {
             case "course":
-                return await requests.event.byCourse(startDate, endDate, parseInt(selection.id));
+                return await requests.event.byCourse(from, to, parseInt(id));
             case "classroom":
-                return await requests.event.byClassroom(startDate, endDate, parseInt(selection.id));
+                return await requests.event.byClassroom(from, to, parseInt(id));
             case "teacher":
-                return await requests.event.byTeacher(startDate, endDate, selection.id);
+                return await requests.event.byTeacher(from, to, id);
             default:
                 return [] as EventDto[];
         }
@@ -291,7 +289,7 @@ export function Calendar() {
         if (!currentSelection) return;
 
         const calendar: Calendar = {
-            events: await getEvents(currentSelection),
+            events: await getEvents(currentSelection.id, currentSelection.type),
             selection: currentSelection,
             color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
             enabled: true
