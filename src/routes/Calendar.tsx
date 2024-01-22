@@ -1,4 +1,4 @@
-import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { Badge, Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled, EyeFilled, EyeOffFilled } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
@@ -131,6 +131,13 @@ const useStyles = makeStyles({
         "@media (max-width: 350px), (max-height: 600px)": {
             display: "none",
         },
+    },
+    eventHeader: {
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: "0 !important",
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     event: {
         flexShrink: 0,
@@ -383,6 +390,22 @@ export function Calendar() {
             );
         }
 
+        function countEvents(day: Date) {
+            return mergedSelections
+                // Filter out disabled calendars
+                .filter(calendar => calendar.enabled)
+                // Cycle through all enabled calendars
+                .map((calendar) => {
+                    return calendar.events
+                        // Filter out events that are not in the current day
+                        .filter(event => event.start.toLocaleDateString() === day.toLocaleDateString())
+                        // Cycle through all events in the current calendar and the current day
+                        .length;
+                })
+                // Sum all events
+                .reduce((a, b) => a + b, 0);
+        }
+
         // Cycle through all days in the current calendar view
         return calendarView.map((day) => {
             // Return the clickable card with the day number and the preview of the events
@@ -390,8 +413,11 @@ export function Calendar() {
                 <Dialog key={day.getTime()} >
                     <DialogTrigger>
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
-                            <CardHeader header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
-                            <div className={styles.eventContainer} style={window.matchMedia('(max-width: 578px)').matches && !currentView ? {overflowY: "auto"} : undefined}>
+                            <div className={styles.eventHeader}>
+                                <Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>
+                                {window.matchMedia('(max-width: 578px)').matches && currentView && countEvents(day) > 0 ? <Badge size="small">{countEvents(day)}</Badge> : undefined}
+                            </div>
+                            <div className={styles.eventContainer} style={window.matchMedia('(max-width: 578px)').matches && !currentView ? { overflowY: "auto" } : undefined}>
                                 {/* TODO Show skeletons when loading events */}
                                 {renderPreviewEvents(day)}
                             </div>
