@@ -192,7 +192,7 @@ export function Calendar() {
     const styles = useStyles();
     const { course } = useContext(CourseContext);
     const requests = useRequests();
-    const [currentView, setCurrentView] = useState<boolean>(true);
+    const [isCurrentViewMonth, setIsCurrentViewMonth] = useState<boolean>(true);
 
     // TODO Use proper localization
     const calendarLocal = {
@@ -208,7 +208,7 @@ export function Calendar() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
-    const calendarView = currentView ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
+    const calendarView = isCurrentViewMonth ? generateMonth(dateTime).flat() : window.matchMedia('(max-width: 578px)').matches ? generateShortWeek(dateTime) : generateWeek(dateTime);
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -339,10 +339,10 @@ export function Calendar() {
                                     className={styles.event}
                                     style={{ backgroundColor: calendar.color }}
                                 >
-                                    <Caption1 className={currentView ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
+                                    <Caption1 className={isCurrentViewMonth ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
 
                                     {/* Week view style */}
-                                    <div style={currentView ? { display: "none" } : undefined}>
+                                    <div style={isCurrentViewMonth ? { display: "none" } : undefined}>
                                         <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
                                         <br />
                                         <Caption2>Aula {event.classroom.name}</Caption2>
@@ -412,9 +412,9 @@ export function Calendar() {
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
                             <div className={styles.eventHeader}>
                                 <Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>
-                                {window.matchMedia('(max-width: 578px)').matches && currentView && countEvents(day) > 0 ? <Badge size="small">{countEvents(day)}</Badge> : undefined}
+                                {window.matchMedia('(max-width: 578px)').matches && isCurrentViewMonth && countEvents(day) > 0 ? <Badge size="small">{countEvents(day)}</Badge> : undefined}
                             </div>
-                            <div className={styles.eventContainer} style={window.matchMedia('(max-width: 578px)').matches && !currentView ? { overflowY: "auto" } : undefined}>
+                            <div className={styles.eventContainer} style={window.matchMedia('(max-width: 578px)').matches && !isCurrentViewMonth ? { overflowY: "auto" } : undefined}>
                                 {/* TODO Show skeletons when loading events */}
                                 {renderPreviewEvents(day)}
                             </div>
@@ -546,10 +546,10 @@ export function Calendar() {
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
-                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : window.matchMedia('(max-width: 578px)').matches ? "shortWeek" : "week"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={isCurrentViewMonth ? "month" : window.matchMedia('(max-width: 578px)').matches ? "shortWeek" : "week"} />
                 <Subtitle2>{calendarTitle}</Subtitle2>
                 <div className={styles.toolbarButtons}>
-                    <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
+                    <Button icon={isCurrentViewMonth ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setIsCurrentViewMonth(!isCurrentViewMonth)}>{isCurrentViewMonth ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
                     <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 </div>
@@ -557,16 +557,16 @@ export function Calendar() {
 
             <div className={styles.drawerContainer}>
                 <div className={styles.container}>
-                    <Card className={styles.calendarHeader} style={!currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>
+                    <Card className={styles.calendarHeader} style={!isCurrentViewMonth && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>
                         {window.matchMedia('(max-width: 578px)').matches ?
-                            currentView ?
+                            isCurrentViewMonth ?
                                 calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>)) :
                                 calendarView.map((day) => (<Subtitle1 key={day.getTime()} className={styles.headerItem}>{day.toLocaleDateString([], { weekday: "short" }).charAt(0).toUpperCase() + day.toLocaleDateString([], { weekday: "short" }).slice(1)}</Subtitle1>))
                             : calendarLocal.weekDays.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))}
                     </Card>
 
                     <div className={styles.calendarContainer}>
-                        <div className={styles.calendar} style={!currentView && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>{renderCurrentCalendarView()}</div>
+                        <div className={styles.calendar} style={!isCurrentViewMonth && window.matchMedia('(max-width: 578px)').matches ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>{renderCurrentCalendarView()}</div>
                     </div>
                 </div>
 
