@@ -203,7 +203,7 @@ export default function AdminPanel() {
                                 ))}
                             </MessageBarGroup>}
 
-                            <Divider />
+                            <Divider>{messages.length == 0 ? "Nessun messaggio" : undefined}</Divider>
 
                             <Subtitle2>{!messageId ? "Aggiungi messaggio" : "Modifica messaggio con ID " + messageId}</Subtitle2>
                             <form onSubmit={!messageId ? addMessage : modifyMessage} className={styles.form}>
@@ -227,13 +227,11 @@ export default function AdminPanel() {
                                 <Field label="Link" validationState={formError ? "error" : "none"}>
                                     <Input type="text" placeholder="Link" value={link} onChange={(e) => { setLink(e.target.value); }} />
                                 </Field>
-                                <Field label="Testo Link" validationState={formError ? "error" : "none"}>
-                                    <Input type="text" placeholder="Testo Link" value={linkText} onChange={(e) => { setLinkText(e.target.value); }} />
+                                <Field label="Testo link" validationState={formError ? "error" : "none"}>
+                                    <Input type="text" placeholder="Testo link" value={linkText} onChange={(e) => { setLinkText(e.target.value); }} />
                                 </Field>
-                                <Label>
-                                    <Checkbox checked={isDismissable} onChange={() => setIsDismissable(!isDismissable)} />
-                                    Dismissable
-                                </Label>
+                                <Checkbox label="Rimovibile" checked={isDismissable} onChange={() => setIsDismissable(!isDismissable)} />
+
                                 <Button appearance="primary" disabled={requestInProgress} type="submit" icon={messageId ? <EditFilled /> : <AddCircleFilled />}>{!messageId ? "Aggiungi" : "Modifica"}</Button>
                                 <Button appearance="secondary" disabled={requestInProgress} onClick={resetForm} icon={<EraserFilled />}>Cancella</Button>
                             </form>
