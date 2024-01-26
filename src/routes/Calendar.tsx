@@ -303,22 +303,36 @@ export function Calendar() {
         }
     }
 
-    /** 
-     * Add the current calendar to the calendars list
-     * */
-    async function onAddCalendarClick() {
-        if (!currentSelection) return;
-        
-        const calendar: Calendar = {
-            selection: currentSelection,
-            color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
-            enabled: true
-        };
-        
+    /**
+     * Add a Calendar object to the list of selections
+     */
+    function addCalendar(calendar: Calendar) {
         setCalendars((oldValue) => {
             if (oldValue.find(item => item.selection.id === calendar.selection.id)) return oldValue;
             return [...oldValue, calendar]
         });
+    }
+
+    /**
+     * Creates a Calendar object from a CalendarSelection
+     */
+    function createCalendar(selection: CalendarSelection): Calendar {
+        return {
+            selection: selection,
+            color: parseInt(selection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
+            enabled: true
+        };
+    }
+
+    /** 
+     * Add the current calendar selection to the list of selections
+     * */
+    async function onAddCalendarClick() {
+        if (!currentSelection) return;
+        
+        const calendar = createCalendar(currentSelection);
+        
+        addCalendar(calendar);
     };
 
     /**
@@ -517,8 +531,11 @@ export function Calendar() {
         </TreeItem>;
     }
 
-    // Load the user default calendar on first render (user course)
-    useEffect(() => { onAddCalendarClick(); }, []);
+    // First render: read calendars from search parameters or load the user default calendar
+    useEffect(() => {
+        // No calendars from parameters: load the user default calendar (user course)
+        onAddCalendarClick();
+    }, []);
 
     // Update calendar title when calendar selections change
     useEffect(updateCalendarTitle, [calendars]);
