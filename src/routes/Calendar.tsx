@@ -1,5 +1,5 @@
-import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular } from "@fluentui/react-icons";
+import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tooltip, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular, StarFilled, StarRegular } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateSelector } from "../components/DateSelector";
@@ -48,11 +48,12 @@ const useStyles = makeStyles({
             alignItems: "unset",
         },
     },
-    toolbarButtons: {
+    stack: {
         display: "flex",
         flexDirection: "row",
         columnGap: "0.5rem",
         justifyContent: "flex-end",
+        alignItems: "center",
         "@media (max-width: 578px)": {
             justifyContent: "space-between",
         },
@@ -229,6 +230,7 @@ export function Calendar() {
 
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [calendarTitle, setCalendarTitle] = useState<string>("");
+    const [isDefault, setIsDefault] = useState<boolean>(false);
 
     const calendarView = isCurrentViewMonth ? generateMonth(dateTime).flat() : screenMediaQuery ? generateShortWeek(dateTime) : generateWeek(dateTime);
 
@@ -430,6 +432,21 @@ export function Calendar() {
     }
 
     /**
+     * Create Calendars from search parameters.
+     */
+    async function createCalendarsFromSearchParams(params: URLSearchParams): Promise<Calendar[]> {
+        let newCalendars: Calendar[] = [];
+        for (const type of ["course", "classroom", "teacher"]) {
+            const searchValues = params.getAll(type);
+            if (searchValues.length > 0) {
+                newCalendars.push(...await createCalendarsFromSearch(type as CalendarType, searchValues));
+            }
+        }
+
+        return newCalendars;
+    }
+
+    /**
      * Renders the various cards for each day of the month/week in the current calendar view.  
      * Each card contains a list that enables the user to preview the events for the day.  
      * Furthermore, each card is clickable and opens a dialog with the detailed list of events for the day.
@@ -627,18 +644,24 @@ export function Calendar() {
 
     // First render: read calendars from search parameters or load the user default calendar
     async function loadCalendars() {
-        let newCalendars: Calendar[] = [];
-        for (const type of ["course", "classroom", "teacher"]) {
-            const searchValues = searchParams.getAll(type);
-            if (searchValues.length > 0) {
-                newCalendars.push(...await createCalendarsFromSearch(type as CalendarType, searchValues));
-            }
-        }
+        const newCalendars = await createCalendarsFromSearchParams(searchParams);
 
         if (newCalendars.length > 0) {
             addCalendars(...newCalendars);
         } else {
-            // No calendars from parameters: load the user default calendar (user course)
+            // No calendars from parameters: try to load the default calendars from local storage
+            try {
+                const defaults = window.localStorage.getItem("defaultCalendar");
+                if (defaults !== null) {
+                    const parsed = new URLSearchParams(defaults);
+                    addCalendars(...await createCalendarsFromSearchParams(parsed));
+                    return;
+                }
+            } catch (err) {
+                console.warn("Failed to load default calendars from local storage", err);
+            }
+
+            // No calendars from local storage: add the default course
             onAddCalendarClick();
         }
     }
@@ -654,6 +677,18 @@ export function Calendar() {
         updateSearchParameters();
     }, [calendars]);
 
+    // Update default view state when search parameters change,
+    // and save current view as default if no default is set and the current search parameters are not empty
+    useEffect(() => {
+        const currentDefault = window.localStorage.getItem("defaultCalendar");
+        if (currentDefault) {
+            setIsDefault(searchParams.toString() === currentDefault);
+        } else if (searchParams.size !== 0) {
+            window.localStorage.setItem("defaultCalendar", searchParams.toString());
+            setIsDefault(true);
+        }
+    }, [searchParams]);
+
     // Load events for the current calendar view
     useEffect(() => {
         calendars.forEach(async (calendar) => {
@@ -666,8 +701,25 @@ export function Calendar() {
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={isCurrentViewMonth ? "month" : screenMediaQuery ? "shortWeek" : "week"} />
-                <Subtitle2>{calendarTitle}</Subtitle2>
-                <div className={styles.toolbarButtons}>
+                <div className={styles.stack}>
+                    <Subtitle2>{calendarTitle}</Subtitle2>
+                    <Tooltip
+                        content={isDefault ? "Questa è la visualizzazione predefinita" : "Imposta come visualizzazione predefinita"}
+                        relationship="description"
+                    >
+                        <Button
+                            icon={isDefault ? <StarFilled /> : <StarRegular />}
+                            disabled={isDefault}
+                            onClick={() => {
+                                if (!isDefault) {
+                                    window.localStorage.setItem("defaultCalendar", searchParams.toString());
+                                    setIsDefault(true);
+                                }
+                            }}
+                        />
+                    </Tooltip>
+                </div>
+                <div className={styles.stack}>
                     <Button icon={isCurrentViewMonth ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setIsCurrentViewMonth(!isCurrentViewMonth)}>{isCurrentViewMonth ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
                     <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
