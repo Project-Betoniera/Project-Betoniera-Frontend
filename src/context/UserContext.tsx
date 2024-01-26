@@ -12,7 +12,7 @@ export const UserContext = createContext({
         setIsAdmin: (value: boolean | null) => { console.log(value); }
     },
     course: {
-        course: null as CourseDto | null, 
+        course: null as CourseDto | null,
         setCourse: (data: CourseDto | null) => { console.log(data); }
     }
 });

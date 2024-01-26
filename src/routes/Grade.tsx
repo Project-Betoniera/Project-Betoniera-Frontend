@@ -1,7 +1,7 @@
-import { Card, CardHeader, Spinner, Title2, DataGrid, createTableColumn, DataGridBody, DataGridHeader, DataGridRow, DataGridCell, DataGridHeaderCell, TabList, Tab, Subtitle2 } from "@fluentui/react-components";
-import { useGlobalStyles } from "../globalStyles";
+import { Card, CardHeader, DataGrid, DataGridBody, DataGridCell, DataGridHeader, DataGridHeaderCell, DataGridRow, Spinner, Subtitle2, Tab, TabList, Title2, createTableColumn } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 import { GradeDto, GradeGroupDto } from "../dto/GradeDto";
+import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
 export function Grade() {
@@ -15,7 +15,7 @@ export function Grade() {
     useEffect(() => {
         requests.grade.groups()
             .then(g => new Promise<GradeGroupDto[]>(r => setTimeout(() => r(g), 100)))
-            .then(setGroups)
+            .then(setGroups);
     }, []);
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export function Grade() {
             columnId: "grade",
             compare: (a, b) => {
                 const aGrade = a.grade === null ? 0 : a.grade;
-                const bGrade = b.grade === null ? 0 : b.grade
+                const bGrade = b.grade === null ? 0 : b.grade;
                 return aGrade - bGrade;
             },
             renderHeaderCell: () => {

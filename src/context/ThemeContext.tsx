@@ -16,7 +16,7 @@ export function ThemeContextProvider({ children }: { children: JSX.Element; }) {
 
         if (savedTheme === "auto" || savedTheme === "light" || savedTheme === "dark") return savedTheme;
         else return "auto";
-    }
+    };
 
     const [theme, setTheme] = useState<"auto" | "light" | "dark">(getTheme());
     const [themeValue, setThemeValue] = useState<Theme>(webLightTheme);
@@ -33,10 +33,10 @@ export function ThemeContextProvider({ children }: { children: JSX.Element; }) {
                 break;
             case "auto":
                 const darkThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-        
+
                 const updateTheme = () => setThemeValue(darkThemeQuery.matches ? webDarkTheme : webLightTheme);
                 updateTheme();
-        
+
                 darkThemeQuery.addEventListener("change", updateTheme);
                 return () => darkThemeQuery.removeEventListener("change", updateTheme);
             default:

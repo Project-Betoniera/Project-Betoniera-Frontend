@@ -1,8 +1,8 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { Body1, Combobox, Option, Select, SelectOnChangeData, makeStyles, shorthands } from "@fluentui/react-components";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
-import useRequests from "../../libraries/requests/requests";
 import { UserContext } from "../../context/UserContext";
+import useRequests from "../../libraries/requests/requests";
 
 /**
  * The available calendar types.
@@ -60,7 +60,7 @@ const selectionCache: { [type in CalendarType]: CalendarSelection[] | Promise<Ca
     course: undefined,
     classroom: undefined,
     teacher: undefined,
-}
+};
 
 /**
  * Requests the available calendars for a specific calendar type.  
@@ -87,7 +87,7 @@ export function getCalendarSelections(requests: ReturnType<typeof useRequests>, 
             switch (type) {
                 case "course":
                     result = await requests.course.all()
-                        .then(courses => 
+                        .then(courses =>
                             courses.map(course => ({
                                 id: course.id.toString(),
                                 type: "course",
@@ -98,7 +98,7 @@ export function getCalendarSelections(requests: ReturnType<typeof useRequests>, 
                     break;
                 case "classroom":
                     result = await requests.classroom.all()
-                        .then(classrooms => 
+                        .then(classrooms =>
                             classrooms.map(classroom => ({
                                 id: classroom.id.toString(),
                                 type: "classroom",
@@ -109,7 +109,7 @@ export function getCalendarSelections(requests: ReturnType<typeof useRequests>, 
                     break;
                 case "teacher":
                     result = await requests.teacher.all()
-                        .then(teachers => 
+                        .then(teachers =>
                             teachers.map(teacher => ({
                                 id: teacher.name,
                                 type: "teacher",

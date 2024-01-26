@@ -18,15 +18,15 @@ export default function OfflineDialog() {
     }, []);
 
     return (
-    <Dialog open={isOffline}>
-        <DialogSurface>
-            <DialogBody>
-                <DialogTitle>🚫 Sei offline</DialogTitle>
-                <DialogContent>
-                    Connettiti ad una rete per utilizzare l'applicazione.
-                </DialogContent>
-            </DialogBody>
-        </DialogSurface>
-    </Dialog>
-    )
+        <Dialog open={isOffline}>
+            <DialogSurface>
+                <DialogBody>
+                    <DialogTitle>🚫 Sei offline</DialogTitle>
+                    <DialogContent>
+                        Connettiti ad una rete per utilizzare l'applicazione.
+                    </DialogContent>
+                </DialogBody>
+            </DialogSurface>
+        </Dialog>
+    );
 }

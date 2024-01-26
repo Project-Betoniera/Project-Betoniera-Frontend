@@ -1,17 +1,17 @@
 import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled, EyeFilled, EyeOffFilled } from "@fluentui/react-icons";
+import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { CalendarSelection, CalendarSelector, CalendarType, getCalendarSelections } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 
+import { useSearchParams } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 import { EventDto } from "../dto/EventDto";
 import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
-import useRequests from "../libraries/requests/requests";
 import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
-import { UserContext } from "../context/UserContext";
-import { useSearchParams } from "react-router-dom";
+import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -189,7 +189,7 @@ type Calendar = {
 type ExtendedEventDto = EventDto & {
     color: number;
     selectionId: string;
-}
+};
 
 const COLORS = [
     // special: default course
@@ -206,7 +206,7 @@ const COLORS = [
 
 // Colors that can be randomly selected.
 // The first color is reserved for the default course
-const RANDOMABLE_COLORS = [ ...Array(COLORS.length - 1).keys() ].map(k => k + 1);
+const RANDOMABLE_COLORS = [...Array(COLORS.length - 1).keys()].map(k => k + 1);
 
 export function Calendar() {
     const styles = useStyles();
@@ -223,7 +223,7 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
-    const [ searchParams, setSearchParams ] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -298,10 +298,10 @@ export function Calendar() {
                     ...event,
                     color: calendar.color,
                     selectionId: calendar.selection.id,
-                }
+                };
 
                 return result;
-            })
+            });
     };
 
     /**
@@ -339,13 +339,13 @@ export function Calendar() {
      */
     function addCalendars(...calendars: Calendar[]) {
         setCalendars((oldValue) => {
-            const newValue = [ ...oldValue ];
+            const newValue = [...oldValue];
             for (const calendar of calendars) {
                 if (!newValue.find(item => item.selection.id === calendar.selection.id)) {
                     newValue.push(calendar);
                 }
             }
-            
+
             if (newValue.length === oldValue.length)
                 return oldValue;
             else
@@ -369,9 +369,9 @@ export function Calendar() {
      * */
     async function onAddCalendarClick() {
         if (!currentSelection) return;
-        
+
         const calendar = createCalendar(currentSelection);
-        
+
         addCalendars(calendar);
     };
 
@@ -486,7 +486,7 @@ export function Calendar() {
                                         }
                                     </div>
                                 </div>
-                            )
+                            );
                         })
                     }
                 </div>
@@ -644,7 +644,6 @@ export function Calendar() {
         }
     }
 
-    
     useEffect(() => {
         loadCalendars();
     }, []);
@@ -660,7 +659,7 @@ export function Calendar() {
         calendars.forEach(async (calendar) => {
             const newEvents = await getEvents(calendar);
             setEvents((oldValue) => [...oldValue, ...newEvents]);
-        })
+        });
     }, [dateTime, calendars]);
 
     return (

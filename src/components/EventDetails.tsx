@@ -1,9 +1,9 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
-import { EventDto } from "../dto/EventDto";
 import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
-import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
-import { useGlobalStyles } from "../globalStyles";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { TimekeeperContext } from "../context/TimekeeperContext";
+import { EventDto } from "../dto/EventDto";
+import { useGlobalStyles } from "../globalStyles";
+import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {

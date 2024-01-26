@@ -1,11 +1,11 @@
 import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { ArrowExitFilled, BuildingFilled, CalendarFilled, DismissRegular, HomeFilled, InfoFilled, PersonFilled, TaskListSquareLtrFilled } from "@fluentui/react-icons";
 import { FunctionComponent, useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, TaskListSquareLtrFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
 import { TokenContext } from "../../context/TokenContext";
-import { RouterButton } from "./RouterButton";
 import { UserContext } from "../../context/UserContext";
 import { UserProfile } from "../UserProfile";
+import { RouterButton } from "./RouterButton";
 
 const useStyles = makeStyles({
     drawer: {
@@ -52,7 +52,7 @@ const menuItems = [
 const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
     const styles = useStyles();
     const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
-    const {setCourse} = useContext(UserContext).course;
+    const { setCourse } = useContext(UserContext).course;
     const { setName: setUserName, setEmail: setUserEmail, setIsAdmin: setIsUserAdmin } = useContext(UserContext).user;
 
     const logout = () => {

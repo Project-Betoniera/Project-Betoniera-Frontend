@@ -10,9 +10,9 @@ export default function courseRequests(token: string, setIsInvalid: (isInvalid: 
             name: data.name,
             startYear: data.startYear,
             endYear: data.endYear,
-        }
+        };
 
-        return result
+        return result;
     }
 
     function parseCourses(data: any) {

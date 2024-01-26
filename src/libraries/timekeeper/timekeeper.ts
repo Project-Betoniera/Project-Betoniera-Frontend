@@ -5,7 +5,7 @@ export default class Timekeeper {
     private registeredEvents: boolean = false;
     private interval: number | null = null;
     private previousTimestamp: number | null = null;
-    private listeners: { precision: TimePrecision, callback: TimekeeperListener }[] = [];
+    private listeners: { precision: TimePrecision, callback: TimekeeperListener; }[] = [];
     private started: boolean = false;
 
     private static splitTimestamp(timestamp: number) {
@@ -13,7 +13,7 @@ export default class Timekeeper {
             second: Math.floor(timestamp / 1000),
             minute: Math.floor(timestamp / 1000 / 60),
             hour: Math.floor(timestamp / 1000 / 60 / 60),
-        }
+        };
     }
 
     private tick() {
@@ -36,7 +36,7 @@ export default class Timekeeper {
     private resume() {
         // ensures that the interval is NOT set
         this.pause();
-        
+
         // determines the current precision
         let timeout = 60_000;
         let smallestPrecision = "hour";
@@ -49,7 +49,7 @@ export default class Timekeeper {
                 smallestPrecision = "minute";
             }
         });
-        
+
         this.interval = window.setInterval(() => {
             this.tick();
         }, timeout);
@@ -69,7 +69,7 @@ export default class Timekeeper {
         } else {
             this.pause();
         }
-    }
+    };
 
     private registerEvents() {
         if (this.registeredEvents) return;
@@ -113,4 +113,5 @@ export default class Timekeeper {
         }
     }
 }
-export type { TimekeeperListener, TimePrecision };
+export type { TimePrecision, TimekeeperListener };
+
