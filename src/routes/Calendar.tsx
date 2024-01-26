@@ -1,14 +1,15 @@
-import { Button, Caption1, Caption2, Card, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissRegular, SettingsRegular, BackpackFilled, BuildingFilled, PersonFilled, DismissFilled, EyeFilled, EyeOffFilled } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CalendarSelection, CalendarSelector } from "../components/calendar/CalendarSelector";
+import { CalendarSelection, CalendarSelector, CalendarType } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 import { CourseContext } from "../context/CourseContext";
 import { EventDto } from "../dto/EventDto";
-import { generateMonth, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
+import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import useRequests from "../libraries/requests/requests";
+import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -107,16 +108,6 @@ const useStyles = makeStyles({
         },
         color: "white",
     },
-    eventIndicator: {
-        "@media (min-width: 351px)": {
-            display: "none",
-        },
-    },
-    verticalEventIndicator: {
-        "@media (max-width: 350px), (min-height: 601px)": {
-            display: "none",
-        },
-    },
     eventContainer: {
         display: "flex",
         minHeight: 0,
@@ -131,6 +122,13 @@ const useStyles = makeStyles({
         "@media (max-width: 350px), (max-height: 600px)": {
             display: "none",
         },
+    },
+    eventHeader: {
+        display: "flex",
+        flexDirection: "row",
+        flexGrow: "0 !important",
+        alignItems: "center",
+        justifyContent: "space-between"
     },
     event: {
         flexShrink: 0,
@@ -149,7 +147,7 @@ const useStyles = makeStyles({
         alignSelf: "stretch",
     },
     scroll: {
-        overflowY: "scroll",
+        overflowY: "auto",
     },
     // Enable the event dialog to be as wide as it needs to be
     eventsDialog: {
@@ -174,26 +172,38 @@ const useStyles = makeStyles({
     },
 });
 
+/**
+ * Calendar type that contains the calendar selection and the color to use for the calendar and the display state
+ */
 type Calendar = {
     selection: CalendarSelection,
-    events: EventDto[],
     color: string,
     enabled: boolean,
 };
 
+/**
+ * Extended `EventDto` type that contains the color and the selection id of the calendar it belongs to
+ */
+type ExtendedEventDto = EventDto & {
+    color: string;
+    selectionId: string;
+}
+
 export function Calendar() {
     const styles = useStyles();
     const { course } = useContext(CourseContext);
+    const screenMediaQuery = useMediaQuery('(max-width: 578px)');
     const requests = useRequests();
-    const [currentView, setCurrentView] = useState<boolean>(true);
+    const [isCurrentViewMonth, setIsCurrentViewMonth] = useState<boolean>(true);
 
     // TODO Use proper localization
     const calendarLocal = {
         months: ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         monthsAbbr: ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"],
         weekDays: ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato", "Domenica"],
-        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"],
+        weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
+
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -201,7 +211,7 @@ export function Calendar() {
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [calendarTitle, setCalendarTitle] = useState<string>("");
 
-    const calendarView = currentView ? generateMonth(dateTime).flat() : generateWeek(dateTime);
+    const calendarView = isCurrentViewMonth ? generateMonth(dateTime).flat() : screenMediaQuery ? generateShortWeek(dateTime) : generateWeek(dateTime);
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
@@ -211,13 +221,10 @@ export function Calendar() {
         fullName: `${course?.code} - ${course?.name}` || "",
     });
 
-    // Calendar selections for each type
-    const [courseSelections, setCourseSelections] = useState<Calendar[]>([]);
-    const [classroomSelections, setClassroomSelections] = useState<Calendar[]>([]);
-    const [teacherSelections, setTeacherSelections] = useState<Calendar[]>([]);
+    // Calendars on the view
+    const [calendars, setCalendars] = useState<Calendar[]>([]);
 
-    // Merged calendar selections
-    const mergedSelections = [courseSelections, classroomSelections, teacherSelections].flat();
+    const [events, setEvents] = useState<ExtendedEventDto[]>([]);
 
     /**
      * Called when the user selects a new calendar with the `CalendarSelector` component 
@@ -235,7 +242,6 @@ export function Calendar() {
             tokens.colorPaletteDarkOrangeBackground2,
             tokens.colorPaletteYellowBackground2,
             tokens.colorPaletteGreenBackground2,
-            tokens.colorPaletteBlueBackground2,
             tokens.colorPalettePurpleBackground2,
             tokens.colorPaletteBerryBackground2,
             tokens.colorPaletteMarigoldBackground2,
@@ -247,63 +253,71 @@ export function Calendar() {
     }
 
     /**
-     * Returns the list of events for the in-view week/month of the calendar selection passed as parameter
+     * Returns the list of events for the in-view week/month for the specified calendar.  
+     * The `from` and `to` parameters can be used to specify a custom range of dates to get events for.
      */
-    async function getEvents(selection: CalendarSelection) {
-        const startDate = calendarView[0];
-        const endDate = calendarView[calendarView.length - 1];
+    async function getEvents(calendar: Calendar, from: Date = calendarView[0], to: Date = calendarView[calendarView.length - 1]) {
+        let newEvents: EventDto[] = [];
 
-        switch (selection.type) {
+        switch (calendar.selection.type) {
             case "course":
-                return await requests.event.byCourse(startDate, endDate, parseInt(selection.id));
+                newEvents = await requests.event.byCourse(from, to, parseInt(calendar.selection.id));
+                break;
             case "classroom":
-                return await requests.event.byClassroom(startDate, endDate, parseInt(selection.id));
+                newEvents = await requests.event.byClassroom(from, to, parseInt(calendar.selection.id));
+                break;
             case "teacher":
-                return await requests.event.byTeacher(startDate, endDate, selection.id);
-            default:
-                return [] as EventDto[];
+                newEvents = await requests.event.byTeacher(from, to, calendar.selection.id);
+                break;
         }
+
+        // Return only the events that are NOT already in the events list
+        return newEvents
+            .filter((event) => events.find((item) =>
+                item.id === event.id &&
+                item.selectionId === calendar.selection.id
+            ) === undefined)
+            .map((event) => {
+                const result: ExtendedEventDto = {
+                    ...event,
+                    color: calendar.color,
+                    selectionId: calendar.selection.id,
+                }
+
+                return result;
+            })
     };
 
     /**
      * Updates the calendar title based on the current calendar selections
      */
     function updateCalendarTitle() {
-        if (mergedSelections.length == 1) {
-            const calendar = mergedSelections[0];
+        if (calendars.length == 1) {
+            const calendar = calendars[0];
             setCalendarTitle(`Calendario per ${calendar.selection.type === "classroom" ? calendar.selection.fullName : calendar.selection.shortName}`);
-        } else {
+        } else if (calendars.length > 1) {
             setCalendarTitle("Visualizzazione personalizzata");
+        } else {
+            setCalendarTitle("Nessun calendario selezionato");
         }
     }
 
     /** 
-     * Add the current calendar selection to the list of selections
+     * Add the current calendar to the calendars list
      * */
     async function onAddCalendarClick() {
         if (!currentSelection) return;
-
+        
         const calendar: Calendar = {
-            events: await getEvents(currentSelection),
             selection: currentSelection,
             color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
             enabled: true
         };
-
-        switch (currentSelection.type) {
-            case "course":
-                if (courseSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setCourseSelections([...courseSelections, calendar]);
-                break;
-            case "classroom":
-                if (classroomSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setClassroomSelections([...classroomSelections, calendar]);
-                break;
-            case "teacher":
-                if (teacherSelections.find(item => item.selection.id === currentSelection.id)) return;
-                setTeacherSelections([...teacherSelections, calendar]);
-                break;
-        }
+        
+        setCalendars((oldValue) => {
+            if (oldValue.find(item => item.selection.id === calendar.selection.id)) return oldValue;
+            return [...oldValue, calendar]
+        });
     };
 
     /**
@@ -313,86 +327,86 @@ export function Calendar() {
      */
     function renderCurrentCalendarView() {
         /**
-         * Renders a preview list of the events for a specified day.  
-         * If more calendars are selected, the events are rendered in the order of the calendars.
+         * Renders a preview list of the events passed as parameter.
+         * @param events The events to render
          */
-        function renderPreviewEvents(day: Date) {
-            return mergedSelections
-                // Filter out disabled calendars
-                .filter(calendar => calendar.enabled)
-                // Cycle through all enabled calendars
-                .map((calendar) => {
-                    return calendar.events
-                        // Filter out events that are not in the current day
-                        .filter(event => event.start.toLocaleDateString() === day.toLocaleDateString())
-                        // Cycle through all events in the current calendar and the current day
-                        .map((event) => {
-                            // Return the preview event card
-                            return (
-                                <Card
-                                    key={event.id}
-                                    className={styles.event}
-                                    style={{ backgroundColor: calendar.color }}
-                                >
-                                    <Caption1 className={currentView ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
+        function renderPreviewEvents(events: ExtendedEventDto[]) {
+            // Render a preview card for each event in each calendar
+            return events.map((event) => (
+                <Card
+                    key={event.id}
+                    className={styles.event}
+                    style={{ backgroundColor: event.color }}
+                >
+                    <Caption1 className={isCurrentViewMonth ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
 
-                                    {/* Week view style */}
-                                    <div style={currentView ? { display: "none" } : undefined}>
-                                        <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
-                                        <br />
-                                        <Caption2>Aula {event.classroom.name}</Caption2>
-                                    </div>
-                                </Card>
-                            );
-                        });
-                });
+                    {/* Week view style */}
+                    <div style={isCurrentViewMonth ? { display: "none" } : undefined}>
+                        <Caption2>{event.start.toLocaleString([], { timeStyle: "short" })} - {event.end.toLocaleString([], { timeStyle: "short" })}</Caption2>
+                        <br />
+                        <Caption2>Aula {event.classroom.name}</Caption2>
+                    </div>
+                </Card>
+            ));
         };
 
         /**
          * Renders a detailed list of the events for a specified day.  
          * If more calendars are selected, the events are grouped horizontally by calendar.
          */
-        function renderDetailedEvents(day: Date) {
+        function renderDetailedEvents(calendars: Calendar[], events: ExtendedEventDto[]) {
             return (
                 <div className={styles.dialogCalendarViewsContainer}>
-                    {mergedSelections
-                        // Filter out disabled calendars
-                        .filter(calendar => calendar.enabled)
-                        // Cycle through all enabled calendars
-                        .map((calendar) => {
-                            // Filter out events that are not in the current day
-                            const events = calendar.events.filter(event => event.start.toLocaleDateString() === day.toLocaleDateString());
+                    {
+                        // Foreach calendar render the detailed event list
+                        calendars.map((calendar) => {
+                            // Events of the current calendar for the current day, sorted by start time
+                            const filteredEvents = events.filter((event) => event.selectionId === calendar.selection.id);
 
                             return (
                                 <div className={styles.dialogCalendarView} key={calendar.selection.id}>
                                     <Subtitle2 className={styles.ellipsisText}>{calendar.selection.fullName}</Subtitle2>
                                     <div className={styles.dialogEventList}>
                                         {
-                                            // Cycle through all events in the current calendar and the current day
-                                            // and foreach event render the preview card
-                                            events.length > 0 ? events.map((event) =>
-                                                <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={calendar.color} />) :
+                                            // Foreach event in the current calendar render the detailed preview card
+                                            filteredEvents.length > 0 ?
+                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={calendar.color} />)
+                                                :
                                                 <Subtitle2>Nessuna</Subtitle2>
                                         }
                                     </div>
                                 </div>
-                            );
-                        })}
+                            )
+                        })
+                    }
                 </div>
             );
         }
 
-        // Cycle through all days in the current calendar view
+        // For each day in the current calendar view render 
+        // a clickable card with the day number and a preview of the events
         return calendarView.map((day) => {
-            // Return the clickable card with the day number and the preview of the events
+            // Events of the current day for the enabled calendars, sorted by start time
+            const filteredEvents = events
+                .filter(event =>
+                    event.start.toLocaleDateString() === day.toLocaleDateString() &&
+                    calendars.find(calendar => calendar.selection.id === event.selectionId)?.enabled)
+                .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+            // Enabled calendars
+            const filteredCalendars = calendars.filter(calendar => calendar.enabled);
+
             return (
                 <Dialog key={day.getTime()} >
                     <DialogTrigger>
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
-                            <CardHeader header={<Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>} />
-                            <div className={styles.eventContainer}>
+                            <div className={styles.eventHeader}>
+                                <Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>
+                                {screenMediaQuery && isCurrentViewMonth && filteredEvents.length > 0 ? <Badge size="small" color={now.toLocaleDateString() === day.toLocaleDateString() ? "subtle" : undefined}>{filteredEvents.length}</Badge> : undefined}
+                            </div>
+                            <div className={styles.eventContainer} style={screenMediaQuery && !isCurrentViewMonth ? { overflowY: "auto" } : undefined}>
                                 {/* TODO Show skeletons when loading events */}
-                                {renderPreviewEvents(day)}
+                                {renderPreviewEvents(filteredEvents)}
                             </div>
                         </Card>
                     </DialogTrigger>
@@ -402,7 +416,7 @@ export function Calendar() {
                                 <Title3>Lezioni {now.toLocaleDateString() === day.toLocaleDateString() ? "di oggi" : `del ${day.toLocaleDateString([], { day: "numeric", month: "long" })}`}</Title3>
                             </DialogTitle>
                             <DialogContent>
-                                {renderDetailedEvents(day)}
+                                {renderDetailedEvents(filteredCalendars, filteredEvents)}
                             </DialogContent>
                             <DialogActions>
                                 <DialogTrigger>
@@ -432,19 +446,97 @@ export function Calendar() {
         }
     };
 
+    /**
+     * Renders the tree view for the specified calendar type
+     * @param type The type of tree to render
+     */
+    function renderTree(type: CalendarType) {
+
+        /**
+         * @returns The appropriate tree title for the specified calendar type
+         */
+        function getTreeTitle() {
+            switch (type) {
+                case "course":
+                    return "Corsi";
+                case "classroom":
+                    return "Aule";
+                case "teacher":
+                    return "Docenti";
+            }
+        }
+
+        // Filter out calendars that are not of the specified type
+        const filtered = calendars.filter((calendar) => calendar.selection.type === type);
+
+        return filtered.length > 0 && <TreeItem itemType="branch">
+            <TreeItemLayout>{getTreeTitle()}</TreeItemLayout>
+            <Tree aria-label={`${type} tree`}>
+                {filtered.map(calendar => {
+                    /**
+                     * Called when the user clicks the eye button on a calendar
+                     */
+                    function onEnableDisableButtonClick() {
+                        setCalendars((oldValue) => oldValue.map((item) => {
+                            if (item.selection.id === calendar.selection.id) item.enabled = !item.enabled;
+                            return item;
+                        }));
+                    };
+
+                    function onRemoveCalendarClick() {
+                        setCalendars((oldValue) => oldValue.filter((item) => item.selection.id !== calendar.selection.id));
+                        setEvents((oldValue) => oldValue.filter((item) => item.selectionId !== calendar.selection.id));
+                    }
+
+                    return (
+                        <TreeItem itemType="leaf" key={calendar.selection.id}>
+                            <TreeItemLayout
+                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
+                                aside={!calendar.enabled ? <EyeOffFilled fontSize={20} /> : undefined}
+                                actions={<>
+                                    <Button
+                                        appearance="subtle"
+                                        aria-label="enable/disable calendar"
+                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
+                                        onClick={onEnableDisableButtonClick}
+                                    />
+                                    <Button
+                                        appearance="subtle"
+                                        aria-label="remove calendar"
+                                        icon={<DismissFilled />}
+                                        onClick={onRemoveCalendarClick}
+                                    />
+                                </>}>
+                                {calendar.selection.shortName}
+                            </TreeItemLayout>
+                        </TreeItem>
+                    );
+                })}
+            </Tree>
+        </TreeItem>;
+    }
+
     // Load the user default calendar on first render (user course)
     useEffect(() => { onAddCalendarClick(); }, []);
 
     // Update calendar title when calendar selections change
-    useEffect(updateCalendarTitle, [mergedSelections]);
+    useEffect(updateCalendarTitle, [calendars]);
+
+    // Load events for the current calendar view
+    useEffect(() => {
+        calendars.forEach(async (calendar) => {
+            const newEvents = await getEvents(calendar);
+            setEvents((oldValue) => [...oldValue, ...newEvents]);
+        })
+    }, [dateTime, calendars]);
 
     return (
         <div className={mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
-                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={currentView ? "month" : "week"} />
+                <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={isCurrentViewMonth ? "month" : screenMediaQuery ? "shortWeek" : "week"} />
                 <Subtitle2>{calendarTitle}</Subtitle2>
                 <div className={styles.toolbarButtons}>
-                    <Button icon={currentView ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setCurrentView(!currentView)}>{currentView ? "Settimana" : "Mese"}</Button>
+                    <Button icon={isCurrentViewMonth ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setIsCurrentViewMonth(!isCurrentViewMonth)}>{isCurrentViewMonth ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
                     <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
                 </div>
@@ -452,14 +544,16 @@ export function Calendar() {
 
             <div className={styles.drawerContainer}>
                 <div className={styles.container}>
-                    <Card className={styles.calendarHeader}>
-                        {window.matchMedia('(max-width: 578px)').matches ?
-                            calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))
+                    <Card className={styles.calendarHeader} style={!isCurrentViewMonth && screenMediaQuery ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>
+                        {screenMediaQuery ?
+                            isCurrentViewMonth ?
+                                calendarLocal.weekDaysAbbr.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>)) :
+                                calendarView.map((day) => (<Subtitle1 key={day.getTime()} className={styles.headerItem}>{day.toLocaleDateString([], { weekday: "short" }).charAt(0).toUpperCase() + day.toLocaleDateString([], { weekday: "short" }).slice(1)}</Subtitle1>))
                             : calendarLocal.weekDays.map((day) => (<Subtitle1 key={day} className={styles.headerItem}>{day}</Subtitle1>))}
                     </Card>
 
                     <div className={styles.calendarContainer}>
-                        <div className={styles.calendar}>{renderCurrentCalendarView()}</div>
+                        <div className={styles.calendar} style={!isCurrentViewMonth && screenMediaQuery ? { gridTemplateColumns: "repeat(" + calendarView.length + ", 1fr)" } : undefined}>{renderCurrentCalendarView()}</div>
                     </div>
                 </div>
 
@@ -483,93 +577,9 @@ export function Calendar() {
                         <Button appearance="primary" onClick={onAddCalendarClick}>Aggiungi</Button>
 
                         <Tree className={mergeClasses(styles.wide, styles.scroll)} aria-label="main tree">
-                            {courseSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Corsi</TreeItemLayout>
-                                <Tree aria-label="course tree">
-                                    {courseSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setCourseSelections(courseSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setCourseSelections(courseSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
-                            {classroomSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Aule</TreeItemLayout>
-                                <Tree aria-label="classroom tree">
-                                    {classroomSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setClassroomSelections(classroomSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setClassroomSelections(classroomSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
-                            {teacherSelections.length > 0 && <TreeItem itemType="branch">
-                                <TreeItemLayout>Docenti</TreeItemLayout>
-                                <Tree aria-label="teachers tree">
-                                    {teacherSelections.map(calendar =>
-                                        <TreeItem itemType="leaf" key={calendar.selection.id}>
-                                            <TreeItemLayout
-                                                iconBefore={getCalendarIcon(calendar.selection.type, calendar)}
-                                                aside={!calendar.enabled ? <EyeOffFilled /> : undefined}
-                                                actions={<>
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="enable/disable calendar"
-                                                        icon={calendar.enabled ? <EyeFilled /> : <EyeOffFilled />}
-                                                        onClick={() => setTeacherSelections(teacherSelections.map((item) => {
-                                                            if (item.selection.id === calendar.selection.id) {
-                                                                item.enabled = !item.enabled;
-                                                            }
-                                                            return item;
-                                                        }))} />
-                                                    <Button
-                                                        appearance="subtle"
-                                                        aria-label="remove calendar"
-                                                        icon={<DismissFilled />}
-                                                        onClick={() => setTeacherSelections(teacherSelections.filter((item) => item.selection.id !== calendar.selection.id))} /></>}>
-                                                {calendar.selection.shortName}
-                                            </TreeItemLayout>
-                                        </TreeItem>)}
-                                </Tree>
-                            </TreeItem>}
+                            {renderTree("course")}
+                            {renderTree("classroom")}
+                            {renderTree("teacher")}
                         </Tree>
                     </DrawerBody>
                 </Drawer>
