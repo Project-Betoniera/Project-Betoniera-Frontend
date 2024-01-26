@@ -69,6 +69,7 @@ export const UserProfile: React.FC = () => {
                     <Option value="light" text="Chiaro">Chiaro</Option>
                     <Option value="dark" text="Scuro">Scuro</Option>
                 </Dropdown>
+                <Subtitle2>Utilità</Subtitle2>
                 <Button onClick={() => {
                     localStorage.removeItem("dismissedMessages");
                     reloadMessages();
