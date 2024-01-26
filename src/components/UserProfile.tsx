@@ -1,9 +1,10 @@
-import { Avatar, Body1, Divider, Dropdown, Option, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
+import { Avatar, Body1, Button, Divider, Dropdown, Option, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
 import { CheckmarkStarburstFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
 import AdminPanel from "./AdminPanel";
+import { MessagesContext } from '../context/MessagesContext';
 
 const useStyles = makeStyles({
     userContainer: {
@@ -49,6 +50,7 @@ export const UserProfile: React.FC = () => {
     const { name, email, isAdmin } = useContext(UserContext).user;
     const { course } = useContext(UserContext).course;
     const { theme, setTheme } = useContext(ThemeContext);
+    const { reloadMessages } = useContext(MessagesContext);
 
     const themeValues = {
         "auto": "Automatico",
@@ -79,6 +81,10 @@ export const UserProfile: React.FC = () => {
                         <Option value="dark" text="Scuro">Scuro</Option>
                     </Dropdown>
                 </div>
+                <Button onClick={() => {
+                    localStorage.removeItem("dismissedMessages");
+                    reloadMessages();
+                }}>Reimposta messaggi ignorati</Button>
             </div>
         </div>
     );
