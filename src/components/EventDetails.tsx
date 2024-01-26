@@ -4,6 +4,7 @@ import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from 
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import { useGlobalStyles } from '../globalStyles';
 import { TimekeeperContext } from '../context/TimekeeperContext';
+import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {
     /**
@@ -18,6 +19,14 @@ export type EventDetailsProps = {
      * The title to be displayed if the `title` property is set to `custom`.
     */
     customTitle?: string;
+    /**
+     * The background color of the card. If not provided, the default background color will be used.
+     */
+    backgroundColor?: string;
+    /**
+     * Whether to make the course label a link to see the calendar of the course. Defaults to `false`.
+    */
+    linkToCalendar?: boolean;
     /**
      * The properties to hide. If not provided, all properties will be displayed.
     */
@@ -40,6 +49,12 @@ const useStyles = makeStyles({
     },
     card: {
         backgroundColor: tokens.colorBrandBackground2Hover
+    },
+    removeLinkStyle: {
+        color: "inherit",
+        ":hover": {
+            color: "inherit",
+        },
     }
 });
 
@@ -74,6 +89,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
     const [now, setNow] = useState(() => new Date());
     const { timekeeper } = useContext(TimekeeperContext);
+
     useEffect(() => {
         const updateTime = () => setNow(new Date());
         timekeeper.addListener('minute', updateTime);
@@ -87,22 +103,24 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
                 {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
-                {props.title !== "course" && !props.hide?.includes("course") && <Body1>{course}</Body1>}
+                {props.title !== "course" && !props.hide?.includes("course") ? props.linkToCalendar ? <RouterLink as="a" className={styles.removeLinkStyle} href={"/calendar?course=" + props.event.course.id}>{course}</RouterLink> : <Body1>{course}</Body1> : null}
                 {props.title !== "classroom" && !props.hide?.includes("classroom") && <Body1>{classroom}</Body1>}
                 {props.title !== "teacher" && !props.hide?.includes("teacher") && <Body1>{teacher}</Body1>}
             </div>
         </div>
     );
 
-    if (props.as === 'card') {
-        return (
-            <Card className={mergeClasses(globalStyles.card, styles.card, props.event.start <= now && props.event.end > now ? globalStyles.ongoing : "")}>
-                {content}
-            </Card>
-        );
-    } else {
-        return content;
-    }
+    const isOngoning = props.event.start <= now && props.event.end > now;
+    return props.as === 'card' ? (
+        <Card
+            // TODO Find a better way to set background color
+            style={!isOngoning ? { backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover } : undefined}
+            className={mergeClasses(globalStyles.card, isOngoning && globalStyles.ongoing)}
+        >
+            {content}
+
+        </Card>
+    ) : content;
 };
 
 export default EventDetails;

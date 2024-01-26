@@ -1,5 +1,5 @@
-import { FunctionComponent } from "react";
 import { Button, ButtonProps } from "@fluentui/react-components";
+import { FunctionComponent } from "react";
 import { useNavigate } from "react-router";
 
 export const RouterButton: FunctionComponent<ButtonProps & { as: "a"; }> = (props) => {

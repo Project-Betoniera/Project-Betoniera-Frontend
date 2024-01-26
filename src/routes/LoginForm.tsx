@@ -1,12 +1,10 @@
-import { FormEvent, useContext, useState } from "react";
-import { TokenContext } from "../context/TokenContext";
+import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle1, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, makeStyles, shorthands, tokens, useId, useToastController } from "@fluentui/react-components";
 import axios from "axios";
-import { apiUrl, isBetaBuild } from "../config";
-import { CourseDto } from "../dto/CourseDto";
-import { Body1, Button, Card, CardHeader, Checkbox, Field, Input, Label, LargeTitle, Link, Spinner, Subtitle1, Subtitle2, Toast, ToastBody, ToastTitle, Toaster, tokens, useId, useToastController } from "@fluentui/react-components";
-import { makeStyles } from '@fluentui/react-components';
-import { shorthands } from '@fluentui/react-components';
 import { encode as toBase64 } from "base-64";
+import { FormEvent, useContext, useState } from "react";
+import { apiUrl, isBetaBuild } from "../config";
+import { TokenContext } from "../context/TokenContext";
+import { CourseDto } from "../dto/CourseDto";
 import { useGlobalStyles } from "../globalStyles";
 import { UserContext } from "../context/UserContext";
 

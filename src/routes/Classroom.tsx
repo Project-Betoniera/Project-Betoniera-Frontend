@@ -99,13 +99,14 @@ export function Classroom() {
     }, [filter, classrooms]);
 
     const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
-        <EventDetails as="card" key={event.id} event={event} title="subject" hide={["classroom"]} />
+        <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
     )) : (<Subtitle2>Nessuna</Subtitle2>);
 
     const renderClassrooms = () => {
         return filteredClassrooms.length === 0 ? [
             <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
         ] : filteredClassrooms.map((item) => {
+
             const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
             let changeTime = "";
 
@@ -166,7 +167,7 @@ export function Classroom() {
                     action={showSideSpinner ? <Spinner size="small" /> : undefined}
                 />
                 <CardFooter className={styles.toolbar}>
-                    <DateSelector autoUpdate={true} inputType="datetime-local" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
+                    <DateSelector autoUpdate={true} inputType="hour" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
                         setShowSideSpinner(autoUpdated);
                         setDateTime(newDateTime);
                     }} />
