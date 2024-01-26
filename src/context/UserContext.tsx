@@ -8,11 +8,13 @@ export const UserContext = createContext({
         setName: (value: string | null) => { console.log(value); },
         email: null as string | null,
         setEmail: (value: string | null) => { console.log(value); },
+        year: null as number | null,
+        setYear: (value: number | null) => { console.log(value); },
         isAdmin: false as boolean | null,
         setIsAdmin: (value: boolean | null) => { console.log(value); }
     },
     course: {
-        course: null as CourseDto | null, 
+        course: null as CourseDto | null,
         setCourse: (data: CourseDto | null) => { console.log(data); }
     }
 });
@@ -21,6 +23,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
 
     const [name, setName] = useState<string | null>(localStorage.getItem("name"));
     const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
+    const [year, setYear] = useState<number | null>(typeof localStorage.getItem("year") === "string" ? Number(localStorage.getItem("year")) : null);
     const [isAdmin, setIsAdmin] = useState<boolean | null>(typeof localStorage.getItem("isAdmin") === "string" ? Boolean(localStorage.getItem("isAdmin")) : null);
 
     const remember = useContext(TokenContext).remember;
@@ -43,6 +46,12 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
             localStorage.setItem("email", email);
         else
             localStorage.removeItem("email");
+
+        if (year !== null && remember)
+            localStorage.setItem("year", year.toString());
+        else
+            localStorage.removeItem("year");
+
         if (isAdmin !== null && remember)
             localStorage.setItem("isAdmin", isAdmin.toString());
         else
@@ -54,6 +63,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
             user: {
                 name, setName,
                 email, setEmail,
+                year, setYear,
                 isAdmin, setIsAdmin
             },
             course: {
