@@ -171,7 +171,7 @@ export function Classroom() {
                         setShowSideSpinner(autoUpdated);
                         setDateTime(newDateTime);
                     }} />
-                    <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
+                    <Select className={styles.filter} onChange={(onFilterChange)} >
                         <option value="all">Tutte</option>
                         <option value="free">Libere</option>
                         <option value="busy">Occupate</option>

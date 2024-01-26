@@ -217,7 +217,7 @@ export default function AdminPanel() {
                                     <Input type="text" placeholder="Percorso" value={matchPath} onChange={(e) => { setMatchPath(e.target.value); }} />
                                 </Field>
                                 <Field label="Intento" required validationState={formError ? "error" : "none"}>
-                                    <Select placeholder="Intento" value={intent} onChange={(e) => { setIntent(e.target.value as any); }}>
+                                    <Select value={intent} onChange={(e) => { setIntent(e.target.value as any); }}>
                                         <option value="info">Informazione</option>
                                         <option value="success">Successo</option>
                                         <option value="warning">Attenzione</option>
