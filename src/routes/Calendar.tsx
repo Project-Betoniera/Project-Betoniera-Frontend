@@ -392,12 +392,17 @@ export function Calendar() {
         let calendar = await createCalendar(selection);
 
         for (const parameter of split) {
-            switch (parameter) {
-                case "disabled":
-                    calendar.enabled = false;
-                    break;
-                default:
-                    console.warn(`Unknown parameter ${parameter} in ${type} search value ${searchValue}`)
+            if (parameter === 'disabled') {
+                calendar.enabled = false;
+            } else if (parameter.length > 0 && parameter[0] === 'c') {
+                const colorValue = parseInt(parameter.substring(1));
+                if (colorValue >= 0 && colorValue < COLORS.length) {
+                    calendar.color = colorValue;
+                } else {
+                    console.warn(`Invalid color value ${parameter} in ${type} search value ${searchValue}`);
+                }
+            } else {
+                console.warn(`Unknown parameter ${parameter} in ${type} search value ${searchValue}`);
             }
         }
 
