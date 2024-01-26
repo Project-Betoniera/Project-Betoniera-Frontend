@@ -1,12 +1,12 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { Button, Combobox, Image, Label, Option, Popover, PopoverSurface, PopoverTrigger, Select, SelectOnChangeData, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import QRCode from 'qrcode';
+import QRCode from "qrcode";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { apiUrl } from "../../config";
 import { TokenContext } from "../../context/TokenContext";
+import { UserContext } from "../../context/UserContext";
 import { useGlobalStyles } from "../../globalStyles";
 import useRequests from "../../libraries/requests/requests";
-import { UserContext } from "../../context/UserContext";
 
 const useStyles = makeStyles({
     qrCode: {

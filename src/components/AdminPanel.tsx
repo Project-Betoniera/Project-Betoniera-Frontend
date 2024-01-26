@@ -1,12 +1,12 @@
 import { Badge, Body1, Button, Checkbox, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider, Field, Input, Link, MessageBar, MessageBarActions, MessageBarBody, MessageBarGroup, MessageBarTitle, Select, Subtitle2, makeStyles, shorthands, tokens } from "@fluentui/react-components";
-import { ArrowSyncCircleFilled, HandRightRegular, CommentNoteFilled, CommentEditFilled, DismissRegular, EraserFilled, AddCircleFilled, EditFilled } from "@fluentui/react-icons";
+import { AddCircleFilled, ArrowSyncCircleFilled, CommentEditFilled, CommentNoteFilled, DismissRegular, EditFilled, EraserFilled, HandRightRegular } from "@fluentui/react-icons";
 import { FormEvent, useContext, useEffect, useState } from "react";
-import useRequests from "../libraries/requests/requests";
-import { Status } from "../dto/StatusDto";
 import { MessagesContext } from "../context/MessagesContext";
-import { useGlobalStyles } from "../globalStyles";
-import { MessageDto } from "../dto/MessageDto";
 import { TimekeeperContext } from "../context/TimekeeperContext";
+import { MessageDto } from "../dto/MessageDto";
+import { Status } from "../dto/StatusDto";
+import { useGlobalStyles } from "../globalStyles";
+import useRequests from "../libraries/requests/requests";
 
 const useStyles = makeStyles({
     container: {
@@ -217,7 +217,7 @@ export default function AdminPanel() {
                                     <Input type="text" placeholder="Percorso" value={matchPath} onChange={(e) => { setMatchPath(e.target.value); }} />
                                 </Field>
                                 <Field label="Intento" required validationState={formError ? "error" : "none"}>
-                                    <Select placeholder="Intento" value={intent} onChange={(e) => { setIntent(e.target.value as any); }}>
+                                    <Select value={intent} onChange={(e) => { setIntent(e.target.value as any); }}>
                                         <option value="info">Informazione</option>
                                         <option value="success">Successo</option>
                                         <option value="warning">Attenzione</option>

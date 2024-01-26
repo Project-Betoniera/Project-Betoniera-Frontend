@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { ThemeContext } from "../context/ThemeContext";
-import { ClassroomDto } from '../dto/ClassroomDto';
+import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
@@ -171,7 +171,7 @@ export function Classroom() {
                         setShowSideSpinner(autoUpdated);
                         setDateTime(newDateTime);
                     }} />
-                    <Select className={styles.filter} placeholder="Filtro" onChange={(onFilterChange)} >
+                    <Select className={styles.filter} onChange={(onFilterChange)} >
                         <option value="all">Tutte</option>
                         <option value="free">Libere</option>
                         <option value="busy">Occupate</option>

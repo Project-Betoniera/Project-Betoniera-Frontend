@@ -20,7 +20,6 @@ export const UserContext = createContext({
 });
 
 export function UserContextProvider({ children }: { children: JSX.Element; }) {
-
     const [name, setName] = useState<string | null>(localStorage.getItem("name"));
     const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
     const [year, setYear] = useState<number | null>(typeof localStorage.getItem("year") === "string" ? Number(localStorage.getItem("year")) : null);
@@ -73,5 +72,4 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
             {children}
         </UserContext.Provider>
     );
-
 }

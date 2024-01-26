@@ -81,7 +81,7 @@ const useStyles = makeStyles({
         ...shorthands.gap("0.5rem")
     },
     section: {
-        paddingLeft: '1rem',
+        paddingLeft: "1rem",
         ...shorthands.margin(0, 0),
     }
 });

@@ -11,7 +11,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             id: data.id,
             name: data.name,
             color: data.color
-        }
+        };
 
         return result;
     }

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import Timekeeper from '../libraries/timekeeper/timekeeper';
+import Timekeeper from "../libraries/timekeeper/timekeeper";
 
 export const TimekeeperContext = createContext({ timekeeper: new Timekeeper() });
 

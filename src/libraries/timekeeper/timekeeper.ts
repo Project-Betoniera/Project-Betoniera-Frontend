@@ -1,11 +1,11 @@
-type TimePrecision = 'second' | 'minute' | 'hour';
+type TimePrecision = "second" | "minute" | "hour";
 type TimekeeperListener = (date: Date) => unknown;
 
 export default class Timekeeper {
     private registeredEvents: boolean = false;
     private interval: number | null = null;
     private previousTimestamp: number | null = null;
-    private listeners: { precision: TimePrecision, callback: TimekeeperListener }[] = [];
+    private listeners: { precision: TimePrecision, callback: TimekeeperListener; }[] = [];
     private started: boolean = false;
 
     private static splitTimestamp(timestamp: number) {
@@ -13,7 +13,7 @@ export default class Timekeeper {
             second: Math.floor(timestamp / 1000),
             minute: Math.floor(timestamp / 1000 / 60),
             hour: Math.floor(timestamp / 1000 / 60 / 60),
-        }
+        };
     }
 
     private tick() {
@@ -22,13 +22,13 @@ export default class Timekeeper {
         const currentTime = Timekeeper.splitTimestamp(currentTimestamp);
         const previousTime = this.previousTimestamp ? Timekeeper.splitTimestamp(this.previousTimestamp) : null;
         if (currentTime.second !== previousTime?.second) {
-            this.listeners.filter(listener => listener.precision === 'second').forEach(listener => listener.callback(now));
+            this.listeners.filter(listener => listener.precision === "second").forEach(listener => listener.callback(now));
         }
         if (currentTime.minute !== previousTime?.minute) {
-            this.listeners.filter(listener => listener.precision === 'minute').forEach(listener => listener.callback(now));
+            this.listeners.filter(listener => listener.precision === "minute").forEach(listener => listener.callback(now));
         }
         if (currentTime.hour !== previousTime?.hour) {
-            this.listeners.filter(listener => listener.precision === 'hour').forEach(listener => listener.callback(now));
+            this.listeners.filter(listener => listener.precision === "hour").forEach(listener => listener.callback(now));
         }
         this.previousTimestamp = currentTimestamp;
     }
@@ -36,20 +36,20 @@ export default class Timekeeper {
     private resume() {
         // ensures that the interval is NOT set
         this.pause();
-        
+
         // determines the current precision
         let timeout = 60_000;
-        let smallestPrecision = 'hour';
+        let smallestPrecision = "hour";
         this.listeners.forEach(listener => {
-            if (listener.precision === 'second' && smallestPrecision !== 'second') {
+            if (listener.precision === "second" && smallestPrecision !== "second") {
                 timeout = 100;
-                smallestPrecision = 'second';
-            } else if (listener.precision === 'minute' && smallestPrecision !== 'second' && smallestPrecision !== 'minute') {
+                smallestPrecision = "second";
+            } else if (listener.precision === "minute" && smallestPrecision !== "second" && smallestPrecision !== "minute") {
                 timeout = 1_000;
-                smallestPrecision = 'minute';
+                smallestPrecision = "minute";
             }
         });
-        
+
         this.interval = window.setInterval(() => {
             this.tick();
         }, timeout);
@@ -64,23 +64,23 @@ export default class Timekeeper {
     }
 
     private onVisibilityChange = () => {
-        if (document.visibilityState === 'visible') {
+        if (document.visibilityState === "visible") {
             this.resume();
         } else {
             this.pause();
         }
-    }
+    };
 
     private registerEvents() {
         if (this.registeredEvents) return;
         this.registeredEvents = true;
-        document.addEventListener('visibilitychange', this.onVisibilityChange);
+        document.addEventListener("visibilitychange", this.onVisibilityChange);
     }
 
     private unregisterEvents() {
         if (!this.registeredEvents) return;
         this.registeredEvents = false;
-        document.removeEventListener('visibilitychange', this.onVisibilityChange);
+        document.removeEventListener("visibilitychange", this.onVisibilityChange);
     }
 
     start() {
@@ -113,4 +113,5 @@ export default class Timekeeper {
         }
     }
 }
-export type { TimekeeperListener, TimePrecision };
+export type { TimePrecision, TimekeeperListener };
+

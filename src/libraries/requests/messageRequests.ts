@@ -1,9 +1,8 @@
 import axios, { AxiosError } from "axios";
-import { MessageDto } from "../../dto/MessageDto";
 import { apiUrl } from "../../config";
+import { MessageDto } from "../../dto/MessageDto";
 
 export default function messageRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
-
     return {
         all: async (): Promise<MessageDto[]> => {
             return await axios({
@@ -69,6 +68,5 @@ export default function messageRequests(token: string, setIsInvalid: (isInvalid:
                 return false;
             });
         }
-    }
-
+    };
 }

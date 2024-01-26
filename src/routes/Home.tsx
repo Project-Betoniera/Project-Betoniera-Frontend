@@ -2,7 +2,7 @@ import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinn
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { TimekeeperContext } from '../context/TimekeeperContext';
+import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -26,7 +26,7 @@ export function Home() {
     const { timekeeper } = useContext(TimekeeperContext);
     useEffect(() => {
         const updateTime = () => setNow(new Date());
-        timekeeper.addListener('minute', updateTime);
+        timekeeper.addListener("minute", updateTime);
         return () => timekeeper.removeListener(updateTime);
     }, []);
 

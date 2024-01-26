@@ -4,9 +4,9 @@ import { encode as toBase64 } from "base-64";
 import { FormEvent, useContext, useState } from "react";
 import { apiUrl, isBetaBuild } from "../config";
 import { TokenContext } from "../context/TokenContext";
+import { UserContext } from "../context/UserContext";
 import { CourseDto } from "../dto/CourseDto";
 import { useGlobalStyles } from "../globalStyles";
-import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
     infoCard: {
@@ -169,4 +169,3 @@ export function LoginForm() {
         </>
     );
 }
-

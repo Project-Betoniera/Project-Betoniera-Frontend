@@ -1,5 +1,5 @@
-import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle } from '@fluentui/react-components';
-import { useEffect, useState } from 'react';
+import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle } from "@fluentui/react-components";
+import { useEffect, useState } from "react";
 
 export default function OfflineDialog() {
     const [isOffline, setOffline] = useState(!navigator.onLine);
@@ -18,15 +18,15 @@ export default function OfflineDialog() {
     }, []);
 
     return (
-    <Dialog open={isOffline}>
-        <DialogSurface>
-            <DialogBody>
-                <DialogTitle>🚫 Sei offline</DialogTitle>
-                <DialogContent>
-                    Connettiti ad una rete per utilizzare l'applicazione.
-                </DialogContent>
-            </DialogBody>
-        </DialogSurface>
-    </Dialog>
-    )
+        <Dialog open={isOffline}>
+            <DialogSurface>
+                <DialogBody>
+                    <DialogTitle>🚫 Sei offline</DialogTitle>
+                    <DialogContent>
+                        Connettiti ad una rete per utilizzare l'applicazione.
+                    </DialogContent>
+                </DialogBody>
+            </DialogSurface>
+        </Dialog>
+    );
 }
