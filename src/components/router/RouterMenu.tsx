@@ -66,8 +66,8 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
     };
 
     useLocation();
-    const url = new URL(window.location.href);
-    const path = url.pathname;
+    const currentUrl = new URL(window.location.href);
+    const path = currentUrl.pathname;
     const navigate = useNavigate();
 
     const [isUserDrawerOpen, setIsUserDrawerOpen] = useState(false);
@@ -84,7 +84,9 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
 
                     const url = new URL(data.value, window.location.href);
                     if (url.origin === window.location.origin) {
-                        navigate(url.href.substring(url.origin.length));
+                        if (currentUrl.pathname !== url.pathname) {
+                            navigate(url.href.substring(url.origin.length));
+                        }
                     } else {
                         window.open(url);
                     }
