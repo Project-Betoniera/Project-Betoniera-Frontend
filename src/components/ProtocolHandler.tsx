@@ -15,10 +15,10 @@ export const ProtocolHandler: FunctionComponent = () => {
         }
         console.log(protocolUrl);
         let pathname = protocolUrl.pathname;
-        while (pathname[0] === '/') {
+        while (pathname[0] === "/") {
             pathname = pathname.substring(1);
         }
-        let path = '/' + pathname + protocolUrl.search + protocolUrl.hash;
+        let path = "/" + pathname + protocolUrl.search + protocolUrl.hash;
         return (<Navigate to={path} replace={true} />);
     }
 

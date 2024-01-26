@@ -8,10 +8,10 @@ export function useMediaQuery(query: string, defaultValue: boolean = false): boo
             const update = () => {
                 setMatches(mediaQuery.matches);
             };
-            mediaQuery.addEventListener('change', update);
+            mediaQuery.addEventListener("change", update);
             update();
             return () => {
-                mediaQuery.removeEventListener('change', update);
+                mediaQuery.removeEventListener("change", update);
             };
         }
     });

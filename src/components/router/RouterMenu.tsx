@@ -1,23 +1,23 @@
-import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { FunctionComponent, useContext, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabList, TabListProps, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import { FunctionComponent, useContext, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { CalendarFilled, HomeFilled, BuildingFilled, InfoFilled, ArrowExitFilled, TaskListSquareLtrFilled, PersonFilled, DismissRegular } from "@fluentui/react-icons";
-import { TokenContext } from '../../context/TokenContext';
-import { RouterButton } from './RouterButton';
-import { UserContext } from '../../context/UserContext';
-import { UserProfile } from '../UserProfile';
+import { TokenContext } from "../../context/TokenContext";
+import { RouterButton } from "./RouterButton";
+import { UserContext } from "../../context/UserContext";
+import { UserProfile } from "../UserProfile";
 
 const useStyles = makeStyles({
     drawer: {
         ...shorthands.borderRadius(tokens.borderRadiusMedium)
     },
     drawerBody: {
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: '100%',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
 
-        marginBottom: '1rem',
+        marginBottom: "1rem",
     },
     displayColumn: {
         display: "flex",
@@ -28,23 +28,23 @@ const useStyles = makeStyles({
 
 const menuItems = [
     {
-        displayName: 'Home',
-        path: '/',
+        displayName: "Home",
+        path: "/",
         icon: <HomeFilled />,
     },
     {
-        displayName: 'Aule',
-        path: '/classroom',
+        displayName: "Aule",
+        path: "/classroom",
         icon: <BuildingFilled />,
     },
     {
-        displayName: 'Calendario',
-        path: '/calendar',
+        displayName: "Calendario",
+        path: "/calendar",
         icon: <CalendarFilled />,
     },
     {
-        displayName: 'Voti',
-        path: '/grade',
+        displayName: "Voti",
+        path: "/grade",
         icon: <TaskListSquareLtrFilled />,
     }
 ];
@@ -79,8 +79,8 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                 appearance="transparent"
                 size="large"
                 onTabSelect={(_, data) => {
-                    if (typeof data.value !== 'string')
-                        throw new Error('Invalid tab value');
+                    if (typeof data.value !== "string")
+                        throw new Error("Invalid tab value");
 
                     const url = new URL(data.value, window.location.href);
                     if (url.origin === window.location.origin) {
@@ -97,7 +97,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                     );
                 })}
 
-                <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
+                <Button appearance="primary" style={{ alignSelf: "center" }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
             </TabList>
 
             <Drawer type={"overlay"} size={"medium"} open={isUserDrawerOpen} onOpenChange={(_, { open }) => setIsUserDrawerOpen(open)} position="end" className={styles.drawer}>

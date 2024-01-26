@@ -1,10 +1,10 @@
 import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { CourseDto } from "../../dto/CourseDto";
-import { GradeDto, GradeGroupDto } from '../../dto/GradeDto';
+import { GradeDto, GradeGroupDto } from "../../dto/GradeDto";
 
 export default function gradeRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
-  
+
     return {
         groups: async (): Promise<GradeGroupDto[]> => {
             return await axios({

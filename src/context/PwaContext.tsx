@@ -25,15 +25,15 @@ export function PwaContextProvider({ children }: { children: JSX.Element; }) {
     useEffect(() => {
         // Check if app is running in standalone mode (PWA)
         if (!window.matchMedia) return;
-        const pwaQuery = window.matchMedia('(display-mode: standalone)');
+        const pwaQuery = window.matchMedia("(display-mode: standalone)");
 
         const updatePwa = () => { setPwa(pwaQuery.matches); };
 
-        pwaQuery.addEventListener('change', updatePwa);
+        pwaQuery.addEventListener("change", updatePwa);
         updatePwa();
 
         return () => {
-            pwaQuery.removeEventListener('change', updatePwa);
+            pwaQuery.removeEventListener("change", updatePwa);
         };
     }, []);
 

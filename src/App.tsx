@@ -84,7 +84,7 @@ function App() {
           <Route path="/calendar-sync" element={<CalendarExport />} />
           <Route path="/grade" element={<Grade />} />
           <Route path="/about" element={<About />} />
-          <Route path='*' element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </FluentProvider>

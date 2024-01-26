@@ -193,7 +193,7 @@ type ExtendedEventDto = EventDto & {
 export function Calendar() {
     const styles = useStyles();
     const { course } = useContext(UserContext).course;
-    const screenMediaQuery = useMediaQuery('(max-width: 578px)');
+    const screenMediaQuery = useMediaQuery("(max-width: 578px)");
     const requests = useRequests();
     const [isCurrentViewMonth, setIsCurrentViewMonth] = useState<boolean>(true);
 
@@ -558,7 +558,7 @@ export function Calendar() {
                     </div>
                 </div>
 
-                <Drawer type={window.matchMedia('(max-width: 1000px)').matches ? "overlay" : "inline"} open={isDrawerOpen} onOpenChange={(_, { open }) => setIsDrawerOpen(open)} position="end" className={styles.drawer}>
+                <Drawer type={window.matchMedia("(max-width: 1000px)").matches ? "overlay" : "inline"} open={isDrawerOpen} onOpenChange={(_, { open }) => setIsDrawerOpen(open)} position="end" className={styles.drawer}>
                     <DrawerHeader>
                         <DrawerHeaderTitle
                             action={

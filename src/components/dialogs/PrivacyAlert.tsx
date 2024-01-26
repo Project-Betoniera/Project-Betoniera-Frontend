@@ -5,7 +5,7 @@ import { hasPlausible } from "../../plausible";
 // This value should be updated when the content of the information dialog is updated
 const VERSION = 1;
 
-const VERSION_STORAGE_KEY = 'privacy-version';
+const VERSION_STORAGE_KEY = "privacy-version";
 
 export function PrivacyAlert() {
   const [acknowledged, setAcknowledged] = useState(() => window.localStorage.getItem(VERSION_STORAGE_KEY) === VERSION.toString());

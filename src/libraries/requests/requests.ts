@@ -4,7 +4,7 @@ import classroomRequests from "./classroomRequests";
 import courseRequests from "./courseRequests";
 import eventRequests from "./eventRequests";
 import teacherRequests from "./teacherRequests";
-import gradeRequests from './gradeRequests';
+import gradeRequests from "./gradeRequests";
 import messageRequests from "./messageRequests";
 import administrationRequests from "./administrationRequests";
 

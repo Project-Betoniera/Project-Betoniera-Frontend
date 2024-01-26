@@ -1,4 +1,4 @@
-import { ModuleDto } from './ModuleDto';
+import { ModuleDto } from "./ModuleDto";
 
 /**
  * Contains information about a grade.
@@ -14,4 +14,4 @@ export type GradeDto = {
 export type GradeGroupDto = {
     code: string;
     displayName: string;
-}
+};

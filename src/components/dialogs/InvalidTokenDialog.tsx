@@ -29,7 +29,7 @@ export default function InvalidTokenDialog() {
                         <Body1>Ci scusiamo per il disagio.</Body1>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="primary" style={{ alignSelf: 'center' }} icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                        <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>

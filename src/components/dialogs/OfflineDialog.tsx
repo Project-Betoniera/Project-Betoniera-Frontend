@@ -1,5 +1,5 @@
-import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle } from '@fluentui/react-components';
-import { useEffect, useState } from 'react';
+import { Dialog, DialogBody, DialogContent, DialogSurface, DialogTitle } from "@fluentui/react-components";
+import { useEffect, useState } from "react";
 
 export default function OfflineDialog() {
     const [isOffline, setOffline] = useState(!navigator.onLine);

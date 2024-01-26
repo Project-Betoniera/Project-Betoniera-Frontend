@@ -2,8 +2,8 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { EventDto } from "../dto/EventDto";
 import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
-import { useGlobalStyles } from '../globalStyles';
-import { TimekeeperContext } from '../context/TimekeeperContext';
+import { useGlobalStyles } from "../globalStyles";
+import { TimekeeperContext } from "../context/TimekeeperContext";
 import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {
@@ -34,7 +34,7 @@ export type EventDetailsProps = {
     /**
      * Type of display. If not set, 'base' will be used.
      */
-    as?: 'card' | 'base' | undefined;
+    as?: "card" | "base" | undefined;
 };
 
 const useStyles = makeStyles({
@@ -92,7 +92,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
     useEffect(() => {
         const updateTime = () => setNow(new Date());
-        timekeeper.addListener('minute', updateTime);
+        timekeeper.addListener("minute", updateTime);
         return () => timekeeper.removeListener(updateTime);
     }, []);
 
@@ -111,7 +111,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     );
 
     const isOngoning = props.event.start <= now && props.event.end > now;
-    return props.as === 'card' ? (
+    return props.as === "card" ? (
         <Card
             // TODO Find a better way to set background color
             style={!isOngoning ? { backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover } : undefined}

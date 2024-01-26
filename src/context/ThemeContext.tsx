@@ -32,13 +32,13 @@ export function ThemeContextProvider({ children }: { children: JSX.Element; }) {
                 setThemeValue(webDarkTheme);
                 break;
             case "auto":
-                const darkThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                const darkThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
         
                 const updateTheme = () => setThemeValue(darkThemeQuery.matches ? webDarkTheme : webLightTheme);
                 updateTheme();
         
-                darkThemeQuery.addEventListener('change', updateTheme);
-                return () => darkThemeQuery.removeEventListener('change', updateTheme);
+                darkThemeQuery.addEventListener("change", updateTheme);
+                return () => darkThemeQuery.removeEventListener("change", updateTheme);
             default:
                 setThemeValue(webLightTheme);
                 break;

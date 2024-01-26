@@ -84,17 +84,17 @@ export function Wrapper() {
 
     useEffect(() => {
         if (!window.matchMedia) return;
-        const darkThemeQuery = window.matchMedia('(max-width: 578px)');
+        const darkThemeQuery = window.matchMedia("(max-width: 578px)");
 
         const updateIconsOnly = () => {
             setIconsOnly(darkThemeQuery.matches);
         };
 
-        darkThemeQuery.addEventListener('change', updateIconsOnly);
+        darkThemeQuery.addEventListener("change", updateIconsOnly);
         updateIconsOnly();
 
         return () => {
-            darkThemeQuery.removeEventListener('change', updateIconsOnly);
+            darkThemeQuery.removeEventListener("change", updateIconsOnly);
         };
     }, []);
 
