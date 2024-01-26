@@ -27,16 +27,6 @@ const useStyles = makeStyles({
         marginTop: "1rem",
         marginBottom: "1rem",
     },
-    displayRow: {
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        columnGap: "0.5rem",
-    },
-    displayColumn: {
-        display: "flex",
-        flexDirection: "column",
-    },
     text: {
         display: "block",
         overflowX: "hidden",
@@ -74,13 +64,11 @@ export const UserProfile: React.FC = () => {
                     <AdminPanel />
                 </div>
                 <Subtitle2>Tema</Subtitle2>
-                <div className={styles.displayRow}>
-                    <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
-                        <Option value="auto" text="Automatico">Automatico</Option>
-                        <Option value="light" text="Chiaro">Chiaro</Option>
-                        <Option value="dark" text="Scuro">Scuro</Option>
-                    </Dropdown>
-                </div>
+                <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
+                    <Option value="auto" text="Automatico">Automatico</Option>
+                    <Option value="light" text="Chiaro">Chiaro</Option>
+                    <Option value="dark" text="Scuro">Scuro</Option>
+                </Dropdown>
                 <Button onClick={() => {
                     localStorage.removeItem("dismissedMessages");
                     reloadMessages();
