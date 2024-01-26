@@ -1,12 +1,11 @@
 import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { CalendarSelection, CalendarSelector, CalendarType, getCalendarSelections } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
-
-import { useSearchParams } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { EventDto } from "../dto/EventDto";
 import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
@@ -643,6 +642,7 @@ export function Calendar() {
             onAddCalendarClick();
         }
     }
+
 
     useEffect(() => {
         loadCalendars();

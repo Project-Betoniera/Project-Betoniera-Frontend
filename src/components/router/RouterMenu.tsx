@@ -52,17 +52,17 @@ const menuItems = [
 const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
     const styles = useStyles();
     const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
-    const { setCourse } = useContext(UserContext).course;
-    const { setName: setUserName, setEmail: setUserEmail, setIsAdmin: setIsUserAdmin } = useContext(UserContext).user;
+    const { user, course } = useContext(UserContext);
 
     const logout = () => {
         setToken(null);
         setRemember(false);
         setIsInvalid(false);
-        setCourse(null);
-        setUserName(null);
-        setUserEmail(null);
-        setIsUserAdmin(null);
+        course.setCourse(null);
+        user.setName(null);
+        user.setEmail(null);
+        user.setYear(null);
+        user.setIsAdmin(null);
     };
 
     useLocation();

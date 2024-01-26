@@ -1,5 +1,6 @@
 import { Card, CardHeader, DataGrid, DataGridBody, DataGridCell, DataGridHeader, DataGridHeaderCell, DataGridRow, Spinner, Subtitle2, Tab, TabList, Title2, createTableColumn } from "@fluentui/react-components";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../context/UserContext";
 import { GradeDto, GradeGroupDto } from "../dto/GradeDto";
 import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
@@ -7,9 +8,10 @@ import useRequests from "../libraries/requests/requests";
 export function Grade() {
     const requests = useRequests();
     const globalStyles = useGlobalStyles();
+    const { user } = useContext(UserContext);
 
     const [groups, setGroups] = useState<GradeGroupDto[] | undefined>(undefined);
-    const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>({ code: "PRI", displayName: "Primo Anno" });
+    const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>(user.year == 2 ? { code: "SEC", displayName: "Secondo Anno" } : { code: "PRI", displayName: "Primo Anno" });
     const [grades, setGrades] = useState<GradeDto[] | undefined>(undefined);
 
     useEffect(() => {
