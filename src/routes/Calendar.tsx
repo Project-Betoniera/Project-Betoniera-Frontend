@@ -678,8 +678,16 @@ export function Calendar() {
         updateSearchParameters();
     }, [calendars]);
 
+    // Update default view state when search parameters change,
+    // and save current view as default if no default is set and the current search parameters are not empty
     useEffect(() => {
-        setIsDefault(searchParams.toString() === window.localStorage.getItem('defaultCalendar'));
+        const currentDefault = window.localStorage.getItem('defaultCalendar');
+        if (currentDefault) {
+            setIsDefault(searchParams.toString() === currentDefault);
+        } else if (searchParams.size !== 0) {
+            window.localStorage.setItem('defaultCalendar', searchParams.toString());
+            setIsDefault(true);
+        }
     }, [searchParams]);
 
     // Load events for the current calendar view
