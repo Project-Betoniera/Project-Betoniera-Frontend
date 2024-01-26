@@ -6,16 +6,16 @@ import { UserContext } from "../../context/UserContext";
 
 export default function InvalidTokenDialog() {
     const { setToken, setRemember, isInvalid, setIsInvalid } = useContext(TokenContext);
-    const { setCourse } = useContext(UserContext).course;
+    const { course, user } = useContext(UserContext);
 
     const logout = () => {
         setToken(null);
         setRemember(false);
         setIsInvalid(false);
-        setCourse(null);
-        setUserName(null);
-        setUserEmail(null);
-        setIsUserAdmin(null);
+        course.setCourse(null);
+        user.setName(null);
+        user.setEmail(null);
+        user.setIsAdmin(null);
     };
 
     return (
