@@ -319,7 +319,7 @@ export function Calendar() {
         for (const selection of calendars) {
             newSearchParams.append(
                 selection.selection.type,
-                `${selection.selection.id}${selection.enabled ? "" : ".disabled"}`
+                `${selection.selection.id}.c${selection.color}${selection.enabled ? "" : ".disabled"}`
             );
         }
         setSearchParams(newSearchParams, {
