@@ -204,6 +204,10 @@ const COLORS = [
     tokens.colorPaletteMarigoldBackground2,
 ];
 
+// Colors that can be randomly selected.
+// The first color is reserved for the default course
+const RANDOMABLE_COLORS = [ ...Array(COLORS.length - 1).keys() ].map(k => k + 1);
+
 export function Calendar() {
     const styles = useStyles();
     const { course } = useContext(UserContext).course;
@@ -250,11 +254,12 @@ export function Calendar() {
     };
 
     /**
-     * Returns a random color, except for 0 which is assigned to the default course only
+     * Returns a random color among the colors that can be randomly selected
      * */
     function getRandomColor() {
-        return Math.floor(Math.random() * (COLORS.length - 1)) + 1;
+        return RANDOMABLE_COLORS[Math.floor(Math.random() * (RANDOMABLE_COLORS.length))];
     }
+    (window as any).getRandomColor = getRandomColor;
 
     /**
      * Converts a numerical color value to the real color value
