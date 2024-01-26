@@ -32,7 +32,7 @@ export type EventDetailsProps = {
     */
     hide?: ("time" | "subject" | "classroom" | "teacher" | "course")[];
     /**
-     * Type of display. If not set, 'base' will be used.
+     * Type of display. If not set, "base" will be used.
      */
     as?: "card" | "base" | undefined;
 };

@@ -3,7 +3,7 @@ import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, D
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CalendarSelection, CalendarSelector, CalendarType } from "../components/calendar/CalendarSelector";
+import { CalendarSelection, CalendarSelector, CalendarType, getCalendarSelections } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 
 import { EventDto } from "../dto/EventDto";
@@ -11,6 +11,7 @@ import { generateMonth, generateShortWeek, generateWeek } from "../libraries/cal
 import useRequests from "../libraries/requests/requests";
 import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
 import { UserContext } from "../context/UserContext";
+import { useSearchParams } from "react-router-dom";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -178,7 +179,7 @@ const useStyles = makeStyles({
  */
 type Calendar = {
     selection: CalendarSelection,
-    color: string,
+    color: number,
     enabled: boolean,
 };
 
@@ -186,9 +187,26 @@ type Calendar = {
  * Extended `EventDto` type that contains the color and the selection id of the calendar it belongs to
  */
 type ExtendedEventDto = EventDto & {
-    color: string;
+    color: number;
     selectionId: string;
 }
+
+const COLORS = [
+    // special: default course
+    tokens.colorBrandBackground2Hover,
+
+    tokens.colorPaletteRedBackground2,
+    tokens.colorPaletteDarkOrangeBackground2,
+    tokens.colorPaletteYellowBackground2,
+    tokens.colorPaletteGreenBackground2,
+    tokens.colorPalettePurpleBackground2,
+    tokens.colorPaletteBerryBackground2,
+    tokens.colorPaletteMarigoldBackground2,
+];
+
+// Colors that can be randomly selected.
+// The first color is reserved for the default course
+const RANDOMABLE_COLORS = [ ...Array(COLORS.length - 1).keys() ].map(k => k + 1);
 
 export function Calendar() {
     const styles = useStyles();
@@ -205,6 +223,7 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
+    const [ searchParams, setSearchParams ] = useSearchParams();
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -235,22 +254,18 @@ export function Calendar() {
     };
 
     /**
-     * Returns a random color from the internal color palette
+     * Returns a random color among the colors that can be randomly selected
      * */
     function getRandomColor() {
-        const colors = [
-            tokens.colorPaletteRedBackground2,
-            tokens.colorPaletteDarkOrangeBackground2,
-            tokens.colorPaletteYellowBackground2,
-            tokens.colorPaletteGreenBackground2,
-            tokens.colorPalettePurpleBackground2,
-            tokens.colorPaletteBerryBackground2,
-            tokens.colorPaletteMarigoldBackground2,
-        ];
+        return RANDOMABLE_COLORS[Math.floor(Math.random() * (RANDOMABLE_COLORS.length))];
+    }
+    (window as any).getRandomColor = getRandomColor;
 
-        const choice = Math.floor(Math.random() * colors.length);
-
-        return colors[choice]; // Generate a random color
+    /**
+     * Converts a numerical color value to the real color value
+     * */
+    function getColorValue(color: number) {
+        return COLORS[color];
     }
 
     /**
@@ -303,23 +318,117 @@ export function Calendar() {
         }
     }
 
+    /**
+     * Updates search parameters based on current calendar selections
+     */
+    function updateSearchParameters() {
+        const newSearchParams = new URLSearchParams();
+        for (const selection of calendars) {
+            newSearchParams.append(
+                selection.selection.type,
+                `${selection.selection.id}.c${selection.color}${selection.enabled ? "" : ".disabled"}`
+            );
+        }
+        setSearchParams(newSearchParams, {
+            replace: true,
+        });
+    }
+
+    /**
+     * Add one or more Calendar objects to the list of selections
+     */
+    function addCalendars(...calendars: Calendar[]) {
+        setCalendars((oldValue) => {
+            const newValue = [ ...oldValue ];
+            for (const calendar of calendars) {
+                if (!newValue.find(item => item.selection.id === calendar.selection.id)) {
+                    newValue.push(calendar);
+                }
+            }
+            
+            if (newValue.length === oldValue.length)
+                return oldValue;
+            else
+                return newValue;
+        });
+    }
+
+    /**
+     * Creates a Calendar object from a CalendarSelection
+     */
+    function createCalendar(selection: CalendarSelection): Calendar {
+        return {
+            selection: selection,
+            color: parseInt(selection.id) === course?.id ? 0 : getRandomColor(),
+            enabled: true
+        };
+    }
+
     /** 
-     * Add the current calendar to the calendars list
+     * Add the current calendar selection to the list of selections
      * */
     async function onAddCalendarClick() {
         if (!currentSelection) return;
         
-        const calendar: Calendar = {
-            selection: currentSelection,
-            color: parseInt(currentSelection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
-            enabled: true
-        };
+        const calendar = createCalendar(currentSelection);
         
-        setCalendars((oldValue) => {
-            if (oldValue.find(item => item.selection.id === calendar.selection.id)) return oldValue;
-            return [...oldValue, calendar]
-        });
+        addCalendars(calendar);
     };
+
+    /**
+     * Add a calendar from a search parameter value.
+     */
+    async function createCalendarFromSearch(type: CalendarType, searchValue: string) {
+        const selections = await getCalendarSelections(requests, type);
+        const split = searchValue.split(".");
+        if (split.length === 0) {
+            throw new Error(`Invalid ${type} search value ${searchValue}`);
+        }
+
+        // Removes the first element so that others can be looked
+        // through as options without having to manually ignore the
+        // first element
+        const id = split.shift();
+
+        const selection = selections.find(s => s.id === id);
+
+        if (selection === undefined) {
+            throw new Error(`Invalid ${type} search value ${searchValue}: Could not find calendar with ID ${id}`);
+        }
+
+        let calendar = await createCalendar(selection);
+
+        for (const parameter of split) {
+            if (parameter === "disabled") {
+                calendar.enabled = false;
+            } else if (parameter.length > 0 && parameter[0] === "c") {
+                const colorValue = parseInt(parameter.substring(1));
+                if (colorValue >= 0 && colorValue < COLORS.length) {
+                    calendar.color = colorValue;
+                } else {
+                    console.warn(`Invalid color value ${parameter} in ${type} search value ${searchValue}`);
+                }
+            } else {
+                console.warn(`Unknown parameter ${parameter} in ${type} search value ${searchValue}`);
+            }
+        }
+
+        return calendar;
+    }
+
+    /**
+     * Add a calendar from an array of search parameter values while maintaining ordering.
+     */
+    async function createCalendarsFromSearch(type: CalendarType, searchValues: string[]): Promise<Calendar[]> {
+        let calendars: Calendar[] = [];
+
+        // This is a for loop to maintain ordering
+        for (const searchValue of searchValues) {
+            calendars.push(await createCalendarFromSearch(type, searchValue));
+        }
+
+        return calendars;
+    }
 
     /**
      * Renders the various cards for each day of the month/week in the current calendar view.  
@@ -337,7 +446,7 @@ export function Calendar() {
                 <Card
                     key={event.id}
                     className={styles.event}
-                    style={{ backgroundColor: event.color }}
+                    style={{ backgroundColor: getColorValue(event.color) }}
                 >
                     <Caption1 className={isCurrentViewMonth ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
 
@@ -371,7 +480,7 @@ export function Calendar() {
                                         {
                                             // Foreach event in the current calendar render the detailed preview card
                                             filteredEvents.length > 0 ?
-                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={calendar.color} />)
+                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={getColorValue(calendar.color)} />)
                                                 :
                                                 <Subtitle2>Nessuna</Subtitle2>
                                         }
@@ -437,11 +546,11 @@ export function Calendar() {
     function getCalendarIcon(type: string, calendar: Calendar) {
         switch (type) {
             case "course":
-                return (<BackpackFilled color={calendar.color} />);
+                return (<BackpackFilled color={getColorValue(calendar.color)} />);
             case "classroom":
-                return (<BuildingFilled color={calendar.color} />);
+                return (<BuildingFilled color={getColorValue(calendar.color)} />);
             case "teacher":
-                return (<PersonFilled color={calendar.color} />);
+                return (<PersonFilled color={getColorValue(calendar.color)} />);
             default:
                 return undefined;
         }
@@ -517,11 +626,34 @@ export function Calendar() {
         </TreeItem>;
     }
 
-    // Load the user default calendar on first render (user course)
-    useEffect(() => { onAddCalendarClick(); }, []);
+    // First render: read calendars from search parameters or load the user default calendar
+    async function loadCalendars() {
+        let newCalendars: Calendar[] = [];
+        for (const type of ["course", "classroom", "teacher"]) {
+            const searchValues = searchParams.getAll(type);
+            if (searchValues.length > 0) {
+                newCalendars.push(...await createCalendarsFromSearch(type as CalendarType, searchValues));
+            }
+        }
 
-    // Update calendar title when calendar selections change
-    useEffect(updateCalendarTitle, [calendars]);
+        if (newCalendars.length > 0) {
+            addCalendars(...newCalendars);
+        } else {
+            // No calendars from parameters: load the user default calendar (user course)
+            onAddCalendarClick();
+        }
+    }
+
+    
+    useEffect(() => {
+        loadCalendars();
+    }, []);
+
+    // Update calendar title and search parameters when calendar selections change
+    useEffect(() => {
+        updateCalendarTitle();
+        updateSearchParameters();
+    }, [calendars]);
 
     // Load events for the current calendar view
     useEffect(() => {
