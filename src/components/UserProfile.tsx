@@ -1,5 +1,5 @@
 import { Avatar, Body1, Button, Divider, Dropdown, Option, Subtitle1, Subtitle2, makeStyles } from "@fluentui/react-components";
-import { CheckmarkStarburstFilled } from "@fluentui/react-icons";
+import { CheckmarkStarburstFilled, CommentDismissFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
 import { AppTheme, ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
@@ -70,7 +70,7 @@ export const UserProfile: React.FC = () => {
                     <Option value="dark" text="Scuro">Scuro</Option>
                 </Dropdown>
                 <Subtitle2>Utilità</Subtitle2>
-                <Button onClick={() => {
+                <Button icon={<CommentDismissFilled />} onClick={() => {
                     localStorage.removeItem("dismissedMessages");
                     reloadMessages();
                 }}>Reimposta messaggi ignorati</Button>
