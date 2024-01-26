@@ -1,14 +1,12 @@
-import { Button, Combobox, Label, Image, Option, Popover, PopoverSurface, PopoverTrigger, makeStyles, shorthands, tokens, Select, SelectOnChangeData } from "@fluentui/react-components";
-import { useGlobalStyles } from "../globalStyles";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
-import QRCode from 'qrcode';
-import { TokenContext } from "../context/TokenContext";
-import { CourseContext } from "../context/CourseContext";
-import { CourseDto } from "../dto/CourseDto";
-import { ClassroomDto } from "../dto/ClassroomDto";
-import axios from "axios";
-import { apiUrl } from "../config";
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
+import { Button, Combobox, Image, Label, Option, Popover, PopoverSurface, PopoverTrigger, Select, SelectOnChangeData, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import QRCode from "qrcode";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { apiUrl } from "../../config";
+import { TokenContext } from "../../context/TokenContext";
+import { UserContext } from "../../context/UserContext";
+import { useGlobalStyles } from "../../globalStyles";
+import useRequests from "../../libraries/requests/requests";
 
 const useStyles = makeStyles({
     qrCode: {
@@ -21,7 +19,8 @@ export function CalendarExporter() {
     const styles = useStyles();
 
     const token = useContext(TokenContext).token;
-    const { course: userCourse } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
+    const requests = useRequests();
 
     // Items for the various selectors
     const calendarTypes: { code: string, name: string; }[] = [
@@ -39,7 +38,7 @@ export function CalendarExporter() {
 
     // Selected values
     const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
-    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(userCourse ? { code: userCourse?.id.toString(), name: userCourse.code } : { code: "", name: "" });
+    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
     const [calendarProvider, setCalendarProvider] = useState<{ code: string, name: string; }>(calendarProviders[3]);
 
     // Generated values
@@ -57,31 +56,20 @@ export function CalendarExporter() {
 
         switch (calendarType.code) {
             case "course":
-                axios.get(new URL("course", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                    params: { distinct: true }
-                }).then(response => {
-                    const courses: CourseDto[] = response.data;
+                requests.course.all().then(courses => {
                     setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
                 }).catch(() => {
                 });
                 break;
             case "classroom":
-                axios.get(new URL("classroom", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                }).then(response => {
-                    const classrooms: ClassroomDto[] = response.data;
+                requests.classroom.all().then(classrooms => {
                     setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
                 }).catch(() => {
                 });
                 break;
             case "teacher":
-                axios.get(new URL("teacher", apiUrl).toString(), {
-                    headers: { Authorization: "Bearer " + token },
-                }).then(response => {
-                    let teachers: { teacher: string; }[] = response.data;
-                    teachers = teachers.filter(item => item.teacher !== null && item.teacher !== " "); // Remove null or empty teachers
-                    setCalendarSelectors(teachers.map(item => ({ code: item.teacher, name: item.teacher, fullName: item.teacher })));
+                requests.teacher.all().then(teachers => {
+                    setCalendarSelectors(teachers.map(item => ({ code: item.name, name: item.name, fullName: item.name })));
                 }).catch(() => {
                 });
                 break;
