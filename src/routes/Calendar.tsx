@@ -322,12 +322,21 @@ export function Calendar() {
     }
 
     /**
-     * Add a Calendar object to the list of selections
+     * Add one or more Calendar objects to the list of selections
      */
-    function addCalendar(calendar: Calendar) {
+    function addCalendars(...calendars: Calendar[]) {
         setCalendars((oldValue) => {
-            if (oldValue.find(item => item.selection.id === calendar.selection.id)) return oldValue;
-            return [...oldValue, calendar]
+            const newValue = [ ...oldValue ];
+            for (const calendar of calendars) {
+                if (!newValue.find(item => item.selection.id === calendar.selection.id)) {
+                    newValue.push(calendar);
+                }
+            }
+            
+            if (newValue.length === oldValue.length)
+                return oldValue;
+            else
+                return newValue;
         });
     }
 
@@ -350,7 +359,7 @@ export function Calendar() {
         
         const calendar = createCalendar(currentSelection);
         
-        addCalendar(calendar);
+        addCalendars(calendar);
     };
 
     /**
