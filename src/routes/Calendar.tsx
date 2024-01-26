@@ -3,7 +3,7 @@ import { ArrowExportRegular, CalendarMonthRegular, CalendarWeekNumbersRegular, D
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CalendarSelection, CalendarSelector, CalendarType } from "../components/calendar/CalendarSelector";
+import { CalendarSelection, CalendarSelector, CalendarType, getCalendarSelections } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
 
 import { EventDto } from "../dto/EventDto";
@@ -363,6 +363,56 @@ export function Calendar() {
     };
 
     /**
+     * Add a calendar from a search parameter value.
+     */
+    async function createCalendarFromSearch(type: CalendarType, searchValue: string) {
+        const selections = await getCalendarSelections(requests, type);
+        const split = searchValue.split(".");
+        if (split.length === 0) {
+            throw new Error(`Invalid ${type} search value ${searchValue}`);
+        }
+
+        // Removes the first element so that others can be looked
+        // through as options without having to manually ignore the
+        // first element
+        const id = split.shift();
+
+        const selection = selections.find(s => s.id === id);
+
+        if (selection === undefined) {
+            throw new Error(`Invalid ${type} search value ${searchValue}: Could not find calendar with ID ${id}`);
+        }
+
+        let calendar = await createCalendar(selection);
+
+        for (const parameter of split) {
+            switch (parameter) {
+                case "disabled":
+                    calendar.enabled = false;
+                    break;
+                default:
+                    console.warn(`Unknown parameter ${parameter} in ${type} search value ${searchValue}`)
+            }
+        }
+
+        return calendar;
+    }
+
+    /**
+     * Add a calendar from an array of search parameter values while maintaining ordering.
+     */
+    async function createCalendarsFromSearch(type: CalendarType, searchValues: string[]): Promise<Calendar[]> {
+        let calendars: Calendar[] = [];
+
+        // This is a for loop to maintain ordering
+        for (const searchValue of searchValues) {
+            calendars.push(await createCalendarFromSearch(type, searchValue));
+        }
+
+        return calendars;
+    }
+
+    /**
      * Renders the various cards for each day of the month/week in the current calendar view.  
      * Each card contains a list that enables the user to preview the events for the day.  
      * Furthermore, each card is clickable and opens a dialog with the detailed list of events for the day.
@@ -559,9 +609,26 @@ export function Calendar() {
     }
 
     // First render: read calendars from search parameters or load the user default calendar
+    async function loadCalendars() {
+        let newCalendars: Calendar[] = [];
+        for (const type of ["course", "classroom", "teacher"]) {
+            const searchValues = searchParams.getAll(type);
+            if (searchValues.length > 0) {
+                newCalendars.push(...await createCalendarsFromSearch(type as CalendarType, searchValues));
+            }
+        }
+
+        if (newCalendars.length > 0) {
+            addCalendars(...newCalendars);
+        } else {
+            // No calendars from parameters: load the user default calendar (user course)
+            onAddCalendarClick();
+        }
+    }
+
+    
     useEffect(() => {
-        // No calendars from parameters: load the user default calendar (user course)
-        onAddCalendarClick();
+        loadCalendars();
     }, []);
 
     // Update calendar title and search parameters when calendar selections change
