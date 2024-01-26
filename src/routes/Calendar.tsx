@@ -11,6 +11,7 @@ import { generateMonth, generateShortWeek, generateWeek } from "../libraries/cal
 import useRequests from "../libraries/requests/requests";
 import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
 import { UserContext } from "../context/UserContext";
+import { useSearchParams } from 'react-router-dom';
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -205,6 +206,7 @@ export function Calendar() {
         weekDaysAbbr: ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]
     };
 
+    const [ searchParams, setSearchParams ] = useSearchParams();
 
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
@@ -301,6 +303,22 @@ export function Calendar() {
         } else {
             setCalendarTitle("Nessun calendario selezionato");
         }
+    }
+
+    /**
+     * Updates search parameters based on current calendar selections
+     */
+    function updateSearchParameters() {
+        const newSearchParams = new URLSearchParams();
+        for (const selection of calendars) {
+            newSearchParams.append(
+                selection.selection.type,
+                `${selection.selection.id}${selection.enabled ? "" : ".disabled"}`
+            );
+        }
+        setSearchParams(newSearchParams, {
+            replace: true,
+        });
     }
 
     /**
@@ -537,8 +555,11 @@ export function Calendar() {
         onAddCalendarClick();
     }, []);
 
-    // Update calendar title when calendar selections change
-    useEffect(updateCalendarTitle, [calendars]);
+    // Update calendar title and search parameters when calendar selections change
+    useEffect(() => {
+        updateCalendarTitle();
+        updateSearchParameters();
+    }, [calendars]);
 
     // Load events for the current calendar view
     useEffect(() => {
