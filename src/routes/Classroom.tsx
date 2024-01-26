@@ -1,14 +1,14 @@
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { ThemeContext } from "../context/ThemeContext";
+import { ClassroomDto } from '../dto/ClassroomDto';
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
-import { ClassroomDto } from '../dto/ClassroomDto';
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -58,7 +58,7 @@ export function Classroom() {
     const { theme } = useContext(ThemeContext);
 
     const globalStyles = useGlobalStyles();
-    const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
+    const themeStyles = theme === "light" ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
     const requests = useRequests();
 

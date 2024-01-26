@@ -2,8 +2,8 @@ import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinn
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
-import { CourseContext } from "../context/CourseContext";
 import { TimekeeperContext } from '../context/TimekeeperContext';
+import { UserContext } from "../context/UserContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
@@ -14,7 +14,7 @@ export function Home() {
     const globalStyles = useGlobalStyles();
 
     const requests = useRequests();
-    const { course } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
 
     const [now, setNow] = useState(() => new Date());
     const [dateTime, setDateTime] = useState(() => new Date());

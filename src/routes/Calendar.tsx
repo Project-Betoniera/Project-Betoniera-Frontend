@@ -5,11 +5,12 @@ import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { CalendarSelection, CalendarSelector, CalendarType } from "../components/calendar/CalendarSelector";
 import { RouterButton } from "../components/router/RouterButton";
-import { CourseContext } from "../context/CourseContext";
+
 import { EventDto } from "../dto/EventDto";
 import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import useRequests from "../libraries/requests/requests";
 import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
+import { UserContext } from "../context/UserContext";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -191,7 +192,7 @@ type ExtendedEventDto = EventDto & {
 
 export function Calendar() {
     const styles = useStyles();
-    const { course } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
     const screenMediaQuery = useMediaQuery('(max-width: 578px)');
     const requests = useRequests();
     const [isCurrentViewMonth, setIsCurrentViewMonth] = useState<boolean>(true);

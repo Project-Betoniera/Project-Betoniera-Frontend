@@ -1,18 +1,21 @@
 import { Body1, Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle } from "@fluentui/react-components";
 import { ArrowExitFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
-import { CourseContext } from "../../context/CourseContext";
 import { TokenContext } from "../../context/TokenContext";
+import { UserContext } from "../../context/UserContext";
 
 export default function InvalidTokenDialog() {
     const { setToken, setRemember, isInvalid, setIsInvalid } = useContext(TokenContext);
-    const { setCourse } = useContext(CourseContext);
+    const { setCourse } = useContext(UserContext).course;
 
     const logout = () => {
         setToken(null);
         setRemember(false);
         setIsInvalid(false);
         setCourse(null);
+        setUserName(null);
+        setUserEmail(null);
+        setIsUserAdmin(null);
     };
 
     return (

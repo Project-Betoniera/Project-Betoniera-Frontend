@@ -1,11 +1,11 @@
 import { FluentProvider, Toast, ToastBody, ToastTitle, Toaster, makeStyles, tokens, useId, useToastController } from "@fluentui/react-components";
 import { useContext, useEffect } from "react";
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { Wrapper } from "./Wrapper";
+import InvalidTokenDialog from "./components/dialogs/InvalidTokenDialog";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import InstallPwaDialog from "./components/dialogs/InstallPwaDialog";
-import InvalidTokenDialog from "./components/dialogs/InvalidTokenDialog";
 import OfflineDialog from "./components/dialogs/OfflineDialog";
 import { PrivacyAlert } from "./components/dialogs/PrivacyAlert";
 import { ThemeContext } from "./context/ThemeContext";
@@ -14,6 +14,7 @@ import { About } from "./routes/About";
 import { Calendar } from "./routes/Calendar";
 import { CalendarExport } from "./routes/CalendarExport";
 import { Classroom } from "./routes/Classroom";
+import { Grade } from "./routes/Grade";
 import { Home } from "./routes/Home";
 import { LoginForm } from "./routes/LoginForm";
 import { NotFound } from "./routes/NotFound";
@@ -33,7 +34,7 @@ const useStyles = makeStyles({
 function App() {
   const style = useStyles();
   const token = useContext(TokenContext).token;
-  const { theme } = useContext(ThemeContext);
+  const { themeValue } = useContext(ThemeContext);
 
   const toasterId = useId("app-toaster");
   const { dispatchToast } = useToastController(toasterId);
@@ -67,7 +68,7 @@ function App() {
   }, [location, token]);
 
   return (
-    <FluentProvider className={style.root} theme={theme}>
+    <FluentProvider className={style.root} theme={themeValue}>
       <Toaster toasterId={toasterId} />
       <PrivacyAlert />
       <OfflineDialog />
@@ -81,6 +82,7 @@ function App() {
           <Route path="/classroom" element={<Classroom />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/calendar-sync" element={<CalendarExport />} />
+          <Route path="/grade" element={<Grade />} />
           <Route path="/about" element={<About />} />
           <Route path='*' element={<NotFound />} />
         </Route>

@@ -1,8 +1,8 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
 import { Body1, Combobox, Option, Select, SelectOnChangeData, makeStyles, shorthands } from "@fluentui/react-components";
 import { ChangeEvent, FunctionComponent, useContext, useEffect, useState } from "react";
-import { CourseContext } from "../../context/CourseContext";
 import useRequests from "../../libraries/requests/requests";
+import { UserContext } from "../../context/UserContext";
 
 /**
  * The available calendar types.
@@ -64,7 +64,7 @@ const useStyles = makeStyles({
 export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props: CalendarSelectorProps) => {
     const styles = useStyles();
 
-    const { course: userCourse } = useContext(CourseContext);
+    const { course } = useContext(UserContext).course;
     const requests = useRequests();
 
     // The available calendar types
@@ -82,10 +82,10 @@ export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props
 
     // The current selected calendar
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
-        id: userCourse?.id.toString() || "" /* TODO Fix course type to not be null */,
+        id: course?.id.toString() || "" /* TODO Fix course type to not be null */,
         type: "course",
-        shortName: userCourse?.code || "",
-        fullName: `${userCourse?.code} - ${userCourse?.name}` || ""
+        shortName: course?.code || "",
+        fullName: `${course?.code} - ${course?.name}` || ""
     });
 
     /**
