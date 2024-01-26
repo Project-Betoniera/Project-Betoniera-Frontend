@@ -458,9 +458,9 @@ export function Calendar() {
          */
         function renderPreviewEvents(events: ExtendedEventDto[]) {
             // Render a preview card for each event in each calendar
-            return events.map((event) => (
+            return events.map((event, index) => (
                 <Card
-                    key={event.id}
+                    key={index}
                     className={styles.event}
                     style={{ backgroundColor: getColorValue(event.color) }}
                 >
@@ -496,7 +496,7 @@ export function Calendar() {
                                         {
                                             // Foreach event in the current calendar render the detailed preview card
                                             filteredEvents.length > 0 ?
-                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={getColorValue(calendar.color)} />)
+                                                filteredEvents.map((event, index) => <EventDetails as="card" key={index} event={event} title="subject" backgroundColor={getColorValue(calendar.color)} />)
                                                 :
                                                 <Subtitle2>Nessuna</Subtitle2>
                                         }
