@@ -192,7 +192,9 @@ type ExtendedEventDto = EventDto & {
 }
 
 const COLORS = [
+    // special: default course
     tokens.colorBrandBackground2Hover,
+
     tokens.colorPaletteRedBackground2,
     tokens.colorPaletteDarkOrangeBackground2,
     tokens.colorPaletteYellowBackground2,
