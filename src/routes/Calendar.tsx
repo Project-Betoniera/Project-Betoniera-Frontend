@@ -179,7 +179,7 @@ const useStyles = makeStyles({
  */
 type Calendar = {
     selection: CalendarSelection,
-    color: string,
+    color: number,
     enabled: boolean,
 };
 
@@ -187,9 +187,20 @@ type Calendar = {
  * Extended `EventDto` type that contains the color and the selection id of the calendar it belongs to
  */
 type ExtendedEventDto = EventDto & {
-    color: string;
+    color: number;
     selectionId: string;
 }
+
+const COLORS = [
+    tokens.colorBrandBackground2Hover,
+    tokens.colorPaletteRedBackground2,
+    tokens.colorPaletteDarkOrangeBackground2,
+    tokens.colorPaletteYellowBackground2,
+    tokens.colorPaletteGreenBackground2,
+    tokens.colorPalettePurpleBackground2,
+    tokens.colorPaletteBerryBackground2,
+    tokens.colorPaletteMarigoldBackground2,
+];
 
 export function Calendar() {
     const styles = useStyles();
@@ -237,22 +248,17 @@ export function Calendar() {
     };
 
     /**
-     * Returns a random color from the internal color palette
+     * Returns a random color, except for 0 which is assigned to the default course only
      * */
     function getRandomColor() {
-        const colors = [
-            tokens.colorPaletteRedBackground2,
-            tokens.colorPaletteDarkOrangeBackground2,
-            tokens.colorPaletteYellowBackground2,
-            tokens.colorPaletteGreenBackground2,
-            tokens.colorPalettePurpleBackground2,
-            tokens.colorPaletteBerryBackground2,
-            tokens.colorPaletteMarigoldBackground2,
-        ];
+        return Math.floor(Math.random() * (COLORS.length - 1)) + 1;
+    }
 
-        const choice = Math.floor(Math.random() * colors.length);
-
-        return colors[choice]; // Generate a random color
+    /**
+     * Converts a numerical color value to the real color value
+     * */
+    function getColorValue(color: number) {
+        return COLORS[color];
     }
 
     /**
@@ -346,7 +352,7 @@ export function Calendar() {
     function createCalendar(selection: CalendarSelection): Calendar {
         return {
             selection: selection,
-            color: parseInt(selection.id) === course?.id ? tokens.colorBrandBackground2Hover : getRandomColor(),
+            color: parseInt(selection.id) === course?.id ? 0 : getRandomColor(),
             enabled: true
         };
     }
@@ -428,7 +434,7 @@ export function Calendar() {
                 <Card
                     key={event.id}
                     className={styles.event}
-                    style={{ backgroundColor: event.color }}
+                    style={{ backgroundColor: getColorValue(event.color) }}
                 >
                     <Caption1 className={isCurrentViewMonth ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
 
@@ -462,7 +468,7 @@ export function Calendar() {
                                         {
                                             // Foreach event in the current calendar render the detailed preview card
                                             filteredEvents.length > 0 ?
-                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={calendar.color} />)
+                                                filteredEvents.map((event) => <EventDetails as="card" key={event.id} event={event} title="subject" backgroundColor={getColorValue(calendar.color)} />)
                                                 :
                                                 <Subtitle2>Nessuna</Subtitle2>
                                         }
@@ -528,11 +534,11 @@ export function Calendar() {
     function getCalendarIcon(type: string, calendar: Calendar) {
         switch (type) {
             case "course":
-                return (<BackpackFilled color={calendar.color} />);
+                return (<BackpackFilled color={getColorValue(calendar.color)} />);
             case "classroom":
-                return (<BuildingFilled color={calendar.color} />);
+                return (<BuildingFilled color={getColorValue(calendar.color)} />);
             case "teacher":
-                return (<PersonFilled color={calendar.color} />);
+                return (<PersonFilled color={getColorValue(calendar.color)} />);
             default:
                 return undefined;
         }
