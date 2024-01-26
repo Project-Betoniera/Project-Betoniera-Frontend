@@ -15,6 +15,7 @@ export default function InvalidTokenDialog() {
         course.setCourse(null);
         user.setName(null);
         user.setEmail(null);
+        user.setYear(null);
         user.setIsAdmin(null);
     };
 
