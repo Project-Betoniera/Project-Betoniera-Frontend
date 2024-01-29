@@ -11,6 +11,7 @@ import { EventDto } from "../dto/EventDto";
 import { generateMonth, generateShortWeek, generateWeek } from "../libraries/calendarGenerator/calendarGenerator";
 import { useMediaQuery } from "../libraries/mediaQuery/mediaQuery";
 import useRequests from "../libraries/requests/requests";
+import { useGlobalStyles } from "../globalStyles";
 
 const useStyles = makeStyles({
     drawerBody: {
@@ -27,6 +28,12 @@ const useStyles = makeStyles({
     },
     drawer: {
         ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    },
+    mobileMargins: {
+        marginTop: "2.5rem",
+        marginBottom: "1rem",
+        marginRight: "1rem",
+        marginLeft: "1rem",
     },
     container: {
         display: "flex",
@@ -138,13 +145,6 @@ const useStyles = makeStyles({
         ...shorthands.margin("0"),
         backgroundColor: tokens.colorBrandBackground2Hover,
     },
-    // Truncate overflowing text with "..." and hide the overflow
-    ellipsisText: {
-        display: "block",
-        overflowX: "hidden",
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-    },
     wide: {
         alignSelf: "stretch",
     },
@@ -210,6 +210,7 @@ const RANDOMABLE_COLORS = [...Array(COLORS.length - 1).keys()].map(k => k + 1);
 
 export function Calendar() {
     const styles = useStyles();
+    const globalStyles = useGlobalStyles();
     const { course } = useContext(UserContext).course;
     const screenMediaQuery = useMediaQuery("(max-width: 578px)");
     const requests = useRequests();
@@ -464,7 +465,7 @@ export function Calendar() {
                     className={styles.event}
                     style={{ backgroundColor: getColorValue(event.color) }}
                 >
-                    <Caption1 className={isCurrentViewMonth ? styles.ellipsisText : undefined}>{event.subject}</Caption1>
+                    <Caption1 className={isCurrentViewMonth ? globalStyles.ellipsisText : undefined}>{event.subject}</Caption1>
 
                     {/* Week view style */}
                     <div style={isCurrentViewMonth ? { display: "none" } : undefined}>
@@ -491,7 +492,7 @@ export function Calendar() {
 
                             return (
                                 <div className={styles.dialogCalendarView} key={calendar.selection.id}>
-                                    <Subtitle2 className={styles.ellipsisText}>{calendar.selection.fullName}</Subtitle2>
+                                    <Subtitle2 className={globalStyles.ellipsisText}>{calendar.selection.fullName}</Subtitle2>
                                     <div className={styles.dialogEventList}>
                                         {
                                             // Foreach event in the current calendar render the detailed preview card
@@ -698,7 +699,7 @@ export function Calendar() {
     }, [dateTime, calendars]);
 
     return (
-        <div className={mergeClasses(styles.container, styles.sideMargin)}>
+        <div className={ screenMediaQuery ? mergeClasses(styles.container, styles.mobileMargins) : mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={isCurrentViewMonth ? "month" : screenMediaQuery ? "shortWeek" : "week"} />
                 <div className={styles.stack}>
