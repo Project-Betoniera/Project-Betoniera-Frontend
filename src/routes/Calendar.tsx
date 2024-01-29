@@ -127,10 +127,7 @@ const useStyles = makeStyles({
         "@media (max-width: 578px)": {
             rowGap: "0.2rem",
             overflowY: "hidden",
-        },
-        "@media (max-width: 350px), (max-height: 600px)": {
-            display: "none",
-        },
+        }
     },
     eventHeader: {
         display: "flex",
@@ -529,7 +526,7 @@ export function Calendar() {
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
                             <div className={styles.eventHeader}>
                                 <Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>
-                                {screenMediaQuery && isCurrentViewMonth && filteredEvents.length > 0 ? <Badge size="small" color={now.toLocaleDateString() === day.toLocaleDateString() ? "subtle" : undefined}>{filteredEvents.length}</Badge> : undefined}
+                                {isCurrentViewMonth && filteredEvents.length > 0 ? <Badge size={ screenMediaQuery ? "small" : "medium"} color={now.toLocaleDateString() === day.toLocaleDateString() ? "subtle" : undefined}>{filteredEvents.length}</Badge> : undefined}
                             </div>
                             <div className={styles.eventContainer} style={screenMediaQuery && !isCurrentViewMonth ? { overflowY: "auto" } : undefined}>
                                 {/* TODO Show skeletons when loading events */}
