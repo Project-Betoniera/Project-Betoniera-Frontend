@@ -1,6 +1,6 @@
 import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tooltip, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular, StarFilled, StarRegular } from "@fluentui/react-icons";
-import { useContext, useEffect, useState } from "react";
+import { ReactNode, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -133,7 +133,6 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "row",
         flexGrow: "0 !important",
-        alignItems: "center",
         justifyContent: "space-between"
     },
     event: {
@@ -445,6 +444,53 @@ export function Calendar() {
     }
 
     /**
+     * Renders the badges for the specified calendars.
+     */
+    function renderBadges(day: Date, calendars: Calendar[], events: ExtendedEventDto[]) {
+
+        const result: ReactNode[] = [];
+
+        // On a mobile device render only one badge with the number of events for all calendars
+        if (screenMediaQuery || calendars.length > 3) {
+            // Add a badge with the number of events for all calendars
+            result.push(
+                <Badge
+                    key="all"
+                    appearance="filled"
+                    size={screenMediaQuery ? "small" : "medium"}
+                    color={now.toLocaleDateString() === day.toLocaleDateString() ? "subtle" : undefined}
+                >
+                    {events.length}
+                </Badge>
+            );
+
+            return result;
+        }
+
+        // Foreach calendar render the detailed event list
+        calendars.map((calendar) => {
+            // Events of the current calendar for the current day, sorted by start time
+            const filteredEvents = events.filter((event) => event.selectionId === calendar.selection.id);
+
+            // Skip if there are no events for the current calendar
+            if (filteredEvents.length === 0) return;
+
+            // Add a badge with the number of events for the current calendar
+            result.push(
+                <Badge
+                    key={calendar.selection.id}
+                    appearance="filled"
+                    style={{ marginRight: "0.2rem", backgroundColor: getColorValue(calendar.color) }}
+                >
+                    {filteredEvents.length}
+                </Badge>
+            );
+        })
+
+        return result;
+    }
+
+    /**
      * Renders the various cards for each day of the month/week in the current calendar view.  
      * Each card contains a list that enables the user to preview the events for the day.  
      * Furthermore, each card is clickable and opens a dialog with the detailed list of events for the day.
@@ -526,7 +572,7 @@ export function Calendar() {
                         <Card key={day.getTime()} className={mergeClasses(styles.card, now.toLocaleDateString() === day.toLocaleDateString() && styles.todayBadge)}>
                             <div className={styles.eventHeader}>
                                 <Subtitle2>{day.toLocaleDateString([], { day: "numeric" })}</Subtitle2>
-                                {isCurrentViewMonth && filteredEvents.length > 0 ? <Badge size={ screenMediaQuery ? "small" : "medium"} color={now.toLocaleDateString() === day.toLocaleDateString() ? "subtle" : undefined}>{filteredEvents.length}</Badge> : undefined}
+                                {isCurrentViewMonth && filteredEvents.length > 0 ? <div>{renderBadges(day, filteredCalendars, filteredEvents)}</div> : undefined}
                             </div>
                             <div className={styles.eventContainer} style={screenMediaQuery && !isCurrentViewMonth ? { overflowY: "auto" } : undefined}>
                                 {/* TODO Show skeletons when loading events */}
@@ -696,7 +742,7 @@ export function Calendar() {
     }, [dateTime, calendars]);
 
     return (
-        <div className={ screenMediaQuery ? mergeClasses(styles.container, styles.mobileMargins) : mergeClasses(styles.container, styles.sideMargin)}>
+        <div className={screenMediaQuery ? mergeClasses(styles.container, styles.mobileMargins) : mergeClasses(styles.container, styles.sideMargin)}>
             <Card className={styles.toolbar}>
                 <DateSelector autoUpdate={true} dateTime={dateTime} setDateTime={setDateTime} inputType={isCurrentViewMonth ? "month" : screenMediaQuery ? "shortWeek" : "week"} />
                 <div className={styles.stack}>
