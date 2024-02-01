@@ -23,7 +23,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
     const [name, setName] = useState<string | null>(localStorage.getItem("name"));
     const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
     const [year, setYear] = useState<number | null>(typeof localStorage.getItem("year") === "string" ? Number(localStorage.getItem("year")) : null);
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(typeof localStorage.getItem("isAdmin") === "string" ? Boolean(localStorage.getItem("isAdmin")) : null);
+    const [isAdmin, setIsAdmin] = useState<boolean | null>(localStorage.getItem("isAdmin") === "true");
 
     const remember = useContext(TokenContext).remember;
     const [course, setCourse] = useState<CourseDto | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
