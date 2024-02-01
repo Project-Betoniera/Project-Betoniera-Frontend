@@ -1,73 +1,84 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { CourseDto } from "../dto/CourseDto";
-import { TokenContext } from "./TokenContext";
+import axios from "axios";
 
-export const UserContext = createContext({
-    user: {
-        name: null as string | null,
-        setName: (value: string | null) => { console.log(value); },
-        email: null as string | null,
-        setEmail: (value: string | null) => { console.log(value); },
-        year: null as number | null,
-        setYear: (value: number | null) => { console.log(value); },
-        isAdmin: false as boolean | null,
-        setIsAdmin: (value: boolean | null) => { console.log(value); }
-    },
-    course: {
-        course: null as CourseDto | null,
-        setCourse: (data: CourseDto | null) => { console.log(data); }
-    }
-});
+import { apiUrl } from "../config";
+import useRequests from "../libraries/requests/requests";
+
+type UserData = {
+    course: CourseDto;
+    email: string;
+    isAdmin: boolean;
+    name: string;
+    remember: boolean;
+    token: string;
+    year: number;
+};
+
+type UserContextType = {
+    data: UserData;
+    login(email: string, password: string, remember: boolean): Promise<void>;
+    logout(): Promise<void>;
+};
+
+const defaultCourse: CourseDto = {
+    id: 0,
+    code: "",
+    name: "",
+    startYear: 0,
+    endYear: 0,
+};
+
+export const UserContext = createContext<UserContextType | null>(null);
 
 export function UserContextProvider({ children }: { children: JSX.Element; }) {
-    const [name, setName] = useState<string | null>(localStorage.getItem("name"));
-    const [email, setEmail] = useState<string | null>(localStorage.getItem("email"));
-    const [year, setYear] = useState<number | null>(typeof localStorage.getItem("year") === "string" ? Number(localStorage.getItem("year")) : null);
-    const [isAdmin, setIsAdmin] = useState<boolean | null>(typeof localStorage.getItem("isAdmin") === "string" ? Boolean(localStorage.getItem("isAdmin")) : null);
+    const [token, setToken] = useState<string>("");
+    const [name, setName] = useState<string>("");
+    const [email, setEmail] = useState<string>("");
+    const [year, setYear] = useState<number>(1);
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [remember, setRemember] = useState<boolean>(true);
+    const [course, setCourse] = useState<CourseDto>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
 
-    const remember = useContext(TokenContext).remember;
-    const [course, setCourse] = useState<CourseDto | null>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
+    const requests = useRequests();
 
+    // Update saved data when one of the values changes or if 'remember' property changes
     useEffect(() => {
-        // Course
-        if (course !== null && remember)
-            localStorage.setItem("course", JSON.stringify(course));
-        else
-            localStorage.removeItem("course");
+        if (remember) {
+            localStorage.setItem("user", JSON.stringify({
+                course,
+                email,
+                isAdmin,
+                name,
+                token,
+                year,
+            }));
+        } else {
+            localStorage.removeItem("user");
+        }
+    }, [remember, course, email, isAdmin, name, token, year]);
 
-        // User
-        if (name !== null && remember)
-            localStorage.setItem("name", name);
-        else
-            localStorage.removeItem("name");
+    async function login(email: string, password: string, remember: boolean) {
 
-        if (email !== null && remember)
-            localStorage.setItem("email", email);
-        else
-            localStorage.removeItem("email");
+    }
 
-        if (year !== null && remember)
-            localStorage.setItem("year", year.toString());
-        else
-            localStorage.removeItem("year");
+    async function logout() {
 
-        if (isAdmin !== null && remember)
-            localStorage.setItem("isAdmin", isAdmin.toString());
-        else
-            localStorage.removeItem("isAdmin");
-    }, [course, name, email, isAdmin]);
+    }
 
     return (
         <UserContext.Provider value={{
-            user: {
-                name, setName,
-                email, setEmail,
-                year, setYear,
-                isAdmin, setIsAdmin
+            data: {
+                course,
+                email,
+                isAdmin,
+                name,
+                remember,
+                token,
+                year,
             },
-            course: {
-                course, setCourse
-            }
+            login,
+            logout,
         }}>
             {children}
         </UserContext.Provider>

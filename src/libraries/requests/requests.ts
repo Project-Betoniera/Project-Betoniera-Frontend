@@ -7,6 +7,7 @@ import eventRequests from "./eventRequests";
 import gradeRequests from "./gradeRequests";
 import messageRequests from "./messageRequests";
 import teacherRequests from "./teacherRequests";
+import userRequests from "./userRequests";
 
 export default function useRequests() {
     const { token, setIsInvalid } = useContext(TokenContext);
@@ -17,6 +18,7 @@ export default function useRequests() {
         teacher: teacherRequests(token || "", setIsInvalid),
         grade: gradeRequests(token || "", setIsInvalid),
         message: messageRequests(token || "", setIsInvalid),
-        administration: administrationRequests(token || "", setIsInvalid)
+        administration: administrationRequests(token || "", setIsInvalid),
+        user: userRequests()
     };
 }
