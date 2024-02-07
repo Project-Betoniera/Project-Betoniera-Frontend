@@ -87,7 +87,7 @@ export function About() {
                 className={styles.commitText}>
                 Commit: {__COMMIT_SHA_DISPLAY__}
               </Button>
-            : undefined
+              : undefined
           }
         />
       </Card>
@@ -182,7 +182,7 @@ export function About() {
                 </div>
               </Button>
             ))
-          : new Array(5).fill(null).map((_, index) => (
+            : new Array(5).fill(null).map((_, index) => (
               <Card key={index}>
                 <Skeleton className={styles.profileCard}>
                   <SkeletonItem shape="square" size={56} />
