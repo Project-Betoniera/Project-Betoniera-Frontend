@@ -1,8 +1,22 @@
+import { makeStyles } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 
-type XY = { x: number; y: number };
+type XY = { x: number; y: number; };
+
+type Point = {
+  x: number;
+  y: number;
+  timestamp: number;
+};
+
+const useStyles = makeStyles({
+  car: {
+    color: "red",
+  }
+});
 
 const imageWidth = 200; // Width of the image in pixels
+const imageHeight = 200; // Height of the image in pixels
 const deadZone = 0.07; // Deadzone for analog sticks (0-1)
 const maxSpeed = 300; // Maximum speed (pixels per second)
 const maxAcceleration = 10; // Maximum acceleration (pixels per second^2)
@@ -96,6 +110,7 @@ function processRotation(speed: XY, oldRotation: number, rAxis: number) {
 }
 
 function EasterEgg() {
+  const styles = useStyles();
   const [gamepad, setGamepad] = useState<Gamepad | null>(null);
   const [, setSpeed] = useState<XY>({
     x: 0,
@@ -106,6 +121,7 @@ function EasterEgg() {
     y: window.innerHeight / 2 - imageWidth / 2,
   });
   const [rotation, setRotation] = useState<number>(0);
+  const [wheelBackLeft, setPoints] = useState<Point[]>([]);
 
   // Add gamepad event listener
   useEffect(() => {
@@ -131,8 +147,17 @@ function EasterEgg() {
 
       setSpeed((oldSpeed) => {
         setRotation((oldRotation) => {
-          setPosition((oldPosition) =>
-            processPosition(oldSpeed, oldPosition, oldRotation)
+          setPosition((oldPosition) => {
+
+            setPoints(oldPoints => [oldPoints
+              .filter(point => point.timestamp + 10000 > timestamp), {
+              x: (oldPosition.x + imageWidth / 2) + ((imageWidth / 2) * Math.cos(oldRotation)),
+              y: (oldPosition.y + imageHeight / 2) + ((imageHeight / 2) * Math.sin(oldRotation)),
+              timestamp
+            }]
+              .flat());
+            return processPosition(oldSpeed, oldPosition, oldRotation);
+          }
           );
 
           return processRotation(oldSpeed, oldRotation, rightStick[0]);
@@ -160,11 +185,24 @@ function EasterEgg() {
             left: position.x,
             zIndex: 1000,
             width: `${imageWidth}px`,
+            overflowX: "hidden",
+            overflowY: "hidden",
           }}
+          className={styles.car}
           alt="Vroom!"
         />
-        <svg>
-          <path d=""></path>
+        <svg style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          minWidth: "100vw",
+          minHeight: "100vh",
+          fill: "none",
+          stroke: "black",
+          strokeWidth: 4,
+          zIndex: 999
+        }}>
+          <path d={`M ${wheelBackLeft.map(point => `${point.x} ${point.y}`).join(" L ")}`}></path>
         </svg>
       </>
     )
