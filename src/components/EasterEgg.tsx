@@ -108,7 +108,7 @@ function EasterEgg() {
   const [rotation, setRotation] = useState<number>(0);
 
   // Wheel tracks
-  const [wheelBackLeft, setWheelBackLeft] = useState<Point[]>([]);
+  const [wheelTracks, setWheelTracks] = useState<Point[][]>([[], [], [], []]);
 
   // Add gamepad event listener
   useEffect(() => {
@@ -179,15 +179,38 @@ function EasterEgg() {
 
       setPosition((oldPosition) => {
         // Process wheel tracks
-        setWheelBackLeft((oldWheelBackLeft) => {
-          return Math.abs(speed.magnitude) > 0 ? [...oldWheelBackLeft.filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: oldPosition.x + imageWidth / 2,
-            y: oldPosition.y + imageHeight / 2,
+        setWheelTracks((oldWheelTracks) => Math.abs(speed.magnitude) > 0 ? [[
+          // Front right wheel
+          ...oldWheelTracks[0].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
+            x: oldPosition.x + imageWidth / 2 - 80,
+            y: oldPosition.y + imageHeight / 2 - 40,
             timestamp: timestamp,
-          }] : [
-            ...oldWheelBackLeft.filter(point => point.timestamp + wheelTrackPeriod > timestamp),
-          ];
-        });
+          }
+        ], [
+          // Front left wheel
+          ...oldWheelTracks[1].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
+            x: oldPosition.x + imageWidth / 2 - 80,
+            y: oldPosition.y + imageHeight / 2 + 40,
+            timestamp: timestamp,
+          }
+        ], [
+          // Rear right wheel
+          ...oldWheelTracks[2].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
+            x: oldPosition.x + imageWidth / 2 + 80,
+            y: oldPosition.y + imageHeight / 2 - 40,
+            timestamp: timestamp,
+          }
+        ], [
+          // Rear left wheel
+          ...oldWheelTracks[3].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
+            x: oldPosition.x + imageWidth / 2 + 80,
+            y: oldPosition.y + imageHeight / 2 + 40,
+            timestamp: timestamp,
+          }
+        ]
+        ] : [
+          ...oldWheelTracks.map(track => track.filter(point => point.timestamp + wheelTrackPeriod > timestamp))
+        ]);
 
         // Process rotation
         setRotation(speed.angle);
@@ -214,6 +237,7 @@ function EasterEgg() {
         <rect width={imageWidth} height={imageHeight} />
       </svg >
       <svg className={styles.wheelTracks}>
+        {wheelTracks.map((track, i) => <path key={i} d={`M ${track.map(point => `${point.x} ${point.y}`).join(" L ")}`} />)}
       </svg>
     </>
   );
