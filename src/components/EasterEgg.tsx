@@ -126,7 +126,7 @@ function EasterEgg() {
     y: window.innerHeight / 2 - imageWidth / 2,
   });
   const [rotation, setRotation] = useState<number>(0);
-  const [wheelBackLeft, setPoints] = useState<Point[]>([]);
+  const [wheelBackLeft, setWheelBackLeft] = useState<Point[]>([]);
 
   // Add gamepad event listener
   useEffect(() => {
@@ -154,7 +154,7 @@ function EasterEgg() {
         setRotation((oldRotation) => {
           setPosition((oldPosition) => {
 
-            setPoints(oldPoints => [oldPoints
+            setWheelBackLeft(oldPoints => [oldPoints
               .filter(point => point.timestamp + 10000 > timestamp), {
               x: (oldPosition.x + imageWidth / 2) + ((imageWidth / 2) * Math.cos(oldRotation)),
               y: (oldPosition.y + imageHeight / 2) + ((imageHeight / 2) * Math.sin(oldRotation)),
