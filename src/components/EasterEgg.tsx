@@ -1,7 +1,11 @@
-import { makeStyles } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 
 type XY = { x: number; y: number; };
+
+type Vector = {
+  magnitude: number;
+  angle: number;
+};
 
 type Point = {
   x: number;
@@ -9,113 +13,43 @@ type Point = {
   timestamp: number;
 };
 
-const useStyles = makeStyles({
-  car: {
-    color: "red",
-  }
-});
-
 const imageWidth = 200; // Width of the image in pixels
-const imageHeight = 200; // Height of the image in pixels
-const deadZone = 0.07; // Deadzone for analog sticks (0-1)
-const maxSpeed = 7; // Maximum speed (pixels per second)
-const maxAcceleration = 10; // Maximum acceleration (pixels per second^2)
-// const maxRotation = Math.PI / 4; // Maximum rotation (radians per second)
-const rotationResponse = 0.15; // Rotation responsiveness. 0 = no response 1 = instant response
+const imageHeight = 100; // Height of the image in pixels
+const wheelTrackPeriod = 10000; // Time in milliseconds that the wheel tracks are visible
+const maxSpeed = 200; // Maximum speed in pixels per second
+const maxRotationRate = 180; // Maximum rotation rate in degrees per second
 
 /**
- * Calculate the new speed based on the left stick.
+ * Determines the x and y components of a vector
+ * @param vector - The vector to convert
+ * @returns - The x and y components of the vector
  */
-function processSpeed(
-  oldSpeed: XY,
-  xAxis: number,
-  yAxis: number,
-  deltaMs: number
-) {
-  const newSpeed: XY = {
-    x: oldSpeed.x,
-    y: oldSpeed.y,
+function vectorToXY(vector: Vector): XY {
+  return {
+    x: Math.cos(vector.angle) * vector.magnitude,
+    y: Math.sin(vector.angle) * vector.magnitude,
   };
-
-  const targetSpeed: XY = {
-    x: xAxis * maxSpeed,
-    y: yAxis * maxSpeed,
-  };
-
-  // Deadzone
-  if (Math.abs(xAxis) < deadZone) targetSpeed.x = 0;
-  if (Math.abs(yAxis) < deadZone) targetSpeed.y = 0;
-
-  // Difference between current speed and desired speed
-  const delta: XY = {
-    x: oldSpeed.x - (targetSpeed.x * deltaMs) / 1000,
-    y: oldSpeed.y - (targetSpeed.y * deltaMs) / 1000,
-  };
-
-  newSpeed.x = oldSpeed.x - ((maxAcceleration * deltaMs) / 1000) * delta.x;
-  newSpeed.y = oldSpeed.y - ((maxAcceleration * deltaMs) / 1000) * delta.y;
-
-  return newSpeed;
 }
 
 /**
- * Calculate the new position based on the speed.
+ * Calculates the new position of an object based on its speed and the time that has passed
+ * @param oldPosition - The old position of the object
+ * @param speed - The speed of the object
+ * @param deltaMs - The time that has passed in milliseconds since the last update
+ * @returns - The new position of the object
  */
-function processPosition(speed: XY, oldPosition: XY, rotation: number) {
-  const newPosition: XY = { x: oldPosition.x, y: oldPosition.y };
+function processPosition(oldPosition: XY, speed: Vector, deltaMs: number): XY {
+  const speedComponents = vectorToXY(speed);
 
-  newPosition.x += speed.x;
-  newPosition.y += speed.y;
-
-  // Constrain position
-  const min: XY = {
-    x: 0 - ((1 - Math.cos(rotation)) * imageWidth) / 2,
-    y: 0 - ((1 - Math.sin(rotation)) * imageWidth) / 2,
+  const newPosition: XY = {
+    x: oldPosition.x + speedComponents.x * (deltaMs / 1000),
+    y: oldPosition.y + speedComponents.y * (deltaMs / 1000),
   };
-
-  const max: XY = {
-    x: window.innerWidth - ((1 - Math.cos(rotation)) * imageWidth) / 2,
-    y: window.innerHeight - ((1 - Math.sin(rotation)) * imageWidth) / 2,
-  };
-
-  if (newPosition.x < min.x) newPosition.x = min.x;
-  if (newPosition.y < min.y) newPosition.y = min.y;
-  if (newPosition.x > max.x) newPosition.x = max.x;
-  if (newPosition.y > max.y) newPosition.y = max.y;
 
   return newPosition;
 }
 
-/**
- * Calculate the new rotation based on the speed and the right stick.
- */
-function processRotation(speed: XY, oldRotation: number, drift: number) {
-  const targetRotation = Math.atan(speed.y / speed.x); // New target rotation
-
-  let delta =
-    oldRotation -
-    targetRotation +
-    (drift * Math.PI) / 4 + // Include rotation from the right stick (Tokyo Drift!)
-    (speed.x >= 0 ? Math.PI : 0); // Invert rotation if moving right
-
-  if (Math.abs(delta) > Math.PI) delta -= Math.sign(delta) * Math.PI * 2; // Prevent rotation over 180 degrees
-
-
-  let newRotation = oldRotation - delta * rotationResponse;
-
-  // Constrain rotation
-  if (newRotation < 0) newRotation += Math.PI * 2;
-  if (newRotation > Math.PI * 2) newRotation -= Math.PI * 2;
-
-  return isNaN(newRotation)
-    ? isNaN(oldRotation)
-      ? 0
-      : oldRotation
-    : newRotation;
-}
-
 function EasterEgg() {
-  const styles = useStyles();
   const [gamepad, setGamepad] = useState<Gamepad | null>(null);
 
   const input: XY = {
@@ -123,9 +57,9 @@ function EasterEgg() {
     y: 0
   };
 
-  const speed: XY = {
-    x: 0,
-    y: 0
+  const speed: Vector = {
+    magnitude: 0,
+    angle: 0
   };
 
   const [position, setPosition] = useState<XY>({
@@ -146,16 +80,16 @@ function EasterEgg() {
 
     function keydownListener(event: KeyboardEvent) {
       if (event.key === "ArrowUp") {
-        input.y = -maxSpeed;
+        input.y = -1;
       }
       if (event.key === "ArrowDown") {
-        input.y = maxSpeed;
+        input.y = 1;
       }
       if (event.key === "ArrowLeft") {
-        input.x = -maxSpeed;
+        input.x = -1;
       }
       if (event.key === "ArrowRight") {
-        input.x = maxSpeed;
+        input.x = 1;
       }
     }
 
@@ -167,7 +101,6 @@ function EasterEgg() {
         input.x = 0;
       }
     }
-
 
     window.addEventListener("gamepadconnected", listener);
     window.addEventListener("keydown", keydownListener);
@@ -185,9 +118,7 @@ function EasterEgg() {
     let previousTimestamp = 0;
 
     const tick: FrameRequestCallback = (timestamp) => {
-
       const deltaMs = timestamp - previousTimestamp;
-
 
       if (gamepad) {
         const leftStick = gamepad.axes.slice(0, 2);
@@ -195,31 +126,26 @@ function EasterEgg() {
         input.y = leftStick[1];
       }
 
-      const targetSpeed: XY = {
-        x: input.x * maxSpeed,
-        y: input.y * maxSpeed
-      };
+      speed.magnitude = input.y * maxSpeed;
+      speed.angle += input.x * maxRotationRate * Math.PI / 180 * (deltaMs / 1000);
 
-      setRotation((oldRotation) => {
-        setPosition((oldPosition) => {
+      setPosition((oldPosition) => {
+        // Process wheel tracks
+        setWheelBackLeft((oldWheelBackLeft) => {
+          return Math.abs(speed.magnitude) > 0 ? [...oldWheelBackLeft.filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
+            x: oldPosition.x + imageWidth / 2,
+            y: oldPosition.y + imageHeight / 2,
+            timestamp: timestamp,
+          }] : [
+            ...oldWheelBackLeft.filter(point => point.timestamp + wheelTrackPeriod > timestamp),
+          ];
+        });
 
-          setWheelBackLeft(oldPoints => [oldPoints
-            .filter(point => point.timestamp + 10000 > timestamp), {
-            x: (oldPosition.x + imageWidth / 2) + ((imageWidth / 2) * Math.cos(oldRotation)),
-            y: (oldPosition.y + imageHeight / 2) + ((imageHeight / 2) * Math.sin(oldRotation)),
-            timestamp
-          }]
-            .flat());
-          return processPosition(speed, oldPosition, oldRotation);
-        }
-        );
+        // Process rotation
+        setRotation(speed.angle);
 
-        return processRotation(speed, oldRotation, 0);
+        return processPosition(oldPosition, speed, deltaMs);
       });
-
-      const newSpeed = processSpeed(speed, targetSpeed.x, targetSpeed.y, deltaMs);
-      speed.x = newSpeed.x;
-      speed.y = newSpeed.y;
 
       previousTimestamp = timestamp;
       window.requestAnimationFrame(tick);
@@ -230,32 +156,31 @@ function EasterEgg() {
 
   return (
     <>
-      <img
-        src="https://www.svgrepo.com/download/393056/car-citroen-top-vehicle.svg"
-        style={{
-          position: "absolute",
-          rotate: `${rotation}rad`,
-          top: position.y,
-          left: position.x,
-          zIndex: 1000,
-          width: `${imageWidth}px`,
-          overflowX: "hidden",
-          overflowY: "hidden",
-        }}
-        className={styles.car}
-        alt="Vroom!"
-      />
+      <svg style={{
+        zIndex: 1000,
+        fill: "blue",
+        fillOpacity: 0.5,
+        position: "absolute",
+        top: position.y,
+        left: position.x,
+        rotate: `${rotation}rad`,
+        width: imageWidth,
+        height: imageHeight
+      }}>
+        <rect width={imageWidth} height={imageHeight} />
+      </svg >
       <svg style={{
         position: "absolute",
         top: 0,
         left: 0,
         minWidth: "100vw",
         minHeight: "100vh",
+        zIndex: 999,
         fill: "none",
-        stroke: "black",
-        strokeWidth: 4,
-        zIndex: 999
+        stroke: "red",
+        strokeWidth: 5,
       }}>
+
         <path d={`M ${wheelBackLeft.map(point => `${point.x} ${point.y}`).join(" L ")}`}></path>
       </svg>
     </>
