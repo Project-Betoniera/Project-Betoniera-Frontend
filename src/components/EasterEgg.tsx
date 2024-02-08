@@ -94,26 +94,36 @@ function EasterEgg() {
     }
 
     function keydownListener(event: KeyboardEvent) {
-      if (event.key === "ArrowUp") {
-        input.y = -1;
-      }
-      if (event.key === "ArrowDown") {
-        input.y = 1;
-      }
-      if (event.key === "ArrowLeft") {
-        input.x = -1;
-      }
-      if (event.key === "ArrowRight") {
-        input.x = 1;
+      switch (event.key) {
+        case "ArrowUp":
+          input.y = -1;
+          break;
+        case "ArrowDown":
+          input.y = 1;
+          break;
+        case "ArrowLeft":
+          input.x = -1;
+          break;
+        case "ArrowRight":
+          input.x = 1;
+          break;
       }
     }
 
     function keyupListener(event: KeyboardEvent) {
-      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-        input.y = 0;
-      }
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        input.x = 0;
+      switch (event.key) {
+        case "ArrowUp":
+          if (input.y === -1) input.y = 0;
+          break;
+        case "ArrowDown":
+          if (input.y === 1) input.y = 0;
+          break;
+        case "ArrowLeft":
+          if (input.x === -1) input.x = 0;
+          break;
+        case "ArrowRight":
+          if (input.x === 1) input.x = 0;
+          break;
       }
     }
 
