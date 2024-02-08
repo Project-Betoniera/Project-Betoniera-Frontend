@@ -100,7 +100,12 @@ function processRotation(speed: XY, oldRotation: number, rAxis: number) {
 
   if (Math.abs(delta) > Math.PI) delta -= Math.sign(delta) * Math.PI * 2; // Prevent rotation over 180 degrees
 
-  const newRotation = oldRotation - delta * rotationResponse;
+
+  let newRotation = oldRotation - delta * rotationResponse;
+
+  // Constrain rotation
+  if (newRotation < 0) newRotation += Math.PI * 2;
+  if (newRotation > Math.PI * 2) newRotation -= Math.PI * 2;
 
   return isNaN(newRotation)
     ? isNaN(oldRotation)
