@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 const imageWidth = 200; // Width of the image in pixels
 const imageHeight = 200; // Height of the image in pixels
 const deadZone = 0.07; // Deadzone for analog sticks (0-1)
-const maxSpeed = 300; // Maximum speed (pixels per second)
+const maxSpeed = 7; // Maximum speed (pixels per second)
 const maxAcceleration = 10; // Maximum acceleration (pixels per second^2)
 // const maxRotation = Math.PI / 4; // Maximum rotation (radians per second)
 const rotationResponse = 0.15; // Rotation responsiveness. 0 = no response 1 = instant response
@@ -89,13 +89,13 @@ function processPosition(speed: XY, oldPosition: XY, rotation: number) {
 /**
  * Calculate the new rotation based on the speed and the right stick.
  */
-function processRotation(speed: XY, oldRotation: number, rAxis: number) {
+function processRotation(speed: XY, oldRotation: number, drift: number) {
   const targetRotation = Math.atan(speed.y / speed.x); // New target rotation
 
   let delta =
     oldRotation -
     targetRotation +
-    (rAxis * Math.PI) / 4 + // Include rotation from the right stick (Tokyo Drift!)
+    (drift * Math.PI) / 4 + // Include rotation from the right stick (Tokyo Drift!)
     (speed.x >= 0 ? Math.PI : 0); // Invert rotation if moving right
 
   if (Math.abs(delta) > Math.PI) delta -= Math.sign(delta) * Math.PI * 2; // Prevent rotation over 180 degrees
@@ -117,15 +117,25 @@ function processRotation(speed: XY, oldRotation: number, rAxis: number) {
 function EasterEgg() {
   const styles = useStyles();
   const [gamepad, setGamepad] = useState<Gamepad | null>(null);
-  const [, setSpeed] = useState<XY>({
+
+  const input: XY = {
     x: 0,
-    y: 0,
-  });
+    y: 0
+  };
+
+  const speed: XY = {
+    x: 0,
+    y: 0
+  };
+
   const [position, setPosition] = useState<XY>({
     x: window.innerWidth / 2 - imageWidth / 2,
     y: window.innerHeight / 2 - imageWidth / 2,
   });
+
   const [rotation, setRotation] = useState<number>(0);
+
+  // Wheel tracks
   const [wheelBackLeft, setWheelBackLeft] = useState<Point[]>([]);
 
   // Add gamepad event listener
@@ -134,9 +144,40 @@ function EasterEgg() {
       setGamepad(event.gamepad);
     }
 
-    window.addEventListener("gamepadconnected", listener);
+    function keydownListener(event: KeyboardEvent) {
+      if (event.key === "ArrowUp") {
+        input.y = -maxSpeed;
+      }
+      if (event.key === "ArrowDown") {
+        input.y = maxSpeed;
+      }
+      if (event.key === "ArrowLeft") {
+        input.x = -maxSpeed;
+      }
+      if (event.key === "ArrowRight") {
+        input.x = maxSpeed;
+      }
+    }
 
-    return () => window.removeEventListener("gamepadconnected", listener);
+    function keyupListener(event: KeyboardEvent) {
+      if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+        input.y = 0;
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        input.x = 0;
+      }
+    }
+
+
+    window.addEventListener("gamepadconnected", listener);
+    window.addEventListener("keydown", keydownListener);
+    window.addEventListener("keyup", keyupListener);
+
+    return () => {
+      window.removeEventListener("gamepadconnected", listener);
+      window.removeEventListener("keydown", keydownListener);
+      window.removeEventListener("keyup", keyupListener);
+    };
   }, []);
 
   // Animation loop
@@ -144,32 +185,41 @@ function EasterEgg() {
     let previousTimestamp = 0;
 
     const tick: FrameRequestCallback = (timestamp) => {
-      if (!gamepad) return;
 
       const deltaMs = timestamp - previousTimestamp;
-      const leftStick = gamepad.axes.slice(0, 2);
-      const rightStick = gamepad.axes.slice(2, 4);
 
-      setSpeed((oldSpeed) => {
-        setRotation((oldRotation) => {
-          setPosition((oldPosition) => {
 
-            setWheelBackLeft(oldPoints => [oldPoints
-              .filter(point => point.timestamp + 10000 > timestamp), {
-              x: (oldPosition.x + imageWidth / 2) + ((imageWidth / 2) * Math.cos(oldRotation)),
-              y: (oldPosition.y + imageHeight / 2) + ((imageHeight / 2) * Math.sin(oldRotation)),
-              timestamp
-            }]
-              .flat());
-            return processPosition(oldSpeed, oldPosition, oldRotation);
-          }
-          );
+      if (gamepad) {
+        const leftStick = gamepad.axes.slice(0, 2);
+        input.x = leftStick[0];
+        input.y = leftStick[1];
+      }
 
-          return processRotation(oldSpeed, oldRotation, rightStick[0]);
-        });
+      const targetSpeed: XY = {
+        x: input.x * maxSpeed,
+        y: input.y * maxSpeed
+      };
 
-        return processSpeed(oldSpeed, leftStick[0], leftStick[1], deltaMs);
+      setRotation((oldRotation) => {
+        setPosition((oldPosition) => {
+
+          setWheelBackLeft(oldPoints => [oldPoints
+            .filter(point => point.timestamp + 10000 > timestamp), {
+            x: (oldPosition.x + imageWidth / 2) + ((imageWidth / 2) * Math.cos(oldRotation)),
+            y: (oldPosition.y + imageHeight / 2) + ((imageHeight / 2) * Math.sin(oldRotation)),
+            timestamp
+          }]
+            .flat());
+          return processPosition(speed, oldPosition, oldRotation);
+        }
+        );
+
+        return processRotation(speed, oldRotation, 0);
       });
+
+      const newSpeed = processSpeed(speed, targetSpeed.x, targetSpeed.y, deltaMs);
+      speed.x = newSpeed.x;
+      speed.y = newSpeed.y;
 
       previousTimestamp = timestamp;
       window.requestAnimationFrame(tick);
@@ -179,38 +229,36 @@ function EasterEgg() {
   }, [gamepad]);
 
   return (
-    gamepad && (
-      <>
-        <img
-          src="https://www.svgrepo.com/download/393056/car-citroen-top-vehicle.svg"
-          style={{
-            position: "absolute",
-            rotate: `${rotation}rad`,
-            top: position.y,
-            left: position.x,
-            zIndex: 1000,
-            width: `${imageWidth}px`,
-            overflowX: "hidden",
-            overflowY: "hidden",
-          }}
-          className={styles.car}
-          alt="Vroom!"
-        />
-        <svg style={{
+    <>
+      <img
+        src="https://www.svgrepo.com/download/393056/car-citroen-top-vehicle.svg"
+        style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          minWidth: "100vw",
-          minHeight: "100vh",
-          fill: "none",
-          stroke: "black",
-          strokeWidth: 4,
-          zIndex: 999
-        }}>
-          <path d={`M ${wheelBackLeft.map(point => `${point.x} ${point.y}`).join(" L ")}`}></path>
-        </svg>
-      </>
-    )
+          rotate: `${rotation}rad`,
+          top: position.y,
+          left: position.x,
+          zIndex: 1000,
+          width: `${imageWidth}px`,
+          overflowX: "hidden",
+          overflowY: "hidden",
+        }}
+        className={styles.car}
+        alt="Vroom!"
+      />
+      <svg style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        minWidth: "100vw",
+        minHeight: "100vh",
+        fill: "none",
+        stroke: "black",
+        strokeWidth: 4,
+        zIndex: 999
+      }}>
+        <path d={`M ${wheelBackLeft.map(point => `${point.x} ${point.y}`).join(" L ")}`}></path>
+      </svg>
+    </>
   );
 }
 
