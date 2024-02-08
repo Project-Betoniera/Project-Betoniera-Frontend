@@ -46,6 +46,21 @@ function processPosition(oldPosition: XY, speed: Vector, deltaMs: number): XY {
     y: oldPosition.y + speedComponents.y * (deltaMs / 1000),
   };
 
+  const min: XY = {
+    x: 0,
+    y: 0,
+  };
+
+  const max: XY = {
+    x: window.innerWidth - imageWidth,
+    y: window.innerHeight - imageHeight,
+  };
+
+  if (newPosition.x < min.x) newPosition.x = min.x;
+  if (newPosition.x > max.x) newPosition.x = max.x;
+  if (newPosition.y < min.y) newPosition.y = min.y;
+  if (newPosition.y > max.y) newPosition.y = max.y;
+
   return newPosition;
 }
 
