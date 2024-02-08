@@ -1,3 +1,4 @@
+import { makeStyles } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 
 type XY = { x: number; y: number; };
@@ -18,6 +19,27 @@ const imageHeight = 100; // Height of the image in pixels
 const wheelTrackPeriod = 10000; // Time in milliseconds that the wheel tracks are visible
 const maxSpeed = 200; // Maximum speed in pixels per second
 const maxRotationRate = 180; // Maximum rotation rate in degrees per second
+
+const useStyles = makeStyles({
+  car: {
+    position: "fixed",
+    zIndex: 1000,
+    pointerEvents: "none",
+    fill: "blue",
+    fillOpacity: 0.5,
+  },
+  wheelTracks: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    minWidth: "100vw",
+    minHeight: "100vh",
+    zIndex: 999,
+    fill: "none",
+    stroke: "red",
+    pointerEvents: "none",
+  }
+});
 
 /**
  * Determines the x and y components of a vector
@@ -65,6 +87,7 @@ function processPosition(oldPosition: XY, speed: Vector, deltaMs: number): XY {
 }
 
 function EasterEgg() {
+  const styles = useStyles();
   const [gamepad, setGamepad] = useState<Gamepad | null>(null);
 
   const input: XY = {
@@ -181,32 +204,16 @@ function EasterEgg() {
 
   return (
     <>
-      <svg style={{
-        zIndex: 1000,
-        fill: "blue",
-        fillOpacity: 0.5,
-        position: "absolute",
+      <svg className={styles.car} style={{
         top: position.y,
         left: position.x,
         rotate: `${rotation}rad`,
         width: imageWidth,
-        height: imageHeight
+        height: imageHeight,
       }}>
         <rect width={imageWidth} height={imageHeight} />
       </svg >
-      <svg style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        minWidth: "100vw",
-        minHeight: "100vh",
-        zIndex: 999,
-        fill: "none",
-        stroke: "red",
-        strokeWidth: 5,
-      }}>
-
-        <path d={`M ${wheelBackLeft.map(point => `${point.x} ${point.y}`).join(" L ")}`}></path>
+      <svg className={styles.wheelTracks}>
       </svg>
     </>
   );
