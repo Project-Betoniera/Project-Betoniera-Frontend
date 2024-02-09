@@ -14,6 +14,8 @@ type Point = {
   timestamp: number;
 };
 
+const debug = true; // TODO Put in environment variable
+
 const imageWidth = 200; // Width of the image in pixels
 const imageHeight = 100; // Height of the image in pixels
 const wheelTrackPeriod = 10000; // Time in milliseconds that the wheel tracks are visible
@@ -21,23 +23,39 @@ const maxSpeed = 200; // Maximum speed in pixels per second
 const maxRotationRate = 180; // Maximum rotation rate in degrees per second
 
 const useStyles = makeStyles({
-  car: {
-    position: "fixed",
-    zIndex: 1000,
-    pointerEvents: "none",
-    fill: "blue",
-    fillOpacity: 0.5,
-  },
   wheelTracks: {
     position: "fixed",
     top: 0,
     left: 0,
     minWidth: "100vw",
     minHeight: "100vh",
-    zIndex: 999,
+    zIndex: 998,
     fill: "none",
     stroke: "red",
     pointerEvents: "none",
+  },
+  car: {
+    position: "fixed",
+    zIndex: 999,
+    pointerEvents: "none",
+    fill: "blue",
+    fillOpacity: 0.5,
+    transformOrigin: `${(1 - axleDistance / imageWidth) * 100}% 50%`, // Rotate around the front wheels (TODO breaks the wheel tracks)
+  },
+  debug: {
+    position: "fixed",
+    display: "flex",
+    flexDirection: "column",
+    rowGap: "1rem",
+    top: 0,
+    left: 0,
+    zIndex: 1000,
+    backgroundColor: "#000000DF",
+    ...shorthands.padding("1rem")
+  },
+  pressed: {
+    fontWeight: "bolder",
+    color: "green",
   }
 });
 
@@ -239,6 +257,21 @@ function EasterEgg() {
       <svg className={styles.wheelTracks}>
         {wheelTracks.map((track, i) => <path key={i} d={`M ${track.map(point => `${point.x} ${point.y}`).join(" L ")}`} />)}
       </svg>
+      {debug && <div className={styles.debug}>
+        <div>
+          {gamepad && gamepad.axes.map((axis, i) =>
+            <div key={i}>Axis {i}: {axis.toFixed(3)}</div>
+          )}
+        </div>
+        <div>
+          {gamepad && gamepad.buttons.map((button, i) =>
+            <div
+              key={i}
+              className={button.pressed ? styles.pressed : undefined}
+            >Button {i}: {button.value}</div>
+          )}
+        </div>
+      </div>}
     </>
   );
 }
