@@ -19,6 +19,9 @@ const debug = true; // TODO Put in environment variable
 const imageWidth = 200; // Width of the image in pixels
 const imageHeight = 100; // Height of the image in pixels
 
+const axleDistance = 160; // Distance between the front and rear wheels in pixels
+const axleLength = 80; // Distance between the left and right wheels in pixels
+
 const deadZone = 0.1; // Dead zone for the gamepad sticks
 const steeringWheelResponse = 0.03; // Rate of response for the steering wheel (0 no response, 1 immediate response)
 const throttleResponse = 0.002; // Rate of response for the throttle (0 no response, 1 immediate response)
@@ -222,29 +225,29 @@ function EasterEgg() {
         setWheelTracks((oldWheelTracks) => Math.abs(speed.magnitude) > 0 ? [[
           // Front right wheel
           ...oldWheelTracks[0].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: (oldPosition.x + imageWidth / 2) - 80 * Math.cos(speed.angle) + 40 * Math.sin(speed.angle),
-            y: (oldPosition.y + imageHeight / 2) - 40 * Math.cos(speed.angle) - 80 * Math.sin(speed.angle),
+            x: (oldPosition.x + imageWidth / 2) - axleDistance / 2 * Math.cos(speed.angle) + axleLength / 2 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) - axleLength / 2 * Math.cos(speed.angle) - axleDistance / 2 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Front left wheel
           ...oldWheelTracks[1].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: (oldPosition.x + imageWidth / 2) - 80 * Math.cos(speed.angle) - 40 * Math.sin(speed.angle),
-            y: (oldPosition.y + imageHeight / 2) + 40 * Math.cos(speed.angle) - 80 * Math.sin(speed.angle),
+            x: (oldPosition.x + imageWidth / 2) - axleDistance / 2 * Math.cos(speed.angle) - axleLength / 2 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) + axleLength / 2 * Math.cos(speed.angle) - axleDistance / 2 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Rear right wheel
           ...oldWheelTracks[2].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: (oldPosition.x + imageWidth / 2) + 80 * Math.cos(speed.angle) + 40 * Math.sin(speed.angle),
-            y: (oldPosition.y + imageHeight / 2) - 40 * Math.cos(speed.angle) + 80 * Math.sin(speed.angle),
+            x: (oldPosition.x + imageWidth / 2) + axleDistance / 2 * Math.cos(speed.angle) + axleLength / 2 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) - axleLength / 2 * Math.cos(speed.angle) + axleDistance / 2 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Rear left wheel
           ...oldWheelTracks[3].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: (oldPosition.x + imageWidth / 2) + 80 * Math.cos(speed.angle) - 40 * Math.sin(speed.angle),
-            y: (oldPosition.y + imageHeight / 2) + 40 * Math.cos(speed.angle) + 80 * Math.sin(speed.angle),
+            x: (oldPosition.x + imageWidth / 2) + axleDistance / 2 * Math.cos(speed.angle) - axleLength / 2 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) + axleLength / 2 * Math.cos(speed.angle) + axleDistance / 2 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ]
