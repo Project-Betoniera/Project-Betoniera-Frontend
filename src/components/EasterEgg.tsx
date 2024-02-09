@@ -1,4 +1,4 @@
-import { makeStyles } from "@fluentui/react-components";
+import { makeStyles, shorthands } from "@fluentui/react-components";
 import { useEffect, useState } from "react";
 
 type XY = { x: number; y: number; };
@@ -18,9 +18,15 @@ const debug = true; // TODO Put in environment variable
 
 const imageWidth = 200; // Width of the image in pixels
 const imageHeight = 100; // Height of the image in pixels
-const wheelTrackPeriod = 10000; // Time in milliseconds that the wheel tracks are visible
-const maxSpeed = 200; // Maximum speed in pixels per second
-const maxRotationRate = 180; // Maximum rotation rate in degrees per second
+
+const deadZone = 0.1; // Dead zone for the gamepad sticks
+const steeringWheelResponse = 0.03; // Rate of response for the steering wheel (0 no response, 1 immediate response)
+const throttleResponse = 0.002; // Rate of response for the throttle (0 no response, 1 immediate response)
+
+const maxSpeed = 300; // Maximum speed in pixels per second
+const maxRotationRate = 120; // Maximum rotation rate in degrees per second
+
+const wheelTrackPeriod = 2000; // Time in milliseconds that the wheel tracks are visible
 
 const useStyles = makeStyles({
   wheelTracks: {
@@ -58,6 +64,17 @@ const useStyles = makeStyles({
     color: "green",
   }
 });
+
+/**
+ * Smoothly transitions from the current value to the target value
+ * @param current - The current value
+ * @param target - The target value
+ * @param rate - The rate of transition
+ * @returns - The new value
+ */
+function smooth(current: number, target: number, rate: number = 0.1): number {
+  return current + (target - current) * rate;
+}
 
 /**
  * Determines the x and y components of a vector
@@ -112,6 +129,9 @@ function EasterEgg() {
     x: 0,
     y: 0
   };
+
+  let steeringWheel = 0;
+  let throttle = 0;
 
   const speed: Vector = {
     magnitude: 0,
@@ -187,13 +207,15 @@ function EasterEgg() {
       const deltaMs = timestamp - previousTimestamp;
 
       if (gamepad) {
-        const leftStick = gamepad.axes.slice(0, 2);
-        input.x = leftStick[0];
-        input.y = leftStick[1];
+        steeringWheel = smooth(steeringWheel, gamepad.axes[0], steeringWheelResponse);
+        throttle = smooth(throttle, gamepad.axes[4] - gamepad.axes[3], throttleResponse);
+
+        input.x = Math.abs(steeringWheel) > deadZone ? steeringWheel : 0;
+        input.y = Math.abs(throttle) > deadZone ? throttle : 0;
       }
 
-      speed.magnitude = input.y * maxSpeed;
       speed.angle += input.x * maxRotationRate * Math.PI / 180 * (deltaMs / 1000);
+      speed.magnitude = input.y * maxSpeed;
 
       setPosition((oldPosition) => {
         // Process wheel tracks
