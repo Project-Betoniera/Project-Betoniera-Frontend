@@ -182,29 +182,29 @@ function EasterEgg() {
         setWheelTracks((oldWheelTracks) => Math.abs(speed.magnitude) > 0 ? [[
           // Front right wheel
           ...oldWheelTracks[0].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: oldPosition.x + imageWidth / 2 - 80,
-            y: oldPosition.y + imageHeight / 2 - 40,
+            x: (oldPosition.x + imageWidth / 2) - 80 * Math.cos(speed.angle) + 40 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) - 40 * Math.cos(speed.angle) - 80 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Front left wheel
           ...oldWheelTracks[1].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: oldPosition.x + imageWidth / 2 - 80,
-            y: oldPosition.y + imageHeight / 2 + 40,
+            x: (oldPosition.x + imageWidth / 2) - 80 * Math.cos(speed.angle) - 40 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) + 40 * Math.cos(speed.angle) - 80 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Rear right wheel
           ...oldWheelTracks[2].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: oldPosition.x + imageWidth / 2 + 80,
-            y: oldPosition.y + imageHeight / 2 - 40,
+            x: (oldPosition.x + imageWidth / 2) + 80 * Math.cos(speed.angle) + 40 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) - 40 * Math.cos(speed.angle) + 80 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ], [
           // Rear left wheel
           ...oldWheelTracks[3].filter(point => point.timestamp + wheelTrackPeriod > timestamp), {
-            x: oldPosition.x + imageWidth / 2 + 80,
-            y: oldPosition.y + imageHeight / 2 + 40,
+            x: (oldPosition.x + imageWidth / 2) + 80 * Math.cos(speed.angle) - 40 * Math.sin(speed.angle),
+            y: (oldPosition.y + imageHeight / 2) + 40 * Math.cos(speed.angle) + 80 * Math.sin(speed.angle),
             timestamp: timestamp,
           }
         ]
