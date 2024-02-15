@@ -1,86 +1,74 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { CourseDto } from "../dto/CourseDto";
-import axios from "axios";
-
-import { apiUrl } from "../config";
+import UserDto from "../dto/UserDto";
 import useRequests from "../libraries/requests/requests";
 
-type UserData = {
-    course: CourseDto;
-    email: string;
-    isAdmin: boolean;
-    name: string;
-    remember: boolean;
-    token: string;
-    year: number;
+export type LoginResponse = {
+  token: string;
+  user: UserDto;
+  course: CourseDto;
 };
 
-type UserContextType = {
-    data: UserData;
-    login(email: string, password: string, remember: boolean): Promise<void>;
-    logout(): Promise<void>;
+export type UserContextType = {
+  data: LoginResponse | null;
+  login(email: string, password: string, remember: boolean): Promise<void>;
+  logout(): Promise<void>;
 };
 
-const defaultCourse: CourseDto = {
-    id: 0,
-    code: "",
-    name: "",
-    startYear: 0,
-    endYear: 0,
-};
+export const UserContext = createContext<UserContextType>({
+  data: null,
+  login: async (_a, _b, _c) => {},
+  logout: async () => {},
+});
 
-export const UserContext = createContext<UserContextType | null>(null);
+export function UserContextProvider({ children }: { children: JSX.Element }) {
+  /**
+   * The key to store the user data in the local or session storage.
+   */
+  const STORAGE_KEY = "user";
+  const requests = useRequests();
 
-export function UserContextProvider({ children }: { children: JSX.Element; }) {
-    const [token, setToken] = useState<string>("");
-    const [name, setName] = useState<string>("");
-    const [email, setEmail] = useState<string>("");
-    const [year, setYear] = useState<number>(1);
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [remember, setRemember] = useState<boolean>(true);
-    const [course, setCourse] = useState<CourseDto>(typeof localStorage.getItem("course") === "string" ? JSON.parse(localStorage.getItem("course") as string) : null);
+  const [data, setData] = useState<LoginResponse | null>(null);
 
-    const requests = useRequests();
+  /**
+   * Login the user and store the user data in the session or local storage, based on the remember parameter.
+   * @param email - The email of the user.
+   * @param password - The password of the user.
+   * @param remember- Whether to store the user data in the local storage (true) or the session storage (false).
+   */
+  async function login(email: string, password: string, remember: boolean) {
+    const storage = remember ? localStorage : sessionStorage;
 
-    // Update saved data when one of the values changes or if 'remember' property changes
-    useEffect(() => {
-        if (remember) {
-            localStorage.setItem("user", JSON.stringify({
-                course,
-                email,
-                isAdmin,
-                name,
-                token,
-                year,
-            }));
-        } else {
-            localStorage.removeItem("user");
-        }
-    }, [remember, course, email, isAdmin, name, token, year]);
+    requests.user
+      .login(email, password)
+      .then((response) => {
+        setData(response);
+        storage.setItem(STORAGE_KEY, JSON.stringify(response));
+      })
+      .catch((error) => {
+        throw error;
+      });
+  }
 
-    async function login(email: string, password: string, remember: boolean) {
+  /**
+   * Remove the user data from the local or session storage.
+   */
+  async function logout() {
+    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
 
-    }
+    setData(null);
+  }
 
-    async function logout() {
-
-    }
-
-    return (
-        <UserContext.Provider value={{
-            data: {
-                course,
-                email,
-                isAdmin,
-                name,
-                remember,
-                token,
-                year,
-            },
-            login,
-            logout,
-        }}>
-            {children}
-        </UserContext.Provider>
-    );
+  return (
+    <UserContext.Provider
+      value={{
+        data: data,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
 }
