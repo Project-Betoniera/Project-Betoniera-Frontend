@@ -4,11 +4,10 @@ import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 
 export default function InvalidTokenDialog() {
-    const isInvalid = false; // TODO implement isInvalid in UserContext
-    const { logout } = useContext(UserContext);
+    const { logout, hasError } = useContext(UserContext);
 
     return (
-        <Dialog open={isInvalid}>
+        <Dialog open={hasError}>
             <DialogSurface>
                 <DialogBody>
                     <DialogTitle>🛂 Esegui di nuovo l'accesso</DialogTitle>
@@ -18,7 +17,7 @@ export default function InvalidTokenDialog() {
                         <Body1>Ci scusiamo per il disagio.</Body1>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={()=>{logout()}} aria-description="logout">Logout</Button>
+                        <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={() => { logout(); }} aria-description="logout">Logout</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>

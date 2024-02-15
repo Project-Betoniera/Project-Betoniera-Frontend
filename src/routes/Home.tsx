@@ -14,7 +14,8 @@ export function Home() {
     const globalStyles = useGlobalStyles();
 
     const requests = useRequests();
-    const { course } = useContext(UserContext).course;
+    const { data } = useContext(UserContext);
+    const course = data?.course || { id: 0, code: "", name: "", startYear: 0, endYear: 0 };
 
     const [now, setNow] = useState(() => new Date());
     const [dateTime, setDateTime] = useState(() => new Date());
