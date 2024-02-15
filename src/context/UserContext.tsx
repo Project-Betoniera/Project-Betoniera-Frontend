@@ -11,12 +11,16 @@ export type LoginResponse = {
 
 export type UserContextType = {
   data: LoginResponse | null;
+  hasError: boolean;
+  setError: (error: boolean) => void;
   login(email: string, password: string, remember: boolean): Promise<void>;
   logout(): Promise<void>;
 };
 
 export const UserContext = createContext<UserContextType>({
   data: null,
+  hasError: false,
+  setError: (_a) => {},
   login: async (_a, _b, _c) => {},
   logout: async () => {},
 });
@@ -29,6 +33,7 @@ export function UserContextProvider({ children }: { children: JSX.Element }) {
   const requests = useRequests();
 
   const [data, setData] = useState<LoginResponse | null>(null);
+  const [hasError, setError] = useState(false);
 
   /**
    * Login the user and store the user data in the session or local storage, based on the remember parameter.
@@ -64,6 +69,8 @@ export function UserContextProvider({ children }: { children: JSX.Element }) {
     <UserContext.Provider
       value={{
         data: data,
+        hasError: hasError,
+        setError: setError,
         login,
         logout,
       }}

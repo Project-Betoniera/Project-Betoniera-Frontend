@@ -1,23 +1,11 @@
 import { Body1, Button, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle } from "@fluentui/react-components";
 import { ArrowExitFilled } from "@fluentui/react-icons";
 import { useContext } from "react";
-import { TokenContext } from "../../context/TokenContext";
 import { UserContext } from "../../context/UserContext";
 
 export default function InvalidTokenDialog() {
-    const { setToken, setRemember, isInvalid, setIsInvalid } = useContext(TokenContext);
-    const { course, user } = useContext(UserContext);
-
-    const logout = () => {
-        setToken(null);
-        setRemember(false);
-        setIsInvalid(false);
-        course.setCourse(null);
-        user.setName(null);
-        user.setEmail(null);
-        user.setYear(null);
-        user.setIsAdmin(null);
-    };
+    const isInvalid = false; // TODO implement isInvalid in UserContext
+    const { logout } = useContext(UserContext);
 
     return (
         <Dialog open={isInvalid}>
@@ -30,7 +18,7 @@ export default function InvalidTokenDialog() {
                         <Body1>Ci scusiamo per il disagio.</Body1>
                     </DialogContent>
                     <DialogActions>
-                        <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={logout} aria-description="logout">Logout</Button>
+                        <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={()=>{logout()}} aria-description="logout">Logout</Button>
                     </DialogActions>
                 </DialogBody>
             </DialogSurface>

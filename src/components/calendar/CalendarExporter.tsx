@@ -3,7 +3,6 @@ import { Button, Combobox, Image, Label, Option, Popover, PopoverSurface, Popove
 import QRCode from "qrcode";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { apiUrl } from "../../config";
-import { TokenContext } from "../../context/TokenContext";
 import { UserContext } from "../../context/UserContext";
 import { useGlobalStyles } from "../../globalStyles";
 import useRequests from "../../libraries/requests/requests";
@@ -18,8 +17,12 @@ export function CalendarExporter() {
     const globalStyles = useGlobalStyles();
     const styles = useStyles();
 
-    const token = useContext(TokenContext).token;
-    const { course } = useContext(UserContext).course;
+    const { data } = useContext(UserContext);
+    if (!data) return null;
+    
+    const token = data.token;
+    const course = data.course;
+
     const requests = useRequests();
 
     // Items for the various selectors
@@ -38,7 +41,7 @@ export function CalendarExporter() {
 
     // Selected values
     const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
-    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>(course ? { code: course?.id.toString(), name: course.code } : { code: "", name: "" });
+    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>({ code: course.id.toString(), name: course.code });
     const [calendarProvider, setCalendarProvider] = useState<{ code: string, name: string; }>(calendarProviders[3]);
 
     // Generated values
