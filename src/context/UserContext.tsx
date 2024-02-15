@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { CourseDto } from "../dto/CourseDto";
 import UserDto from "../dto/UserDto";
 import useRequests from "../libraries/requests/requests";
@@ -20,27 +20,56 @@ export type UserContextType = {
 export const UserContext = createContext<UserContextType>({
   data: null,
   hasError: false,
-  setError: (_a) => {},
-  login: async (_a, _b, _c) => {},
-  logout: async () => {},
+  setError: (_a) => { },
+  login: async (_a, _b, _c) => { },
+  logout: async () => { },
 });
 
-export function UserContextProvider({ children }: { children: JSX.Element }) {
+export function UserContextProvider({ children }: { children: JSX.Element; }) {
   /**
    * The key to store the user data in the local or session storage.
    */
-  const STORAGE_KEY = "user";
+  const STORAGE_KEY = "session";
   const requests = useRequests();
 
   const [data, setData] = useState<LoginResponse | null>(null);
   const [hasError, setError] = useState(false);
+
+  useEffect(() => {
+    const rawData = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+    if (!rawData) return; // Not logged in
+
+    try {
+      const parsed = JSON.parse(rawData);
+      setData(parsed);
+
+      // Check after setting data to avoid showing directly the login page
+      if (!parsed.token ||
+        !parsed.user ||
+        !parsed.user.name ||
+        !parsed.user.email ||
+        !parsed.user.year ||
+        !parsed.user.isAdmin ||
+        !parsed.course ||
+        !parsed.course.id ||
+        !parsed.course.code ||
+        !parsed.course.name ||
+        !parsed.course.startYear ||
+        !parsed.course.endYear) {
+        throw new Error("Invalid user data");
+      }
+    } catch (error) {
+      console.error(error);
+      setError(true);
+    }
+  }, []);
 
   /**
    * Login the user and store the user data in the session or local storage, based on the remember parameter.
    * @param email - The email of the user.
    * @param password - The password of the user.
    * @param remember- Whether to store the user data in the local storage (true) or the session storage (false).
-   */
+  */
   async function login(email: string, password: string, remember: boolean) {
     const storage = remember ? localStorage : sessionStorage;
 
@@ -49,9 +78,10 @@ export function UserContextProvider({ children }: { children: JSX.Element }) {
       .then((response) => {
         setData(response);
         storage.setItem(STORAGE_KEY, JSON.stringify(response));
+        setError(false);
       })
-      .catch((error) => {
-        throw error;
+      .catch(() => {
+        setError(true);
       });
   }
 
