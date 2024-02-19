@@ -64,9 +64,9 @@ export const UserProfile: React.FC = () => {
             </div>
             <Divider />
             <div className={styles.profileMenu}>
-                <div style={{ display: user.isAdmin ? "unset" : "none" }}>
+                {user.isAdmin && <div>
                     <AdminPanel />
-                </div>
+                </div>}
                 <Subtitle2>Tema</Subtitle2>
                 <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
                     <Option value="auto" text="Automatico">Automatico</Option>
