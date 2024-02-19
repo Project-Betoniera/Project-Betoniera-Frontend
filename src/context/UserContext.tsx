@@ -17,6 +17,11 @@ export type UserContextType = {
   logout(): Promise<void>;
 };
 
+/**
+ * The key to store the user data in the local or session storage.
+ */
+const STORAGE_KEY = "session";
+
 export const UserContext = createContext<UserContextType>({
   data: null,
   hasError: false,
@@ -25,44 +30,45 @@ export const UserContext = createContext<UserContextType>({
   logout: async () => { },
 });
 
+function getUserDataFromStorage(): LoginResponse | null {
+  const rawData = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
+  if (!rawData) return null; // Not logged in
+
+  const parsed = JSON.parse(rawData);
+  return parsed;
+}
+
 export function UserContextProvider({ children }: { children: JSX.Element; }) {
-  /**
-   * The key to store the user data in the local or session storage.
-   */
-  const STORAGE_KEY = "session";
   const requests = useRequests();
 
-  const [data, setData] = useState<LoginResponse | null>(null);
+  const [data, setData] = useState<LoginResponse | null>(getUserDataFromStorage());
   const [hasError, setError] = useState(false);
 
   useEffect(() => {
-    const rawData = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
-    if (!rawData) return; // Not logged in
+    if (!data) return;
 
     try {
-      const parsed = JSON.parse(rawData);
-      setData(parsed);
-
       // Check after setting data to avoid showing directly the login page
-      if (!parsed.token ||
-        !parsed.user ||
-        !parsed.user.name ||
-        !parsed.user.email ||
-        !parsed.user.year ||
-        !parsed.user.isAdmin ||
-        !parsed.course ||
-        !parsed.course.id ||
-        !parsed.course.code ||
-        !parsed.course.name ||
-        !parsed.course.startYear ||
-        !parsed.course.endYear) {
+      if (typeof data.token === undefined ||
+        typeof data.user === undefined ||
+        typeof data.user.name === undefined ||
+        typeof data.user.email === undefined ||
+        typeof data.user.year === undefined ||
+        typeof data.user.isAdmin === undefined ||
+        typeof data.course === undefined ||
+        typeof data.course.id === undefined ||
+        typeof data.course.code === undefined ||
+        typeof data.course.name === undefined ||
+        typeof data.course.startYear === undefined ||
+        typeof data.course.endYear === undefined) {
+        console.error("Invalid user data");
         throw new Error("Invalid user data");
       }
     } catch (error) {
       console.error(error);
       setError(true);
     }
-  }, []);
+  }, [data]);
 
   /**
    * Login the user and store the user data in the session or local storage, based on the remember parameter.
