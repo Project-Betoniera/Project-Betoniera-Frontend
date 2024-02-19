@@ -12,9 +12,7 @@ export default function InvalidTokenDialog() {
                 <DialogBody>
                     <DialogTitle>🛂 Esegui di nuovo l'accesso</DialogTitle>
                     <DialogContent>
-                        <Body1>Sembra che il tuo token non sia più valido. Per favore, esegui di nuovo il login.</Body1><br />
-                        <Body1>Se hai dei calendari sincronizzati, rimuovili e sincronizzali di nuovo.</Body1><br />
-                        <Body1>Ci scusiamo per il disagio.</Body1>
+                        <Body1>Sembra che i dati di accesso non siano più validi. Per favore, esegui di nuovo il login.</Body1><br />
                     </DialogContent>
                     <DialogActions>
                         <Button appearance="primary" style={{ alignSelf: "center" }} icon={<ArrowExitFilled />} onClick={() => { logout(); }} aria-description="logout">Logout</Button>
