@@ -24,7 +24,8 @@ export default function administrationRequests(token: string, setIsInvalid: (isI
             }).then((response) => {
                 return parseStatus(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                const status = error.response?.status;
+                if (status === 401 || status === 403) setIsInvalid(true);
                 throw error;
             });
         },
@@ -36,7 +37,8 @@ export default function administrationRequests(token: string, setIsInvalid: (isI
                     Authorization: `Bearer ${token}`
                 }
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                const status = error.response?.status;
+                if (status === 401 || status === 403) setIsInvalid(true);
                 throw error;
             });
         }
