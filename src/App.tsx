@@ -93,7 +93,7 @@ function App() {
           path="/login"
           element={<LoginForm />}
         />
-        <Route
+        {token && <Route
           path="/"
           element={<Wrapper />}
         >
@@ -125,7 +125,7 @@ function App() {
             path="*"
             element={<NotFound />}
           />
-        </Route>
+        </Route>}
       </Routes>
     </FluentProvider>
   );
