@@ -77,8 +77,7 @@ export function Classroom() {
 
         requests.classroom.status(dateTime)
             .then(setClassrooms)
-            .then(() => setShowSideSpinner(false))
-            .catch(console.error); // TODO Handle error
+            .then(() => setShowSideSpinner(false));
     }, [dateTime]);
 
     // Filter the classrooms when the filter changes
@@ -137,8 +136,7 @@ export function Classroom() {
                                 ...eventDialog,
                                 events,
                             };
-                        }))
-                        .catch(console.error); // TODO Handle error
+                        }));
                 }}>
                     <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
                     <div>

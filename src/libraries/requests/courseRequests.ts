@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { CourseDto } from "../../dto/CourseDto";
 
-export default function courseRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function courseRequests(token: string, setErrorCode: (errorCode: number) => void) {
     function parseCourse(data: any) {
         const result: CourseDto = {
             id: data.id,
@@ -36,7 +36,7 @@ export default function courseRequests(token: string, setIsInvalid: (isInvalid: 
             }).then((response) => {
                 return parseCourses(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as CourseDto[];
             });
         },
@@ -50,7 +50,7 @@ export default function courseRequests(token: string, setIsInvalid: (isInvalid: 
             }).then((response) => {
                 return parseCourse(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         },

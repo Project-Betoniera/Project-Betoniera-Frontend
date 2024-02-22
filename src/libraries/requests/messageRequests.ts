@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { MessageDto } from "../../dto/MessageDto";
 
-export default function messageRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function messageRequests(token: string, setErrorCode: (errorCode: number) => void) {
     return {
         all: async (): Promise<MessageDto[]> => {
             return await axios({
@@ -14,8 +14,7 @@ export default function messageRequests(token: string, setIsInvalid: (isInvalid:
             }).then((response) => {
                 return response.data as MessageDto[];
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
-                console.error(error);
+                setErrorCode(error.response?.status || 0);
                 return [] as MessageDto[];
             });
         },
@@ -31,8 +30,7 @@ export default function messageRequests(token: string, setIsInvalid: (isInvalid:
             }).then((response) => {
                 return response.data as MessageDto;
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
-                console.error(error);
+                setErrorCode(error.response?.status || 0);
                 return {} as MessageDto;
             });
         },
@@ -48,8 +46,7 @@ export default function messageRequests(token: string, setIsInvalid: (isInvalid:
             }).then((response) => {
                 return response.status === 200;
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
-                console.error(error.isAxiosError);
+                setErrorCode(error.response?.status || 0);
                 return false;
             });
         },
@@ -63,8 +60,7 @@ export default function messageRequests(token: string, setIsInvalid: (isInvalid:
             }).then((response) => {
                 return response.status === 200;
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
-                console.error(error);
+                setErrorCode(error.response?.status || 0);
                 return false;
             });
         }

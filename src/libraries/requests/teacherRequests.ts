@@ -1,7 +1,7 @@
 import axios from "axios";
 import { apiUrl } from "../../config";
 
-export default function teacherRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function teacherRequests(token: string, setErrorCode: (errorCode: number) => void) {
     return {
         all: async () => {
             return await axios({
@@ -15,7 +15,7 @@ export default function teacherRequests(token: string, setIsInvalid: (isInvalid:
                 teachers = teachers.filter(item => item.name !== null && item.name !== " "); // Remove null or empty teachers
                 return teachers;
             }).catch((error) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as { name: string; }[];
             });
         }
