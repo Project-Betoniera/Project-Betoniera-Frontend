@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { Status } from "../../dto/StatusDto";
 
-export default function administrationRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function administrationRequests(token: string, setErrorCode: (errorCode: number) => void) {
     function parseStatus(data: any) {
         const result: Status = {
             lastRefresh: new Date(data.lastRefresh),
@@ -24,8 +24,7 @@ export default function administrationRequests(token: string, setIsInvalid: (isI
             }).then((response) => {
                 return parseStatus(response.data);
             }).catch((error: AxiosError) => {
-                const status = error.response?.status;
-                if (status === 401 || status === 403) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         },
@@ -37,8 +36,7 @@ export default function administrationRequests(token: string, setIsInvalid: (isI
                     Authorization: `Bearer ${token}`
                 }
             }).catch((error: AxiosError) => {
-                const status = error.response?.status;
-                if (status === 401 || status === 403) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         }

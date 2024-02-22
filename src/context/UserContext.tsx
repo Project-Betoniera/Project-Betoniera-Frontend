@@ -11,8 +11,8 @@ export type LoginResponse = {
 
 export type UserContextType = {
   data: LoginResponse | null;
-  hasError: boolean;
-  setError: (error: boolean) => void;
+  errorCode: number | null;
+  setErrorCode: (error: number | null) => void;
   login(email: string, password: string, remember: boolean): Promise<void>;
   logout(): Promise<void>;
 };
@@ -24,8 +24,8 @@ const STORAGE_KEY = "session";
 
 export const UserContext = createContext<UserContextType>({
   data: null,
-  hasError: false,
-  setError: (_a) => { },
+  errorCode: null,
+  setErrorCode: (_a) => { },
   login: async (_a, _b, _c) => { },
   logout: async () => { },
 });
@@ -42,7 +42,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
   const requests = useRequests();
 
   const [data, setData] = useState<LoginResponse | null>(getUserDataFromStorage());
-  const [hasError, setError] = useState(false);
+  const [errorCode, setErrorCode] = useState<number | null>(null);
 
   useEffect(() => {
     if (!data) return;
@@ -66,7 +66,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
       }
     } catch (error) {
       console.error(error);
-      setError(true);
+      setErrorCode(401);
     }
   }, [data]);
 
@@ -84,10 +84,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
       .then((response) => {
         setData(response);
         storage.setItem(STORAGE_KEY, JSON.stringify(response));
-        setError(false);
-      })
-      .catch(() => {
-        setError(true);
+        setErrorCode(null);
       });
   }
 
@@ -105,8 +102,8 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
     <UserContext.Provider
       value={{
         data: data,
-        hasError: hasError,
-        setError: setError,
+        errorCode: errorCode,
+        setErrorCode: setErrorCode,
         login,
         logout,
       }}

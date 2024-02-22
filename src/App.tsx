@@ -15,7 +15,7 @@ import { useRegisterSW } from "virtual:pwa-register/react";
 import { Wrapper } from "./Wrapper";
 import { ProtocolHandler } from "./components/ProtocolHandler";
 import InstallPwaDialog from "./components/dialogs/InstallPwaDialog";
-import InvalidTokenDialog from "./components/dialogs/InvalidTokenDialog";
+import NetworkErrorDialog from "./components/dialogs/NetworkErrorDialog";
 import OfflineDialog from "./components/dialogs/OfflineDialog";
 import { PrivacyAlert } from "./components/dialogs/PrivacyAlert";
 import { ThemeContext } from "./context/ThemeContext";
@@ -86,7 +86,7 @@ function App() {
       <PrivacyAlert />
       <OfflineDialog />
       {token && <InstallPwaDialog />}
-      {token && <InvalidTokenDialog />}
+      {token && <NetworkErrorDialog />}
       <ProtocolHandler />
       <Routes>
         <Route

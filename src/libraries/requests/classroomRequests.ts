@@ -3,7 +3,7 @@ import { apiUrl } from "../../config";
 import { ClassroomDto } from "../../dto/ClassroomDto";
 import { ClassroomStatus } from "../../dto/ClassroomStatus";
 
-export default function classroomRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function classroomRequests(token: string, setErrorCode: (errorCode: number) => void) {
     const excludedClassrooms = [5, 19, 26, 31, 33]; // TODO Get this from the API
 
     function parseClassroom(data: any) {
@@ -78,7 +78,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -92,7 +92,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassroom(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         },
@@ -110,7 +110,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -128,7 +128,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -145,7 +145,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassroomStatus(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomStatus[];
             });
         }

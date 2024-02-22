@@ -1,11 +1,11 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { encode as toBase64 } from "base-64";
 import { LoginResponse } from "../../context/UserContext";
 import { CourseDto } from "../../dto/CourseDto";
 import UserDto from "../../dto/UserDto";
 
-export default function userRequests() {
+export default function userRequests(setErrorCode: (errorCode: number) => void) {
     return {
         login: async (email: string, password: string) => {
             return await axios({
@@ -38,8 +38,8 @@ export default function userRequests() {
                 };
 
                 return result;
-            }).catch((error) => {
-                console.error(error);
+            }).catch((error: AxiosError) => {
+                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         }

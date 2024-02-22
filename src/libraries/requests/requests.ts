@@ -10,17 +10,17 @@ import userRequests from "./userRequests";
 import { UserContext } from "../../context/UserContext";
 
 export default function useRequests() {
-    const { data, setError } = useContext(UserContext);
+    const { data, setErrorCode } = useContext(UserContext);
     const token = data?.token || "";
 
     return {
-        classroom: classroomRequests(token, setError),
-        course: courseRequests(token, setError),
-        event: eventRequests(token, setError),
-        teacher: teacherRequests(token, setError),
-        grade: gradeRequests(token, setError),
-        message: messageRequests(token, setError),
-        administration: administrationRequests(token, setError),
-        user: userRequests()
+        classroom: classroomRequests(token, setErrorCode),
+        course: courseRequests(token, setErrorCode),
+        event: eventRequests(token, setErrorCode),
+        teacher: teacherRequests(token, setErrorCode),
+        grade: gradeRequests(token, setErrorCode),
+        message: messageRequests(token, setErrorCode),
+        administration: administrationRequests(token, setErrorCode),
+        user: userRequests(setErrorCode)
     };
 }
