@@ -44,6 +44,23 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
   const [data, setData] = useState<LoginResponse | null>(getUserDataFromStorage());
   const [errorCode, setErrorCode] = useState<number | null>(null);
 
+  // Tries to retrieve an updated login response from backend.
+  // If it fails, it will keep the current user data and silently fail.
+  // If it fails with a 401, the login data is invalid and it will show the appropriate error message.
+  useEffect(() => {
+    if (!data) return;
+
+    requests.user
+      .loginWithToken(data.token)
+      .then((response) => {
+        setData(response);
+        setErrorCode(null);
+      }).catch((error) => {
+        if (error.response?.status === 401) setErrorCode(401);
+        else setErrorCode(null);
+      });
+  }, []);
+
   useEffect(() => {
     if (!data) return;
 

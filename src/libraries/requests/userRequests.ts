@@ -6,6 +6,30 @@ import { CourseDto } from "../../dto/CourseDto";
 import UserDto from "../../dto/UserDto";
 
 export default function userRequests(setErrorCode: (errorCode: number) => void) {
+    function parseLoginResponse(rawData: any) {
+        const user: UserDto = {
+            name: rawData.user.name,
+            email: rawData.user.email,
+            year: rawData.user.year,
+            isAdmin: rawData.user.isAdmin
+        };
+        const course: CourseDto = {
+            id: rawData.course.id,
+            name: rawData.course.name,
+            code: rawData.course.code,
+            startYear: rawData.course.startYear,
+            endYear: rawData.course.endYear
+        };
+
+        const result: LoginResponse = {
+            token: rawData.token,
+            user: user,
+            course: course
+        };
+
+        return result;
+    }
+
     return {
         login: async (email: string, password: string) => {
             return await axios({
@@ -15,33 +39,25 @@ export default function userRequests(setErrorCode: (errorCode: number) => void) 
                     Authorization: `Basic ${toBase64(`${email}:${password}`)}`
                 }
             }).then((response) => {
-                const data = response.data;
-
-                const user: UserDto = {
-                    name: data.user.name,
-                    email: data.user.email,
-                    year: data.user.year,
-                    isAdmin: data.user.isAdmin
-                };
-                const course: CourseDto = {
-                    id: data.course.id,
-                    name: data.course.name,
-                    code: data.course.code,
-                    startYear: data.course.startYear,
-                    endYear: data.course.endYear
-                };
-
-                const result: LoginResponse = {
-                    token: data.token,
-                    user: user,
-                    course: course
-                };
-
-                return result;
+                return parseLoginResponse(response.data);
             }).catch((error: AxiosError) => {
                 setErrorCode(error.response?.status || 0);
                 throw error;
             });
-        }
+        },
+        loginWithToken: async (token: string) => {
+            return await axios({
+                url: new URL("login", apiUrl).toString(),
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then((response) => {
+                return parseLoginResponse(response.data);
+            }).catch((error: AxiosError) => {
+                setErrorCode(error.response?.status || 0);
+                throw error;
+            });
+        },
     };
 }
