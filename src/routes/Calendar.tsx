@@ -769,7 +769,7 @@ export function Calendar() {
                 <div className={styles.stack}>
                     <Button icon={isCurrentViewMonth ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setIsCurrentViewMonth(!isCurrentViewMonth)}>{isCurrentViewMonth ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
-                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
+                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync" appearance="primary">Integrazioni</RouterButton>
                 </div>
             </Card>
 

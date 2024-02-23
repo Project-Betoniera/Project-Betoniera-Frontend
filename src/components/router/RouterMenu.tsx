@@ -91,7 +91,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                     );
                 })}
 
-                <Button appearance="primary" style={{ alignSelf: "center" }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
+                <Button style={{ alignSelf: "center" }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
             </TabList>
 
             <Drawer type={"overlay"} size={"medium"} open={isUserDrawerOpen} onOpenChange={(_, { open }) => setIsUserDrawerOpen(open)} position="end" className={styles.drawer}>
