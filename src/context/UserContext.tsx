@@ -34,8 +34,12 @@ function getUserDataFromStorage(): LoginResponse | null {
   const rawData = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
   if (!rawData) return null; // Not logged in
 
-  const parsed = JSON.parse(rawData);
-  return parsed;
+  try {
+    return JSON.parse(rawData);
+  }
+  catch {
+    return null;
+  }
 }
 
 export function UserContextProvider({ children }: { children: JSX.Element; }) {
