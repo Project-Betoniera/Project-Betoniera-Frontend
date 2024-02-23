@@ -4,7 +4,6 @@ import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { useGlobalStyles } from "../globalStyles";
 import { EventDto } from "../dto/EventDto";
 import EventDetails from "../components/EventDetails";
-import { ClassroomDto } from "../dto/ClassroomDto";
 import { ThemeContext } from "../context/ThemeContext";
 import useRequests from "../libraries/requests/requests";
 
@@ -33,7 +32,7 @@ const useDarkStyles = makeStyles({
 });
 
 export function ClassroomViewer() {
-    const { theme } = useContext(ThemeContext);
+    const theme = useContext(ThemeContext).themeValue;
     const globalStyles = useGlobalStyles();
     const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
 
@@ -114,31 +113,23 @@ export function ClassroomViewer() {
                     />
                     <div>
                         <Divider><Body1>{getDividerText()}</Body1></Divider>
-                        {renderEvent(item.status.currentOrNextEvent, item.classroom)}
+                        {renderEvent(item.status.currentOrNextEvent)}
                     </div>
                 </Card>
             );
         });
     };
 
-    const renderEvent = (event: Omit<EventDto, "classroom"> | null, classroom: ClassroomDto) => {
-        // TODO Return classroom object inside ClassroomStatus object
-        const fixEvent = (event: Omit<EventDto, "classroom">, classroom: ClassroomDto) => {
-            let result: EventDto = {
-                id: event.id,
-                start: event.start,
-                end: event.end,
-                subject: event.subject,
-                teacher: event.teacher,
-                course: event.course,
-                classroom: classroom
-            };
-
-            return result;
-        };
-
+    const renderEvent = (event: EventDto | null) => {
         if (event && event.start.getDate() === now.getDate() && event.end > now) {
-            return <EventDetails event={fixEvent(event, classroom)} titleType={"custom"} titleSize="large" subtitle={event.course.name} hide={["classroom", "course"]} title={event.course.code} />;
+            return <EventDetails
+                event={event}
+                titleSize="large"
+                subtitle={event.course.name}
+                hide={["classroom", "course"]}
+                title="custom"
+                customTitle={event.course.code}
+            />;
         }
         else {
             return <Subtitle2>Nessuna lezione</Subtitle2>;

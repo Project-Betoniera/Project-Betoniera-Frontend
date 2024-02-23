@@ -1,23 +1,34 @@
-import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { Home } from "./routes/Home";
-import { Wrapper } from "./Wrapper";
-import { CalendarExport } from "./routes/CalendarExport";
+import {
+  FluentProvider,
+  Toast,
+  ToastBody,
+  ToastTitle,
+  Toaster,
+  makeStyles,
+  tokens,
+  useId,
+  useToastController,
+} from "@fluentui/react-components";
 import { useContext, useEffect } from "react";
-import { LoginForm } from "./routes/LoginForm";
-import { TokenContext } from "./context/TokenContext";
-import { NotFound } from "./routes/NotFound";
-import { Classroom } from "./routes/Classroom";
-import { About } from "./routes/About";
-import { FluentProvider, Toast, ToastBody, ToastTitle, Toaster, makeStyles, tokens, useId, useToastController } from "@fluentui/react-components";
-import { ThemeContext } from "./context/ThemeContext";
-import { PrivacyAlert } from "./components/PrivacyAlert";
-import OfflineDialog from "./components/OfflineDialog";
-import InstallPwaDialog from "./components/InstallPwaDialog";
-import { ProtocolHandler } from "./components/ProtocolHandler";
+import { Route, Routes, useLocation, useNavigate } from "react-router";
 import { useRegisterSW } from "virtual:pwa-register/react";
+import { Wrapper } from "./Wrapper";
+import { ProtocolHandler } from "./components/ProtocolHandler";
+import InstallPwaDialog from "./components/dialogs/InstallPwaDialog";
+import NetworkErrorDialog from "./components/dialogs/NetworkErrorDialog";
+import OfflineDialog from "./components/dialogs/OfflineDialog";
+import { PrivacyAlert } from "./components/dialogs/PrivacyAlert";
+import { ThemeContext } from "./context/ThemeContext";
+import { About } from "./routes/About";
 import { Calendar } from "./routes/Calendar";
+import { CalendarExport } from "./routes/CalendarExport";
+import { Classroom } from "./routes/Classroom";
+import { Grade } from "./routes/Grade";
+import { Home } from "./routes/Home";
+import { LoginForm } from "./routes/LoginForm";
+import { NotFound } from "./routes/NotFound";
+import { UserContext } from "./context/UserContext";
 import { ClassroomViewer } from "./routes/ClassroomViewer";
-import InvalidTokenDialog from "./components/InvalidTokenDialog";
 
 const useStyles = makeStyles({
   root: {
@@ -28,13 +39,13 @@ const useStyles = makeStyles({
     paddingBottom: "env(safe-area-inset-bottom, 0)",
     paddingLeft: "env(safe-area-inset-left, 0)",
     paddingRight: "env(safe-area-inset-right, 0)",
-  }
+  },
 });
 
 function App() {
   const style = useStyles();
-  const token = useContext(TokenContext).token;
-  const { theme } = useContext(ThemeContext);
+  const token = useContext(UserContext).data?.token;
+  const { themeValue } = useContext(ThemeContext);
 
   const toasterId = useId("app-toaster");
   const { dispatchToast } = useToastController(toasterId);
@@ -42,7 +53,7 @@ function App() {
   const {
     // offlineReady: [offlineReady, setOfflineReady],
     // needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker
+    updateServiceWorker,
   } = useRegisterSW({
     onOfflineReady: () => {
       dispatchToast(
@@ -50,12 +61,12 @@ function App() {
           <ToastTitle>App pronta</ToastTitle>
           <ToastBody>La PWA è pronta per essere installata.</ToastBody>
         </Toast>,
-        { intent: "success" }
+        { intent: "success" },
       );
     },
     onNeedRefresh: () => {
       updateServiceWorker();
-    }
+    },
   });
 
   const location = useLocation();
@@ -68,24 +79,58 @@ function App() {
   }, [location, token]);
 
   return (
-    <FluentProvider className={style.root} theme={theme}>
+    <FluentProvider
+      className={style.root}
+      theme={themeValue}
+    >
       <Toaster toasterId={toasterId} />
       <PrivacyAlert />
       <OfflineDialog />
       {token && <InstallPwaDialog />}
-      <InvalidTokenDialog />
+      {token && <NetworkErrorDialog />}
       <ProtocolHandler />
       <Routes>
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/viewer" element={<ClassroomViewer />} />
-        <Route path="/" element={<Wrapper />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/classroom" element={<Classroom />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/calendar-sync" element={<CalendarExport />} />
-          <Route path="/about" element={<About />} />
-          <Route path='*' element={<NotFound />} />
-        </Route>
+        <Route
+          path="/login"
+          element={<LoginForm />}
+        />
+        <Route
+          path="/viewer"
+          element={<ClassroomViewer />}
+        />
+        {token && <Route
+          path="/"
+          element={<Wrapper />}
+        >
+          <Route
+            path="/"
+            element={<Home />}
+          />
+          <Route
+            path="/classroom"
+            element={<Classroom />}
+          />
+          <Route
+            path="/calendar"
+            element={<Calendar />}
+          />
+          <Route
+            path="/calendar-sync"
+            element={<CalendarExport />}
+          />
+          <Route
+            path="/grade"
+            element={<Grade />}
+          />
+          <Route
+            path="/about"
+            element={<About />}
+          />
+          <Route
+            path="*"
+            element={<NotFound />}
+          />
+        </Route>}
       </Routes>
     </FluentProvider>
   );

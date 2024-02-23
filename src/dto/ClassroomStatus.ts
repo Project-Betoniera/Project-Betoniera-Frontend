@@ -6,6 +6,6 @@ export type ClassroomStatus = {
     status: {
         isFree: boolean;
         statusChangeAt: Date | null;
-        currentOrNextEvent: Omit<EventDto, "classroom"> | null;
+        currentOrNextEvent: EventDto | null;
     };
 };

@@ -1,7 +1,7 @@
 
-import { Body1, Card, CardHeader, Subtitle2, Title2, mergeClasses, makeStyles, tokens, Link } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Link, Subtitle2, Title2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { CalendarExporter } from "../components/calendar/CalendarExporter";
 import { useGlobalStyles } from "../globalStyles";
-import { CalendarExporter } from "../components/CalendarExporter";
 
 const useStyles = makeStyles({
     warning: {

@@ -3,20 +3,24 @@ import { apiUrl } from "../../config";
 import { ClassroomDto } from "../../dto/ClassroomDto";
 import { ClassroomStatus } from "../../dto/ClassroomStatus";
 
-export default function classroomRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function classroomRequests(token: string, setErrorCode: (errorCode: number) => void) {
     const excludedClassrooms = [5, 19, 26, 31, 33]; // TODO Get this from the API
+
+    function parseClassroom(data: any) {
+        const result: ClassroomDto = {
+            id: data.id,
+            name: data.name,
+            color: data.color
+        };
+
+        return result;
+    }
 
     function parseClassrooms(data: any) {
         const result: ClassroomDto[] = [];
         if (!Array.isArray(data)) return result;
 
-        data.forEach((item: any) => {
-            !excludedClassrooms.includes(item.id) && result.push({
-                id: item.id,
-                name: item.name,
-                color: item.color,
-            });
-        });
+        data.forEach((item: any) => { !excludedClassrooms.includes(item.id) && result.push(parseClassroom(item)); });
 
         return result;
     }
@@ -40,12 +44,11 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
                             startYear: item.status.currentOrNextEvent?.course.startYear,
                             endYear: item.status.currentOrNextEvent?.course.endYear,
                         },
-                        // TODO Uncomment when classroom is returned in the response
-                        // classroom: {
-                        //     id: item.status.currentOrNextEvent?.classroom.id,
-                        //     name: item.status.currentOrNextEvent?.classroom.name,
-                        //     color: item.status.currentOrNextEvent?.classroom.color,
-                        // },
+                        classroom: {
+                            id: item.status.currentOrNextEvent?.classroom.id,
+                            name: item.status.currentOrNextEvent?.classroom.name,
+                            color: item.status.currentOrNextEvent?.classroom.color,
+                        },
                         start: new Date(item.status.currentOrNextEvent?.start),
                         end: new Date(item.status.currentOrNextEvent?.end),
                         subject: item.status.currentOrNextEvent?.subject,
@@ -74,7 +77,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -86,10 +89,10 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
                     Authorization: `Bearer ${token}`
                 },
             }).then((response) => {
-                return parseClassrooms(response.data);
+                return parseClassroom(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
-                return [] as ClassroomDto[];
+                setErrorCode(error.response?.status || 0);
+                throw error;
             });
         },
         busy: async (start: Date, end: Date) => {
@@ -106,7 +109,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -124,7 +127,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassrooms(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomDto[];
             });
         },
@@ -141,7 +144,7 @@ export default function classroomRequests(token: string, setIsInvalid: (isInvali
             }).then((response) => {
                 return parseClassroomStatus(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as ClassroomStatus[];
             });
         }

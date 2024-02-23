@@ -1,7 +1,10 @@
-import { FunctionComponent } from "react";
+import { Body1, Body2, Card, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { TimekeeperContext } from "../context/TimekeeperContext";
 import { EventDto } from "../dto/EventDto";
-import { Body1, Body2, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles } from "@fluentui/react-components";
+import { useGlobalStyles } from "../globalStyles";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
+import { RouterLink } from "./router/RouterLink";
 
 export type EventDetailsProps = {
     /**
@@ -11,15 +14,23 @@ export type EventDetailsProps = {
     /**
      * The property to use as title. If `custom` is used, the `customTitle` property should be provided.
     */
-    titleType: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    title: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    /**
+     * The title to be displayed if the `title` property is set to `custom`.
+    */
+    customTitle?: string;
     /**
      * The size of the title.
     */
     titleSize?: "small" | "medium" | "large" | "huge";
     /**
-     * The title to be displayed if the `title` property is set to `custom`.
+     * The background color of the card. If not provided, the default background color will be used.
+     */
+    backgroundColor?: string;
+    /**
+     * Whether to make the course label a link to see the calendar of the course. Defaults to `false`.
     */
-    title?: string;
+    linkToCalendar?: boolean;
     /**
      * The subtitle to be displayed.
     */
@@ -29,9 +40,9 @@ export type EventDetailsProps = {
     */
     hide?: ("time" | "subject" | "classroom" | "teacher" | "course")[];
     /**
-     * The current date. Used to display "Ongoing" badge if the event is ongoing.
+     * Type of display. If not set, "base" will be used.
      */
-    now?: Date;
+    as?: "card" | "base" | undefined;
 };
 
 const useStyles = makeStyles({
@@ -44,26 +55,20 @@ const useStyles = makeStyles({
         display: "flex",
         flexDirection: "column"
     },
+    card: {
+        backgroundColor: tokens.colorBrandBackground2Hover
+    },
+    removeLinkStyle: {
+        color: "inherit",
+        ":hover": {
+            color: "inherit",
+        },
+    },
     text: {
         display: "block",
         overflowX: "hidden",
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
-    },
-    blinkAnimation: {
-        animationDuration: "1s",
-        animationIterationCount: "infinite",
-        animationDirection: "alternate",
-        animationName: [
-            {
-                from: {
-                    opacity: 0,
-                },
-                to: {
-                    opacity: 1,
-                },
-            }
-        ],
     },
 });
 
@@ -73,38 +78,40 @@ const useStyles = makeStyles({
  */
 const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsProps) => {
     const styles = useStyles();
+    const globalStyles = useGlobalStyles();
 
-    let title: string;
-    const titleSize = props.titleSize ?? "medium";
-
+    const titleSize = props.titleSize ?? "small";
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
     const classroom = `\u{1F4CD} Aula ${props.event.classroom.name}`;
     const teacher = props.event.teacher ? `\u{1F9D1}\u{200D}\u{1F3EB} ${props.event.teacher}` : "";
     const course = `\u{1F4DA} ${props.event.course.code} ${props.event.course.name}`;
 
-    switch (props.titleType) {
-        case "classroom":
-            title = classroom;
-            break;
-        case "course":
-            title = course;
-            break;
-        case "teacher":
-            title = teacher;
-            break;
-        case "time":
-            title = time;
-            break;
+    let title: string;
+    switch (props.title) {
         case "subject":
             title = subject;
             break;
-        default:
-            title = props.title ?? "";
+        case "classroom":
+            title = classroom;
             break;
+        case "custom":
+            title = props.customTitle || "Missing custom title";
+            break;
+        default:
+            title = "Missing title type";
     }
 
-    return (
+    const [now, setNow] = useState(() => new Date());
+    const { timekeeper } = useContext(TimekeeperContext);
+
+    useEffect(() => {
+        const updateTime = () => setNow(new Date());
+        timekeeper.addListener("minute", updateTime);
+        return () => timekeeper.removeListener(updateTime);
+    }, []);
+
+    const content = (
         <div className={styles.root}>
             {titleSize === "huge" && <Title1 className={styles.text}>{title}</Title1>}
             {props.subtitle && titleSize === "huge" && <Title3 className={styles.text}>{props.subtitle}</Title3>}
@@ -115,16 +122,28 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             {titleSize === "small" && <Subtitle2 className={styles.text}>{title}</Subtitle2>}
             {props.subtitle && titleSize === "small" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
 
-            {props.now && props.event.start <= props.now && props.event.end > props.now && <Body2 className={styles.blinkAnimation}>{"\u{1F534}"} In corso</Body2>}
+            {now && props.event.start <= now && props.event.end > now && <Body2 className={globalStyles.blink}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
-                {props.titleType !== "time" && !props.hide?.includes("time") && <Body1 className={styles.text}>{time}</Body1>}
-                {props.titleType !== "subject" && !props.hide?.includes("subject") && <Body1 className={styles.text}>{subject}</Body1>}
-                {props.titleType !== "course" && !props.hide?.includes("course") && <Body1 className={styles.text}>{course}</Body1>}
-                {props.titleType !== "classroom" && !props.hide?.includes("classroom") && <Body1 className={styles.text}>{classroom}</Body1>}
-                {props.titleType !== "teacher" && !props.hide?.includes("teacher") && <Body1 className={styles.text}>{teacher}</Body1>}
+                {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}
+                {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
+                {props.title !== "course" && !props.hide?.includes("course") ? props.linkToCalendar ? <RouterLink as="a" className={styles.removeLinkStyle} href={"/calendar?course=" + props.event.course.id}>{course}</RouterLink> : <Body1>{course}</Body1> : null}
+                {props.title !== "classroom" && !props.hide?.includes("classroom") && <Body1>{classroom}</Body1>}
+                {props.title !== "teacher" && !props.hide?.includes("teacher") && <Body1>{teacher}</Body1>}
             </div>
         </div>
     );
+
+    const isOngoning = props.event.start <= now && props.event.end > now;
+    return props.as === "card" ? (
+        <Card
+            // TODO Find a better way to set background color
+            style={!isOngoning ? { backgroundColor: props.backgroundColor ? props.backgroundColor : tokens.colorBrandBackground2Hover } : undefined}
+            className={mergeClasses(globalStyles.card, isOngoning && globalStyles.ongoing)}
+        >
+            {content}
+
+        </Card>
+    ) : content;
 };
 
 export default EventDetails;

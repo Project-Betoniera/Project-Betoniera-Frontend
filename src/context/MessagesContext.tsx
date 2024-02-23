@@ -1,40 +1,32 @@
-import axios from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
-import { apiUrl } from "../config";
-import { TokenContext } from "./TokenContext";
+import { createContext, useEffect, useState } from "react";
+import { MessageDto } from "../dto/MessageDto";
+import useRequests from "../libraries/requests/requests";
 
-export type Message = {
-    id: number;
-    intent: "info" | "success" | "warning" | "error";
-    matchPath: string;
-    title: string;
-    body?: string;
-    link?: string;
-    linkText?: string;
-    isDismissable: boolean;
-};
-
-export const MessagesContext = createContext({ messages: [] as Message[], dismissMessage: (id: number) => { console.log(id); }, doNotShowAgain: (id: number) => { console.log(id); } });
+export const MessagesContext = createContext({
+    messages: [] as MessageDto[],
+    setMessages: (value: MessageDto[]) => { console.log(value); },
+    reloadMessages: () => { console.log("reloadMessages"); },
+    dismissMessage: (id: number) => { console.log(id); },
+    doNotShowAgain: (id: number) => { console.log(id); }
+});
 
 export function MessagesContextProvider({ children }: { children: JSX.Element; }) {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const token = useContext(TokenContext).token;
+    const [messages, setMessages] = useState<MessageDto[]>([]);
+    const requests = useRequests();
 
-    useEffect(() => {
+    const reloadMessages = () => {
         // Get dismissed messages from local storage
         const dismissedMessages: number[] = JSON.parse(localStorage.getItem("dismissedMessages") || "[]");
 
         // Get messages from API
-        axios.get(new URL("message", apiUrl).toString(), {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then((response) => {
-            setMessages((response.data as Message[]).filter((message) => !dismissedMessages.includes(message.id)));
+        requests.message.all().then((response) => {
+            setMessages(response.filter((message) => !dismissedMessages.includes(message.id)));
         }).catch(() => {
             setMessages([]);
         });
-    }, []);
+    }
+
+    useEffect(reloadMessages, []);
 
     const dismissMessage = (id: number) => { setMessages((messages) => messages.filter((message) => message.id !== id)); };
     const doNotShowAgain = (id: number) => {
@@ -47,7 +39,7 @@ export function MessagesContextProvider({ children }: { children: JSX.Element; }
     };
 
     return (
-        <MessagesContext.Provider value={{ messages, dismissMessage, doNotShowAgain }}>
+        <MessagesContext.Provider value={{ messages, setMessages, reloadMessages, dismissMessage, doNotShowAgain }}>
             {children}
         </MessagesContext.Provider>
     );

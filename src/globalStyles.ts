@@ -71,6 +71,13 @@ export const useGlobalStyles = makeStyles({
             alignItems: "flex-start",
         },
     },
+    // Truncate overflowing text with "..." and hide the overflow
+    ellipsisText: {
+        display: "block",
+        overflowX: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+    },
     ongoing: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
     },
