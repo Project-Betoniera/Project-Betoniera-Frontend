@@ -4,7 +4,6 @@ import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
-import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
@@ -65,25 +64,6 @@ export function Home() {
     );
 
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
-        // TODO Return classroom object inside ClassroomStatus object
-        const fixNextEvent = (event: Omit<EventDto, "classroom"> | null, classroom: ClassroomDto) => {
-            if (!event) return null;
-
-            let result: EventDto = {
-                id: event.id,
-                start: event.start,
-                end: event.end,
-                subject: event.subject,
-                teacher: event.teacher,
-                course: event.course,
-                classroom: classroom
-            };
-
-            return result;
-        };
-
-        const nextEvent = fixNextEvent(item.status.currentOrNextEvent, item.classroom);
-
         let changeTime = "";
         if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
             changeTime = "Fino a domani";
@@ -99,7 +79,7 @@ export function Home() {
                     </Card>
                 </PopoverTrigger>
                 <PopoverSurface>
-                    {nextEvent ? <EventDetails event={nextEvent as EventDto} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                    {item.status.currentOrNextEvent ? <EventDetails event={item.status.currentOrNextEvent} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
                 </PopoverSurface>
             </Popover>
         );

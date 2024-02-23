@@ -44,12 +44,11 @@ export default function classroomRequests(token: string, setErrorCode: (errorCod
                             startYear: item.status.currentOrNextEvent?.course.startYear,
                             endYear: item.status.currentOrNextEvent?.course.endYear,
                         },
-                        // TODO Uncomment when classroom is returned in the response
-                        // classroom: {
-                        //     id: item.status.currentOrNextEvent?.classroom.id,
-                        //     name: item.status.currentOrNextEvent?.classroom.name,
-                        //     color: item.status.currentOrNextEvent?.classroom.color,
-                        // },
+                        classroom: {
+                            id: item.status.currentOrNextEvent?.classroom.id,
+                            name: item.status.currentOrNextEvent?.classroom.name,
+                            color: item.status.currentOrNextEvent?.classroom.color,
+                        },
                         start: new Date(item.status.currentOrNextEvent?.start),
                         end: new Date(item.status.currentOrNextEvent?.end),
                         subject: item.status.currentOrNextEvent?.subject,
