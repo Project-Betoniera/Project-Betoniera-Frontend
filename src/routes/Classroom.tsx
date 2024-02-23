@@ -1,4 +1,4 @@
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -17,7 +17,6 @@ const useLightStyles = makeStyles({
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
         ":hover": { backgroundColor: tokens.colorPaletteLightGreenBackground1 },
         ":active": { backgroundColor: tokens.colorPaletteGreenBackground2 },
-
     },
     cardBusy: {
         backgroundColor: tokens.colorPaletteRedBackground2,
@@ -57,10 +56,10 @@ const useStyles = makeStyles({
 });
 
 export function Classroom() {
-    const { theme } = useContext(ThemeContext);
+    const theme = useContext(ThemeContext).themeValue;
 
     const globalStyles = useGlobalStyles();
-    const themeStyles = theme === "light" ? useLightStyles() : useDarkStyles();
+    const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
     const requests = useRequests();
 
