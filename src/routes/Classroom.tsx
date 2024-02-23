@@ -7,8 +7,10 @@ import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
+import { FullScreenMaximizeFilled } from "@fluentui/react-icons";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
+import { RouterButton } from "../components/router/RouterButton";
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -162,7 +164,12 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
-                    action={showSideSpinner ? <Spinner size="small" /> : undefined}
+                    action={
+                        <>
+                            {showSideSpinner ? <Spinner size="small" /> : undefined}
+                            {<RouterButton as="a" icon={<FullScreenMaximizeFilled />} href="/viewer" />}
+                        </>
+                    }
                 />
                 <CardFooter className={styles.toolbar}>
                     <DateSelector autoUpdate={true} inputType="hour" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {

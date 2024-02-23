@@ -28,6 +28,7 @@ import { Home } from "./routes/Home";
 import { LoginForm } from "./routes/LoginForm";
 import { NotFound } from "./routes/NotFound";
 import { UserContext } from "./context/UserContext";
+import { ClassroomViewer } from "./routes/ClassroomViewer";
 
 const useStyles = makeStyles({
   root: {
@@ -92,6 +93,10 @@ function App() {
         <Route
           path="/login"
           element={<LoginForm />}
+        />
+        <Route
+          path="/viewer"
+          element={<ClassroomViewer />}
         />
         {token && <Route
           path="/"
