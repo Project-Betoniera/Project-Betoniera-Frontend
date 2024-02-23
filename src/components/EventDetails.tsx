@@ -1,4 +1,4 @@
-import { Body1, Body2, Card, Subtitle2, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { Body1, Body2, Card, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { EventDto } from "../dto/EventDto";
@@ -20,6 +20,10 @@ export type EventDetailsProps = {
     */
     customTitle?: string;
     /**
+     * The size of the title.
+    */
+    titleSize?: "small" | "medium" | "large" | "huge";
+    /**
      * The background color of the card. If not provided, the default background color will be used.
      */
     backgroundColor?: string;
@@ -27,6 +31,10 @@ export type EventDetailsProps = {
      * Whether to make the course label a link to see the calendar of the course. Defaults to `false`.
     */
     linkToCalendar?: boolean;
+    /**
+     * The subtitle to be displayed.
+    */
+    subtitle?: string;
     /**
      * The properties to hide. If not provided, all properties will be displayed.
     */
@@ -55,7 +63,13 @@ const useStyles = makeStyles({
         ":hover": {
             color: "inherit",
         },
-    }
+    },
+    text: {
+        display: "block",
+        overflowX: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+    },
 });
 
 /**
@@ -66,6 +80,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     const styles = useStyles();
     const globalStyles = useGlobalStyles();
 
+    const titleSize = props.titleSize ?? "small";
     const time = `${getClockEmoji(props.event.start)} ${props.event.start.toLocaleString([], { timeStyle: "short" })} - ${props.event.end.toLocaleString([], { timeStyle: "short" })}`;
     const subject = `\u{1F4BC} ${props.event.subject}`;
     const classroom = `\u{1F4CD} Aula ${props.event.classroom.name}`;
@@ -81,10 +96,10 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
             title = classroom;
             break;
         case "custom":
-            title = props.customTitle || "eventDetails";
+            title = props.customTitle || "Missing custom title";
             break;
         default:
-            title = "eventDetails";
+            title = "Missing title type";
     }
 
     const [now, setNow] = useState(() => new Date());
@@ -98,7 +113,15 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
     const content = (
         <div className={styles.root}>
-            <Subtitle2>{title}</Subtitle2>
+            {titleSize === "huge" && <Title1 className={styles.text}>{title}</Title1>}
+            {props.subtitle && titleSize === "huge" && <Title3 className={styles.text}>{props.subtitle}</Title3>}
+            {titleSize === "large" && <Title2 className={styles.text}>{title}</Title2>}
+            {props.subtitle && titleSize === "large" && <Subtitle1 className={styles.text}>{props.subtitle}</Subtitle1>}
+            {titleSize === "medium" && <Subtitle1 className={styles.text}>{title}</Subtitle1>}
+            {props.subtitle && titleSize === "medium" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+            {titleSize === "small" && <Subtitle2 className={styles.text}>{title}</Subtitle2>}
+            {props.subtitle && titleSize === "small" && <Body1 className={styles.text}>{props.subtitle}</Body1>}
+
             {now && props.event.start <= now && props.event.end > now && <Body2 className={globalStyles.blink}>{"\u{1F534}"} In corso</Body2>}
             <div className={styles.body}>
                 {props.title !== "time" && !props.hide?.includes("time") && <Body1>{time}</Body1>}

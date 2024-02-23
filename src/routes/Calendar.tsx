@@ -207,7 +207,10 @@ const RANDOMABLE_COLORS = [...Array(COLORS.length - 1).keys()].map(k => k + 1);
 export function Calendar() {
     const styles = useStyles();
     const globalStyles = useGlobalStyles();
-    const { course } = useContext(UserContext).course;
+
+    const { data } = useContext(UserContext);
+    const course = data?.course || { id: 0, code: "", name: "", startYear: 0, endYear: 0 };
+
     const screenMediaQuery = useMediaQuery("(max-width: 578px)");
     const requests = useRequests();
     const [isCurrentViewMonth, setIsCurrentViewMonth] = useState<boolean>(true);
@@ -233,10 +236,10 @@ export function Calendar() {
 
     // Current calendar selection (the one that will be added if the user clicks the "Add" button)
     const [currentSelection, setCurrentSelection] = useState<CalendarSelection>({
-        id: course?.id.toString() || "",
+        id: course.id.toString(),
         type: "course",
-        shortName: course?.code || "",
-        fullName: `${course?.code} - ${course?.name}` || "",
+        shortName: course.code,
+        fullName: `${course.code} - ${course.name}`,
     });
 
     // Calendars on the view
@@ -485,7 +488,7 @@ export function Calendar() {
                     {filteredEvents.length}
                 </Badge>
             );
-        })
+        });
 
         return result;
     }
@@ -766,7 +769,7 @@ export function Calendar() {
                 <div className={styles.stack}>
                     <Button icon={isCurrentViewMonth ? <CalendarWeekNumbersRegular /> : <CalendarMonthRegular />} onClick={() => setIsCurrentViewMonth(!isCurrentViewMonth)}>{isCurrentViewMonth ? "Settimana" : "Mese"}</Button>
                     <Button icon={<SettingsRegular />} onClick={() => setIsDrawerOpen(!isDrawerOpen)} />
-                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync">Integrazioni</RouterButton>
+                    <RouterButton className={styles.syncButton} as="a" icon={<ArrowExportRegular />} href="/calendar-sync" appearance="primary">Integrazioni</RouterButton>
                 </div>
             </Card>
 

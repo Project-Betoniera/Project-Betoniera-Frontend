@@ -3,7 +3,7 @@ import { apiUrl } from "../../config";
 import { CourseDto } from "../../dto/CourseDto";
 import { GradeDto, GradeGroupDto } from "../../dto/GradeDto";
 
-export default function gradeRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function gradeRequests(token: string, setErrorCode: (errorCode: number) => void) {
     return {
         groups: async (): Promise<GradeGroupDto[]> => {
             return await axios({
@@ -15,7 +15,7 @@ export default function gradeRequests(token: string, setIsInvalid: (isInvalid: b
             }).then((response) => {
                 return response.data;
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as CourseDto[];
             });
         },
@@ -29,7 +29,7 @@ export default function gradeRequests(token: string, setIsInvalid: (isInvalid: b
             }).then((response) => {
                 return response.data;
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as CourseDto[];
             });
         },

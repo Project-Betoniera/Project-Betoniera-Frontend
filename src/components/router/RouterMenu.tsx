@@ -2,7 +2,6 @@ import { Button, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Tab, TabLi
 import { ArrowExitFilled, BuildingFilled, CalendarFilled, DismissRegular, HomeFilled, InfoFilled, PersonFilled, TaskListSquareLtrFilled } from "@fluentui/react-icons";
 import { FunctionComponent, useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { TokenContext } from "../../context/TokenContext";
 import { UserContext } from "../../context/UserContext";
 import { UserProfile } from "../UserProfile";
 import { RouterButton } from "./RouterButton";
@@ -56,19 +55,7 @@ const menuItems = [
 
 const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) => {
     const styles = useStyles();
-    const { setToken, setRemember, setIsInvalid } = useContext(TokenContext);
-    const { user, course } = useContext(UserContext);
-
-    const logout = () => {
-        setToken(null);
-        setRemember(false);
-        setIsInvalid(false);
-        course.setCourse(null);
-        user.setName(null);
-        user.setEmail(null);
-        user.setYear(null);
-        user.setIsAdmin(null);
-    };
+    const { logout } = useContext(UserContext);
 
     useLocation();
     const currentUrl = new URL(window.location.href);
@@ -104,7 +91,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                     );
                 })}
 
-                <Button appearance="primary" style={{ alignSelf: "center" }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
+                <Button style={{ alignSelf: "center" }} icon={<PersonFilled />} onClick={() => setIsUserDrawerOpen(true)} aria-description="user-profile">{!iconsOnly ? "Profilo" : ""}</Button>
             </TabList>
 
             <Drawer type={"overlay"} size={"medium"} open={isUserDrawerOpen} onOpenChange={(_, { open }) => setIsUserDrawerOpen(open)} position="end" className={styles.drawer}>
@@ -137,7 +124,7 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
                         <Button
                             appearance="primary"
                             icon={<ArrowExitFilled />}
-                            onClick={logout}
+                            onClick={()=>logout()}
                             aria-description="logout"
                         >Logout</Button>
                     </div>

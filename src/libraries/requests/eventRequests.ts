@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { apiUrl } from "../../config";
 import { EventDto } from "../../dto/EventDto";
 
-export default function eventRequests(token: string, setIsInvalid: (isInvalid: boolean) => void) {
+export default function eventRequests(token: string, setErrorCode: (errorCode: number) => void) {
     function parseEvents(data: any) {
         const result: EventDto[] = [];
         if (!Array.isArray(data)) return result;
@@ -48,7 +48,7 @@ export default function eventRequests(token: string, setIsInvalid: (isInvalid: b
             }).then((response) => {
                 return parseEvents(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as EventDto[];
             });
         },
@@ -67,7 +67,7 @@ export default function eventRequests(token: string, setIsInvalid: (isInvalid: b
             }).then((response) => {
                 return parseEvents(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as EventDto[];
             });
         },
@@ -86,7 +86,7 @@ export default function eventRequests(token: string, setIsInvalid: (isInvalid: b
             }).then((response) => {
                 return parseEvents(response.data);
             }).catch((error: AxiosError) => {
-                if (error.response?.status === 401) setIsInvalid(true);
+                setErrorCode(error.response?.status || 0);
                 return [] as EventDto[];
             });
         }

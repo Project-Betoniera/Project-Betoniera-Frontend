@@ -136,7 +136,7 @@ export function getCalendarSelections(requests: ReturnType<typeof useRequests>, 
 export const CalendarSelector: FunctionComponent<CalendarSelectorProps> = (props: CalendarSelectorProps) => {
     const styles = useStyles();
 
-    const { course } = useContext(UserContext).course;
+    const course = useContext(UserContext).data?.course;
     const requests = useRequests();
 
     // The available calendar types

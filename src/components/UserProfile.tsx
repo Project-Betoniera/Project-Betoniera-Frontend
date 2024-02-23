@@ -37,8 +37,12 @@ const useStyles = makeStyles({
 
 export const UserProfile: React.FC = () => {
     const styles = useStyles();
-    const { name, email, isAdmin } = useContext(UserContext).user;
-    const { course } = useContext(UserContext).course;
+
+    const { data } = useContext(UserContext);
+
+    const user = data?.user || { name: "", email: "", year: 0, isAdmin: false };
+    const course = data?.course || { id: "", code: "", name: "", startYear: 0, endYear: 0 };
+
     const { theme, setTheme } = useContext(ThemeContext);
     const { reloadMessages } = useContext(MessagesContext);
 
@@ -51,18 +55,18 @@ export const UserProfile: React.FC = () => {
     return (
         <div>
             <div className={styles.userContainer}>
-                <Avatar size={48} badge={isAdmin ? { icon: <CheckmarkStarburstFilled color="gold" />, size: "medium" } : undefined} />
+                <Avatar size={48} badge={user.isAdmin ? { icon: <CheckmarkStarburstFilled color="gold" />, size: "medium" } : undefined} />
                 <div className={styles.userInfo}>
-                    <Subtitle1 className={styles.text}>{name}</Subtitle1>
-                    <Body1 className={styles.text}>{email}</Body1>
+                    <Subtitle1 className={styles.text}>{user.name}</Subtitle1>
+                    <Body1 className={styles.text}>{user.email}</Body1>
                     <Body1 className={styles.text}>{course && `${course.name} - ${course.startYear}/${course.endYear}`}</Body1>
                 </div>
             </div>
             <Divider />
             <div className={styles.profileMenu}>
-                <div style={{ display: isAdmin ? "unset" : "none" }}>
+                {user.isAdmin && <div>
                     <AdminPanel />
-                </div>
+                </div>}
                 <Subtitle2>Tema</Subtitle2>
                 <Dropdown onOptionSelect={(_event, data) => setTheme(data.selectedOptions[0] as AppTheme)} value={themeValues[theme]} selectedOptions={[theme]} >
                     <Option value="auto" text="Automatico">Automatico</Option>

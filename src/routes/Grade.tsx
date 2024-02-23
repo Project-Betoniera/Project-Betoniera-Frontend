@@ -8,7 +8,8 @@ import useRequests from "../libraries/requests/requests";
 export function Grade() {
     const requests = useRequests();
     const globalStyles = useGlobalStyles();
-    const { user } = useContext(UserContext);
+    const { data } = useContext(UserContext);
+    const user = data?.user || { name: "", email: "", year: 0, isAdmin: false };
 
     const [groups, setGroups] = useState<GradeGroupDto[] | undefined>(undefined);
     const [selectedGroup, setSelectedGroup] = useState<GradeGroupDto | undefined>(user.year == 2 ? { code: "SEC", displayName: "Secondo Anno" } : { code: "PRI", displayName: "Primo Anno" });

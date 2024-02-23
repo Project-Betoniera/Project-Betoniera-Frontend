@@ -1,4 +1,4 @@
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
@@ -7,15 +7,16 @@ import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
 import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
+import { FullScreenMaximizeFilled } from "@fluentui/react-icons";
 import getClockEmoji from "../libraries/clockEmoji/clockEmoji";
 import useRequests from "../libraries/requests/requests";
+import { RouterButton } from "../components/router/RouterButton";
 
 const useLightStyles = makeStyles({
     cardFree: {
         backgroundColor: tokens.colorPaletteLightGreenBackground2,
         ":hover": { backgroundColor: tokens.colorPaletteLightGreenBackground1 },
         ":active": { backgroundColor: tokens.colorPaletteGreenBackground2 },
-
     },
     cardBusy: {
         backgroundColor: tokens.colorPaletteRedBackground2,
@@ -55,10 +56,10 @@ const useStyles = makeStyles({
 });
 
 export function Classroom() {
-    const { theme } = useContext(ThemeContext);
+    const theme = useContext(ThemeContext).themeValue;
 
     const globalStyles = useGlobalStyles();
-    const themeStyles = theme === "light" ? useLightStyles() : useDarkStyles();
+    const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
     const styles = useStyles();
     const requests = useRequests();
 
@@ -77,8 +78,7 @@ export function Classroom() {
 
         requests.classroom.status(dateTime)
             .then(setClassrooms)
-            .then(() => setShowSideSpinner(false))
-            .catch(console.error); // TODO Handle error
+            .then(() => setShowSideSpinner(false));
     }, [dateTime]);
 
     // Filter the classrooms when the filter changes
@@ -137,8 +137,7 @@ export function Classroom() {
                                 ...eventDialog,
                                 events,
                             };
-                        }))
-                        .catch(console.error); // TODO Handle error
+                        }));
                 }}>
                     <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
                     <div>
@@ -164,7 +163,12 @@ export function Classroom() {
             <Card className={globalStyles.titleBar}>
                 <CardHeader
                     header={<Title2>🏫 Stato Aule</Title2>}
-                    action={showSideSpinner ? <Spinner size="small" /> : undefined}
+                    action={
+                        <>
+                            {showSideSpinner ? <Spinner size="small" /> : undefined}
+                            {<RouterButton as="a" icon={<FullScreenMaximizeFilled />} href="/viewer" />}
+                        </>
+                    }
                 />
                 <CardFooter className={styles.toolbar}>
                     <DateSelector autoUpdate={true} inputType="hour" dateTime={dateTime} setDateTime={(newDateTime, autoUpdated) => {
