@@ -6,6 +6,7 @@ import { EventDto } from "../dto/EventDto";
 import EventDetails from "../components/EventDetails";
 import { ThemeContext } from "../context/ThemeContext";
 import useRequests from "../libraries/requests/requests";
+import { TimekeeperContext } from '../context/TimekeeperContext';
 
 const useLightStyles = makeStyles({
     cardFree: {
@@ -35,34 +36,54 @@ export function ClassroomViewer() {
     const theme = useContext(ThemeContext).themeValue;
     const globalStyles = useGlobalStyles();
     const themeStyles = theme === webLightTheme ? useLightStyles() : useDarkStyles();
+    const { timekeeper } = useContext(TimekeeperContext);
 
     const requests = useRequests();
 
-    const [now, setNow] = useState(new Date());
+    const now = new Date();
     const [classrooms, setClassrooms] = useState<ClassroomStatus[] | null>(null);
+    const [nextClassrooms, setNextClassrooms] = useState<ClassroomStatus[] | null>(null);
     const [currentFloor, setCurrentFloor] = useState(1);
 
     useEffect(() => {
         // First data fetch
         getClassroomsStatus();
 
-        // Fetch classrooms status every 10 seconds
+        // Change displayed floor every 15 seconds
         const interval = setInterval(() => {
             setCurrentFloor((oldValue) => {
-                if (oldValue === 3) {
-                    getClassroomsStatus(); // Refresh when all data has been shown
-                    setNow(new Date());
-                }
                 return oldValue === 3 ? 1 : oldValue + 1;
             });
         }, 15000);
 
-        return () => clearInterval(interval);
+        // Update classrooms every minute
+        timekeeper.addListener("minute", getClassroomsStatus);
+
+        return () => {
+            clearInterval(interval);
+            timekeeper.removeListener(getClassroomsStatus);
+        };
     }, []);
 
+    // Move nextClassrooms to classrooms when the floor changes
+    useEffect(() => {
+        if (nextClassrooms) {
+            setClassrooms(nextClassrooms);
+            setNextClassrooms(null);
+        }
+    }, [currentFloor]);
+
+    // Move nextClassrooms to classrooms when there is no current classroom data (initial load)
+    useEffect(() => {
+        if (!classrooms) {
+            setClassrooms(nextClassrooms);
+            setNextClassrooms(null);
+        }
+    }, [nextClassrooms]);
+
     const getClassroomsStatus = () => {
-        requests.classroom.status(now)
-            .then(setClassrooms)
+        requests.classroom.status(new Date())
+            .then(setNextClassrooms)
             .catch(console.error);
     };
 
