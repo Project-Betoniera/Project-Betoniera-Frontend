@@ -39,37 +39,33 @@ export function About() {
   const styles = useStyles();
   const globalStyles = useGlobalStyles();
 
-  const endpoints = [
-    "https://api.github.com/users/Genio2003",
-    "https://api.github.com/users/Melagranata",
-    "https://api.github.com/users/qlcvea",
-  ];
-
   const [users, setUsers] = useState<User[] | null>(null);
 
   useEffect(() => {
     const result: User[] = [];
 
-    endpoints.forEach((endponint) => {
-      axios({
-        method: "GET",
-        url: new URL(endponint).toString(),
-      })
-        .then((response) => {
-          const user: User = {
-            id: response.data.id,
-            login: response.data.login,
-            avatar_url: response.data.avatar_url,
-            html_url: response.data.html_url,
-            name: response.data.name,
-          };
+    axios({
+      method: "GET",
+      url: new URL("https://api.github.com/repos/Genio2003/Project-Betoniera-Frontend/contributors").toString(),
+      headers: {
+        // Only for testing, will be removed once the project is public
+        "Authorization": "Bearer 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",
+      }
+    }).then((response) => {
+      response.data.forEach((contributor: any) => {
+        const user: User = {
+          id: contributor.id,
+          login: contributor.login,
+          avatar_url: contributor.avatar_url,
+          html_url: contributor.html_url,
+          name: contributor.name,
+        };
 
-          result.push(user);
-          setUsers(result);
-        })
-        .catch(() => {
-          if (!users) setUsers([]);
-        });
+        result.push(user);
+        setUsers(result);
+      });
+    }).catch(() => {
+      if (!users) setUsers([]);
     });
   }, []);
 
