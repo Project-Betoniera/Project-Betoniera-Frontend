@@ -69,9 +69,9 @@ export function Home() {
         if (!events) {
             return (
                 <>
-                    <EventDetailsSkeleton as="card" title="subject"/>
-                    <EventDetailsSkeleton as="card" title="subject"/>
-                    <EventDetailsSkeleton as="card" title="subject"/>
+                    <EventDetailsSkeleton as="card" hide={["course"]}/>
+                    <EventDetailsSkeleton as="card" hide={["course"]}/>
+                    <EventDetailsSkeleton as="card" hide={["course"]}/>
                 </>
             )
         } else if (events.length === 0) {

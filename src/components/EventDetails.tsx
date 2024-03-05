@@ -148,7 +148,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
 
 
 export type EventDetailsSkeletonProps = {
-    title: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    hide?: ("time" | "subject" | "classroom" | "teacher" | "course")[];
     as?: "card" | "base" | undefined;
 };
 
@@ -173,14 +173,16 @@ const EventDetailsSkeleton: FunctionComponent<EventDetailsSkeletonProps> = (prop
     const styles = useSkeletonStyles();
     const globalStyles = useGlobalStyles();
 
+    // Array of skeleton items with size 4 - props.hide.length
+    const skeletonItems = Array.from({ length: 4 - (props.hide?.length || 0) }, (_, i) => (
+        <SkeletonItem key={i} size={16} />
+    ));
+
     const content = (
         <div className={styles.root}>
             <SkeletonItem size={24} />
             <div className={styles.body}>
-                {props.title === "custom" && <SkeletonItem />}
-                <SkeletonItem />
-                <SkeletonItem />
-                <SkeletonItem />
+                {skeletonItems}
             </div>
         </div>
     );
