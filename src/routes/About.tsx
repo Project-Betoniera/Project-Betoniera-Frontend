@@ -1,6 +1,7 @@
 import {
   Avatar,
   Body1,
+  Button,
   Card,
   CardHeader,
   Link,
@@ -27,7 +28,10 @@ const useStyles = makeStyles({
   profileCard: {
     display: "flex",
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "space-evenly",
+    flexGrow: 1,
+    rowGap: "1rem",
+    columnGap: "1rem",
   },
   profileDetails: {
     display: "flex",
@@ -45,27 +49,32 @@ export function About() {
 
     axios({
       method: "GET",
-      url: new URL("https://api.github.com/repos/Genio2003/Project-Betoniera-Frontend/contributors").toString(),
+      url: new URL(
+        "https://api.github.com/repos/Genio2003/Project-Betoniera-Frontend/contributors"
+      ).toString(),
       headers: {
         // Only for testing, will be removed once the project is public
-        "Authorization": "Bearer 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",
-      }
-    }).then((response) => {
-      response.data.forEach((contributor: any) => {
-        const user: User = {
-          id: contributor.id,
-          login: contributor.login,
-          avatar_url: contributor.avatar_url,
-          html_url: contributor.html_url,
-          contributions: contributor.contributions,
-        };
+        Authorization:
+          "Bearer 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",
+      },
+    })
+      .then((response) => {
+        response.data.forEach((contributor: any) => {
+          const user: User = {
+            id: contributor.id,
+            login: contributor.login,
+            avatar_url: contributor.avatar_url,
+            html_url: contributor.html_url,
+            contributions: contributor.contributions,
+          };
 
-        result.push(user);
-        setUsers(result);
+          result.push(user);
+          setUsers(result);
+        });
+      })
+      .catch(() => {
+        if (!users) setUsers([]);
       });
-    }).catch(() => {
-      if (!users) setUsers([]);
-    });
   }, []);
 
   return (
@@ -151,18 +160,27 @@ export function About() {
         <Card>
           <Title2>{"\u{1F9D1}\u{200D}\u{1F4BB}"} I nostri collaboratori</Title2>
         </Card>
-        <div className={globalStyles.list}>
+        <div className={globalStyles.grid}>
           {users ? (
             users.map((user) => (
-              <Card className={styles.profileCard} key={user.id}>
-                <Link href={user.html_url} target="_blank">
-                  <Avatar name={user.login} shape="square" size={56} image={{ src: user.avatar_url, alt: `${user.login}'s profile picture` }} />
-                </Link>
-                <div className={styles.profileDetails}>
-                  <Title3>{user.login}</Title3>
-                  <Subtitle2>{user.contributions} contribuzioni</Subtitle2>
+              <Button as="a" href={user.html_url} target="_blank" key={user.id}>
+                <div className={styles.profileCard}>
+                  <Avatar
+                    name={user.login}
+                    shape="square"
+                    size={56}
+                    image={{
+                      src: user.avatar_url,
+                      alt: `${user.login}'s profile picture`,
+                    }}
+                  />
+
+                  <div className={styles.profileDetails}>
+                    <Title3>{user.login}</Title3>
+                    <Subtitle2>{user.contributions} contribuzioni</Subtitle2>
+                  </div>
                 </div>
-              </Card>
+              </Button>
             ))
           ) : (
             <Spinner />
