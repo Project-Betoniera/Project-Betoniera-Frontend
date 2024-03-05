@@ -1,4 +1,4 @@
-import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Skeleton, SkeletonItem, Spinner, Subtitle2, Title2, makeStyles } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
@@ -9,8 +9,22 @@ import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
+const useStyles = makeStyles({
+    skeletonRoot: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem"
+    },
+    skeletonBody: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.2rem"
+    }
+})
+
 export function Home() {
     const globalStyles = useGlobalStyles();
+    const styles = useStyles();
 
     const requests = useRequests();
     const { data } = useContext(UserContext);
@@ -69,9 +83,9 @@ export function Home() {
         if (!events) {
             return (
                 <>
-                    <EventDetailsSkeleton as="card" hide={["course"]}/>
-                    <EventDetailsSkeleton as="card" hide={["course"]}/>
-                    <EventDetailsSkeleton as="card" hide={["course"]}/>
+                    <EventDetailsSkeleton as="card" hide={["course"]} />
+                    <EventDetailsSkeleton as="card" hide={["course"]} />
+                    <EventDetailsSkeleton as="card" hide={["course"]} />
                 </>
             )
         } else if (events.length === 0) {
@@ -83,6 +97,7 @@ export function Home() {
         }
     }
 
+    /*
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
         let changeTime = "";
         if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
@@ -104,6 +119,51 @@ export function Home() {
             </Popover>
         );
     }) : (<Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>);
+    */
+
+    const classroomSkeleton = (
+        <Card className={globalStyles.card}>
+            <Skeleton>
+                <div className={styles.skeletonRoot}>
+                    <SkeletonItem size={24} />
+                    <div className={styles.skeletonBody}>
+                        <SkeletonItem size={16} />
+                    </div>
+                </div>
+            </Skeleton>
+        </Card>
+    );
+
+    const renderClassrooms = () => {
+        if (!classrooms) {
+            const skeletonsElements = new Array(10).fill(classroomSkeleton);
+            return (skeletonsElements);
+        } else if (classrooms.length === 0) {
+            return <Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>;
+        } else {
+            return classrooms.filter(item => item.status.isFree).map((item) => {
+                let changeTime = "";
+                if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
+                    changeTime = "Fino a domani";
+                else
+                    changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+
+                return (
+                    <Popover key={item.classroom.id}>
+                        <PopoverTrigger>
+                            <Card className={globalStyles.card}>
+                                <CardHeader header={<Subtitle2>🏫 Aula {item.classroom.name}</Subtitle2>} />
+                                <Body1>{changeTime}</Body1>
+                            </Card>
+                        </PopoverTrigger>
+                        <PopoverSurface>
+                            {item.status.currentOrNextEvent ? <EventDetails event={item.status.currentOrNextEvent} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                        </PopoverSurface>
+                    </Popover>
+                );
+            });
+        }
+    }
 
     return (
         <>
@@ -133,7 +193,7 @@ export function Home() {
                     />
                 </Card>
                 <div className={globalStyles.grid}>
-                    {classrooms ? (renderClassrooms()) : (<Spinner size="huge" />)}
+                    {renderClassrooms()}
                 </div>
             </div>
         </>
