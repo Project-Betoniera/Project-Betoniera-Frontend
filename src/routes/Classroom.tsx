@@ -1,7 +1,7 @@
 import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
-import EventDetails from "../components/EventDetails";
+import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
 import { ThemeContext } from "../context/ThemeContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -98,9 +98,28 @@ export function Classroom() {
         }
     }, [filter, classrooms]);
 
+    /*
     const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
         <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
     )) : (<Subtitle2>Nessuna</Subtitle2>);
+    */
+
+    const renderEvents = () => {
+        if (!eventDialog || !eventDialog.events) {
+            return (
+                <>
+                    <EventDetailsSkeleton as="card" hide={["classroom"]}/>
+                    <EventDetailsSkeleton as="card" hide={["classroom"]}/>
+                </>
+            )
+        } else if (eventDialog.events.length === 0) {
+            return <Subtitle2>Nessuna</Subtitle2>;
+        } else {
+            return eventDialog.events.map((event) => (
+                <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
+            ));
+        }
+    }
 
     const renderClassrooms = () => {
         return filteredClassrooms.length === 0 ? [
@@ -203,7 +222,7 @@ export function Classroom() {
                                 <Subtitle2>📅 {dateTime.toLocaleDateString([], { dateStyle: "medium" })}</Subtitle2>
                             </DialogTitle>
                             <DialogContent className={globalStyles.list}>
-                                {eventDialog.events === null ? <Spinner size="huge" /> : renderEvents()}
+                                {renderEvents()}
                             </DialogContent>
                             <DialogActions>
                                 <DialogTrigger>
