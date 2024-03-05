@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Body1,
   Card,
   CardHeader,
@@ -19,16 +20,14 @@ type User = {
   login: string;
   avatar_url: string;
   html_url: string;
-  name: string;
+  contributions: number;
 };
 
 const useStyles = makeStyles({
   profileCard: {
     display: "flex",
     flexDirection: "row",
-  },
-  profilePicture: {
-    width: "4rem",
+    alignItems: "center",
   },
   profileDetails: {
     display: "flex",
@@ -58,7 +57,7 @@ export function About() {
           login: contributor.login,
           avatar_url: contributor.avatar_url,
           html_url: contributor.html_url,
-          name: contributor.name,
+          contributions: contributor.contributions,
         };
 
         result.push(user);
@@ -152,25 +151,23 @@ export function About() {
         <Card>
           <Title2>{"\u{1F9D1}\u{200D}\u{1F4BB}"} I nostri collaboratori</Title2>
         </Card>
-        {users ? (
-          users.map((user) => (
-            <Card className={styles.profileCard} key={user.id}>
-              <Link href={user.html_url} target="_blank">
-                <img
-                  className={styles.profilePicture}
-                  src={user.avatar_url}
-                  alt={`${user.name}'s profile picture`}
-                />
-              </Link>
-              <div className={styles.profileDetails}>
-                <Title3>{user.login}</Title3>
-                <Subtitle2>{user.name}</Subtitle2>
-              </div>
-            </Card>
-          ))
-        ) : (
-          <Spinner />
-        )}
+        <div className={globalStyles.list}>
+          {users ? (
+            users.map((user) => (
+              <Card className={styles.profileCard} key={user.id}>
+                <Link href={user.html_url} target="_blank">
+                  <Avatar name={user.login} shape="square" size={56} image={{ src: user.avatar_url, alt: `${user.login}'s profile picture` }} />
+                </Link>
+                <div className={styles.profileDetails}>
+                  <Title3>{user.login}</Title3>
+                  <Subtitle2>{user.contributions} contribuzioni</Subtitle2>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <Spinner />
+          )}
+        </div>
       </div>
     </div>
   );
