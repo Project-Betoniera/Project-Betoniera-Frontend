@@ -108,12 +108,6 @@ export function Classroom() {
         }
     }, [filter, classrooms]);
 
-    /*
-    const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
-        <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
-    )) : (<Subtitle2>Nessuna</Subtitle2>);
-    */
-
     const renderEvents = () => {
         if (!eventDialog || !eventDialog.events) {
             return (
@@ -130,56 +124,6 @@ export function Classroom() {
             ));
         }
     }
-
-    /*
-    const renderClassrooms = () => {
-        return filteredClassrooms.length === 0 ? [
-            <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
-        ] : filteredClassrooms.map((item) => {
-
-            const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
-            let changeTime = "";
-
-            if (!item.status.statusChangeAt)
-                changeTime = "Nessun evento programmato.";
-            else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
-            else
-                changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
-
-            return (
-                <Card key={item.classroom.id} className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)} onClick={() => {
-                    setEventDialog({
-                        classroom: item.classroom,
-                        events: null,
-                        open: true
-                    });
-
-                    const start = new Date(dateTime);
-                    start.setHours(0, 0, 0, 0);
-                    const end = new Date(start);
-                    end.setDate(end.getDate() + 1);
-
-                    requests.event.byClassroom(start, end, item.classroom.id)
-                        .then(events => setEventDialog(eventDialog => {
-                            if (!eventDialog) return null;
-                            return {
-                                ...eventDialog,
-                                events,
-                            };
-                        }));
-                }}>
-                    <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
-                    <div>
-                        <Body1>{status}</Body1>
-                        <br />
-                        <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
-                    </div>
-                </Card>
-            );
-        });
-    };
-    */
 
     const classroomSkeleton = (
         <Card className={globalStyles.card}>

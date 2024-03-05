@@ -69,16 +69,6 @@ export function Home() {
             .then(() => setShowClassroomsSideSpinner(false));
     }, [now]);
 
-    /*
-    const renderEvents = () => events && events.length > 0 ? (
-        events.map((event) => (
-            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
-        ))
-    ) : (
-        <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
-    );
-    */
-
     const renderEvents = () => {
         if (!events) {
             return (
@@ -96,30 +86,6 @@ export function Home() {
             ));
         }
     }
-
-    /*
-    const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
-        let changeTime = "";
-        if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
-            changeTime = "Fino a domani";
-        else
-            changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
-
-        return (
-            <Popover key={item.classroom.id}>
-                <PopoverTrigger>
-                    <Card className={globalStyles.card}>
-                        <CardHeader header={<Subtitle2>🏫 Aula {item.classroom.name}</Subtitle2>} />
-                        <Body1>{changeTime}</Body1>
-                    </Card>
-                </PopoverTrigger>
-                <PopoverSurface>
-                    {item.status.currentOrNextEvent ? <EventDetails event={item.status.currentOrNextEvent} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
-                </PopoverSurface>
-            </Popover>
-        );
-    }) : (<Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>);
-    */
 
     const classroomSkeleton = (
         <Card className={globalStyles.card}>
