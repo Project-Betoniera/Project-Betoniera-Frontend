@@ -1,7 +1,7 @@
 import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
-import EventDetails from "../components/EventDetails";
+import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -55,6 +55,7 @@ export function Home() {
             .then(() => setShowClassroomsSideSpinner(false));
     }, [now]);
 
+    /*
     const renderEvents = () => events && events.length > 0 ? (
         events.map((event) => (
             <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
@@ -62,6 +63,25 @@ export function Home() {
     ) : (
         <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
     );
+    */
+
+    const renderEvents = () => {
+        if (!events) {
+            return (
+                <>
+                    <EventDetailsSkeleton as="card" title="subject"/>
+                    <EventDetailsSkeleton as="card" title="subject"/>
+                    <EventDetailsSkeleton as="card" title="subject"/>
+                </>
+            )
+        } else if (events.length === 0) {
+            return <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>;
+        } else {
+            return events.map((event) => (
+                <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
+            ));
+        }
+    }
 
     const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
         let changeTime = "";
@@ -100,7 +120,7 @@ export function Home() {
                     }} />
                 </Card>
                 <div className={globalStyles.grid}>
-                    {events ? (renderEvents()) : (<Spinner size="huge" />)}
+                    {renderEvents()}
                 </div>
             </div>
 

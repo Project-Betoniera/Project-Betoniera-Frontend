@@ -1,4 +1,4 @@
-import { Body1, Body2, Card, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
+import { Body1, Body2, Card, Skeleton, SkeletonItem, Subtitle1, Subtitle2, Title1, Title2, Title3, makeStyles, mergeClasses, tokens } from "@fluentui/react-components";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { EventDto } from "../dto/EventDto";
@@ -146,4 +146,55 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
     ) : content;
 };
 
+
+export type EventDetailsSkeletonProps = {
+    title: "time" | "subject" | "classroom" | "teacher" | "course" | "custom";
+    as?: "card" | "base" | undefined;
+};
+
+const useSkeletonStyles = makeStyles({
+    root: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem"
+    },
+    body: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.2rem"
+    }
+});
+
+/**
+ * A skeleton component used to display a loading state of the EventDetails component.
+ * @param props the properties of the component.
+ */
+const EventDetailsSkeleton: FunctionComponent<EventDetailsSkeletonProps> = (props: EventDetailsSkeletonProps) => {
+    const styles = useSkeletonStyles();
+    const globalStyles = useGlobalStyles();
+
+    const content = (
+        <div className={styles.root}>
+            <SkeletonItem size={24} />
+            <div className={styles.body}>
+                {props.title === "custom" && <SkeletonItem />}
+                <SkeletonItem />
+                <SkeletonItem />
+                <SkeletonItem />
+            </div>
+        </div>
+    );
+
+    return props.as === "card" ? (
+        <Card className={globalStyles.card}>
+            <Skeleton>
+                {content}
+            </Skeleton>
+        </Card>
+    ) : (
+        content
+    );
+}
+
 export default EventDetails;
+export { EventDetailsSkeleton };
