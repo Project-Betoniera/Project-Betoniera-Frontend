@@ -1,7 +1,9 @@
 import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Skeleton, SkeletonItem, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
-import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
+import EventDetails from "../components/EventDetails";
+import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetails";
 import { ThemeContext } from "../context/ThemeContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -52,16 +54,6 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 578px)": {
             alignSelf: "stretch",
         }
-    },
-    skeletonRoot: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: "0.5rem"
-    },
-    skeletonBody: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: "0.2rem"
     }
 });
 
@@ -125,24 +117,10 @@ export function Classroom() {
         }
     }
 
-    const classroomSkeleton = (
-        <Card className={globalStyles.card}>
-            <Skeleton>
-                <div className={styles.skeletonRoot}>
-                    <SkeletonItem size={24} />
-                    <div className={styles.skeletonBody}>
-                        <SkeletonItem size={16} />
-                        <SkeletonItem size={16} />
-                    </div>
-                </div>
-            </Skeleton>
-        </Card>
-    );
-
     const renderClassrooms = () => {
         if (!classrooms) {
-            const skeletonsElements = new Array(15).fill(classroomSkeleton);
-            return (skeletonsElements);
+            const skeletonElements = new Array(15).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
+            return (skeletonElements);
         } else if (filteredClassrooms.length === 0) {
             return <Card className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>;
         } else {

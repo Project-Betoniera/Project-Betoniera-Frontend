@@ -1,7 +1,9 @@
-import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Skeleton, SkeletonItem, Spinner, Subtitle2, Title2, makeStyles } from "@fluentui/react-components";
+import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinner, Subtitle2, Title2 } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
-import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
+import EventDetails from "../components/EventDetails";
+import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetails";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -9,22 +11,8 @@ import { EventDto } from "../dto/EventDto";
 import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
-const useStyles = makeStyles({
-    skeletonRoot: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: "0.5rem"
-    },
-    skeletonBody: {
-        display: "flex",
-        flexDirection: "column",
-        rowGap: "0.2rem"
-    }
-})
-
 export function Home() {
     const globalStyles = useGlobalStyles();
-    const styles = useStyles();
 
     const requests = useRequests();
     const { data } = useContext(UserContext);
@@ -87,23 +75,10 @@ export function Home() {
         }
     }
 
-    const classroomSkeleton = (
-        <Card className={globalStyles.card}>
-            <Skeleton>
-                <div className={styles.skeletonRoot}>
-                    <SkeletonItem size={24} />
-                    <div className={styles.skeletonBody}>
-                        <SkeletonItem size={16} />
-                    </div>
-                </div>
-            </Skeleton>
-        </Card>
-    );
-
     const renderClassrooms = () => {
         if (!classrooms) {
-            const skeletonsElements = new Array(10).fill(classroomSkeleton);
-            return (skeletonsElements);
+            const skeletonElements = new Array(10).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
+            return (skeletonElements);
         } else if (classrooms.length === 0) {
             return <Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>;
         } else {
