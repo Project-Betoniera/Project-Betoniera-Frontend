@@ -1,4 +1,4 @@
-import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
+import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Select, SelectOnChangeData, Skeleton, SkeletonItem, Spinner, Subtitle2, Title2, Title3, makeStyles, mergeClasses, tokens, webLightTheme } from "@fluentui/react-components";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails, { EventDetailsSkeleton } from "../components/EventDetails";
@@ -52,6 +52,16 @@ const useStyles = makeStyles({
         "@media screen and (max-width: 578px)": {
             alignSelf: "stretch",
         }
+    },
+    skeletonRoot: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.5rem"
+    },
+    skeletonBody: {
+        display: "flex",
+        flexDirection: "column",
+        rowGap: "0.2rem"
     }
 });
 
@@ -121,6 +131,7 @@ export function Classroom() {
         }
     }
 
+    /*
     const renderClassrooms = () => {
         return filteredClassrooms.length === 0 ? [
             <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
@@ -168,6 +179,74 @@ export function Classroom() {
             );
         });
     };
+    */
+
+    const classroomSkeleton = (
+        <Card className={globalStyles.card}>
+            <Skeleton>
+                <div className={styles.skeletonRoot}>
+                    <SkeletonItem size={24} />
+                    <div className={styles.skeletonBody}>
+                        <SkeletonItem size={16} />
+                        <SkeletonItem size={16} />
+                    </div>
+                </div>
+            </Skeleton>
+        </Card>
+    );
+
+    const renderClassrooms = () => {
+        if (!classrooms) {
+            const skeletonsElements = new Array(15).fill(classroomSkeleton);
+            return (skeletonsElements);
+        } else if (filteredClassrooms.length === 0) {
+            return <Card className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>;
+        } else {
+            return filteredClassrooms.map((item) => {
+
+                const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
+                let changeTime = "";
+
+                if (!item.status.statusChangeAt)
+                    changeTime = "Nessun evento programmato.";
+                else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
+                    changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+                else
+                    changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+
+                return (
+                    <Card key={item.classroom.id} className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)} onClick={() => {
+                        setEventDialog({
+                            classroom: item.classroom,
+                            events: null,
+                            open: true
+                        });
+
+                        const start = new Date(dateTime);
+                        start.setHours(0, 0, 0, 0);
+                        const end = new Date(start);
+                        end.setDate(end.getDate() + 1);
+
+                        requests.event.byClassroom(start, end, item.classroom.id)
+                            .then(events => setEventDialog(eventDialog => {
+                                if (!eventDialog) return null;
+                                return {
+                                    ...eventDialog,
+                                    events,
+                                };
+                            }));
+                    }}>
+                        <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
+                        <div>
+                            <Body1>{status}</Body1>
+                            <br />
+                            <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
+                        </div>
+                    </Card>
+                );
+            });
+        }
+    }
 
     function onFilterChange(_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) {
         if (data.value !== "all" &&
@@ -203,7 +282,7 @@ export function Classroom() {
             </Card>
 
             <div className={globalStyles.grid}>
-                {classrooms ? renderClassrooms() : <Spinner size="huge" />}
+                {renderClassrooms()}
             </div>
 
             {eventDialog && (
