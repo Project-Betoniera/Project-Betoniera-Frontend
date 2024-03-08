@@ -2,20 +2,24 @@ import { Card, Skeleton, SkeletonItem, makeStyles } from "@fluentui/react-compon
 import { FunctionComponent } from "react";
 import { useGlobalStyles } from "../../globalStyles";
 
+type ClassroomDetailsSkeletonProps = {
+    lines?: number;
+};
+
 const useStyles = makeStyles({
     skeletonRoot: {
         display: "flex",
         flexDirection: "column",
-        rowGap: "0.5rem"
+        rowGap: "0.8rem"
     },
     skeletonBody: {
         display: "flex",
         flexDirection: "column",
-        rowGap: "0.2rem"
+        rowGap: "0.5rem"
     }
-})
+});
 
-const ClassroomDetailsSkeleton: FunctionComponent = () => {
+const ClassroomDetailsSkeleton: FunctionComponent<ClassroomDetailsSkeletonProps> = (props) => {
     const styles = useStyles();
     const globalStyles = useGlobalStyles();
 
@@ -25,12 +29,12 @@ const ClassroomDetailsSkeleton: FunctionComponent = () => {
                 <div className={styles.skeletonRoot}>
                     <SkeletonItem size={24} />
                     <div className={styles.skeletonBody}>
-                        <SkeletonItem size={16} />
+                        {new Array(props.lines || 1).fill(null).map((_, index) => <SkeletonItem key={index} size={16} />)}
                     </div>
                 </div>
             </Skeleton>
         </Card>
     );
-}
+};
 
 export default ClassroomDetailsSkeleton;

@@ -3,7 +3,7 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
-import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetails";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetailsSkeleton";
 import { ThemeContext } from "../context/ThemeContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -104,10 +104,10 @@ export function Classroom() {
         if (!eventDialog || !eventDialog.events) {
             return (
                 <>
-                    <EventDetailsSkeleton as="card" hide={["classroom"]}/>
-                    <EventDetailsSkeleton as="card" hide={["classroom"]}/>
+                    <EventDetailsSkeleton as="card" lines={3} />
+                    <EventDetailsSkeleton as="card" lines={3} />
                 </>
-            )
+            );
         } else if (eventDialog.events.length === 0) {
             return <Subtitle2>Nessuna</Subtitle2>;
         } else {
@@ -115,12 +115,11 @@ export function Classroom() {
                 <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
             ));
         }
-    }
+    };
 
     const renderClassrooms = () => {
         if (!classrooms) {
-            const skeletonElements = new Array(15).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
-            return (skeletonElements);
+            return new Array(30).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} lines={2} />);
         } else if (filteredClassrooms.length === 0) {
             return <Card className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>;
         } else {
@@ -168,7 +167,7 @@ export function Classroom() {
                 );
             });
         }
-    }
+    };
 
     function onFilterChange(_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) {
         if (data.value !== "all" &&

@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
 import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
-import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetails";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetailsSkeleton";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -59,13 +59,7 @@ export function Home() {
 
     const renderEvents = () => {
         if (!events) {
-            return (
-                <>
-                    <EventDetailsSkeleton as="card" hide={["course"]} />
-                    <EventDetailsSkeleton as="card" hide={["course"]} />
-                    <EventDetailsSkeleton as="card" hide={["course"]} />
-                </>
-            )
+            return new Array(3).fill(null).map((_, index) => <EventDetailsSkeleton key={index} as="card" lines={3} />);
         } else if (events.length === 0) {
             return <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>;
         } else {
@@ -73,12 +67,11 @@ export function Home() {
                 <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
             ));
         }
-    }
+    };
 
     const renderClassrooms = () => {
         if (!classrooms) {
-            const skeletonElements = new Array(10).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
-            return (skeletonElements);
+            return new Array(10).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
         } else if (classrooms.length === 0) {
             return <Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>;
         } else {
@@ -104,7 +97,7 @@ export function Home() {
                 );
             });
         }
-    }
+    };
 
     return (
         <>
