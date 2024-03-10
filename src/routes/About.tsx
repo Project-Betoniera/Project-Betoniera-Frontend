@@ -50,12 +50,11 @@ export function About() {
     axios({
       method: "GET",
       url: new URL(
-        "https://api.github.com/repos/Genio2003/Project-Betoniera-Frontend/contributors"
+        "https://api.github.com/repos/Project-Betoniera/Project-Betoniera-Frontend/contributors"
       ).toString(),
       headers: {
         // Only for testing, will be removed once the project is public
-        Authorization:
-          "Bearer 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",
+        Authorization: __REPO_METADATA_API_KEY__,
       },
     })
       .then((response) => {

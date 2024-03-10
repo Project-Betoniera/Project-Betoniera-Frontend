@@ -13,6 +13,7 @@ new URL(apiUrl);
 const plausibleDomain = process.env.PLAUSIBLE_DOMAIN || null;
 const plausibleScript = process.env.PLAUSIBLE_SCRIPT || "https://plausible.io/js/plausible.js";
 const isBetaBuild = process.env.IS_BETA_BUILD === "true";
+const repoMetadataApiKey = process.env.REPO_METADATA_API_KEY
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -21,6 +22,7 @@ export default defineConfig({
     __PLAUSIBLE_DOMAIN__: JSON.stringify(plausibleDomain),
     __PLAUSIBLE_SCRIPT__: JSON.stringify(plausibleScript),
     __IS_BETA_BUILD__: isBetaBuild,
+    __REPO_METADATA_API_KEY__: JSON.stringify(repoMetadataApiKey)
   },
   plugins: [react(), VitePWA({
     registerType: "prompt", devOptions: { enabled: true }, manifest: {
