@@ -5,11 +5,10 @@ import {
   Card,
   CardHeader,
   Link,
-  Spinner,
+  Skeleton,
+  SkeletonItem,
   Subtitle1,
-  Subtitle2,
   Title2,
-  Title3,
   makeStyles,
 } from "@fluentui/react-components";
 import { useGlobalStyles } from "../globalStyles";
@@ -29,15 +28,19 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-evenly",
+    alignItems: "center",
     flexGrow: 1,
     rowGap: "1rem",
     columnGap: "1rem",
   },
   profileDetails: {
     display: "flex",
+    flexGrow: 1,
+    rowGap: "0.5rem",
     flexDirection: "column",
   },
 });
+
 export function About() {
   const styles = useStyles();
   const globalStyles = useGlobalStyles();
@@ -175,15 +178,25 @@ export function About() {
                   />
 
                   <div className={styles.profileDetails}>
-                    <Title3>{user.login}</Title3>
-                    <Subtitle2>{user.contributions} contribuzioni</Subtitle2>
+                    <Subtitle1>{user.login}</Subtitle1>
+                    <Body1>{user.contributions} contribuzioni</Body1>
                   </div>
                 </div>
               </Button>
             ))
-          ) : (
-            <Spinner />
-          )}
+          ) :
+            new Array(5).fill(null).map((_, index) => (
+              <Card key={index}>
+                <Skeleton className={styles.profileCard}>
+                  <SkeletonItem shape="square" size={56} />
+                  <Skeleton className={styles.profileDetails}>
+                    <SkeletonItem size={24} />
+                    <SkeletonItem size={16} />
+                  </Skeleton>
+                </Skeleton>
+              </Card>
+            ))
+          }
         </div>
       </div>
     </div>
