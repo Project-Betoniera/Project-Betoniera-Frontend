@@ -75,10 +75,10 @@ jobs:
         name: Deploy to production server
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          host: ${{ vars.SSH_HOST }}
+          username: ${{ vars.SSH_USERNAME }}
           key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
+          port: ${{ vars.SSH_PORT }}
           script: |
             docker stop project-betoniera-frontend
             docker rm project-betoniera-frontend
