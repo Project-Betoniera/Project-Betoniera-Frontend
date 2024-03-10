@@ -2,6 +2,8 @@ import { Body1, Card, CardHeader, Popover, PopoverSurface, PopoverTrigger, Spinn
 import { useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
+import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetailsSkeleton";
 import { TimekeeperContext } from "../context/TimekeeperContext";
 import { UserContext } from "../context/UserContext";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -55,35 +57,47 @@ export function Home() {
             .then(() => setShowClassroomsSideSpinner(false));
     }, [now]);
 
-    const renderEvents = () => events && events.length > 0 ? (
-        events.map((event) => (
-            <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
-        ))
-    ) : (
-        <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>
-    );
+    const renderEvents = () => {
+        if (!events) {
+            return new Array(3).fill(null).map((_, index) => <EventDetailsSkeleton key={index} as="card" lines={3} />);
+        } else if (events.length === 0) {
+            return <Card className={globalStyles.card}><Subtitle2>😊 Nessuna lezione {dateTime.toDateString() !== now.toDateString() ? `${"programmata per il " + dateTime.toLocaleDateString([], { dateStyle: "medium" })}` : "rimasta per oggi"}</Subtitle2></Card>;
+        } else {
+            return events.map((event) => (
+                <EventDetails as="card" key={event.id} event={event} title="subject" hide={["course"]} />
+            ));
+        }
+    };
 
-    const renderClassrooms = () => classrooms && classrooms.length > 0 ? classrooms.filter(item => item.status.isFree).map((item) => {
-        let changeTime = "";
-        if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
-            changeTime = "Fino a domani";
-        else
-            changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+    const renderClassrooms = () => {
+        if (!classrooms) {
+            return new Array(10).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} />);
+        } else if (classrooms.length === 0) {
+            return <Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>;
+        } else {
+            return classrooms.filter(item => item.status.isFree).map((item) => {
+                let changeTime = "";
+                if (!item.status.statusChangeAt || item.status.statusChangeAt.getDate() != now.getDate())
+                    changeTime = "Fino a domani";
+                else
+                    changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
 
-        return (
-            <Popover key={item.classroom.id}>
-                <PopoverTrigger>
-                    <Card className={globalStyles.card}>
-                        <CardHeader header={<Subtitle2>🏫 Aula {item.classroom.name}</Subtitle2>} />
-                        <Body1>{changeTime}</Body1>
-                    </Card>
-                </PopoverTrigger>
-                <PopoverSurface>
-                    {item.status.currentOrNextEvent ? <EventDetails event={item.status.currentOrNextEvent} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
-                </PopoverSurface>
-            </Popover>
-        );
-    }) : (<Card className={globalStyles.card}><Subtitle2>😒 Nessuna aula libera al momento</Subtitle2></Card>);
+                return (
+                    <Popover key={item.classroom.id}>
+                        <PopoverTrigger>
+                            <Card className={globalStyles.card}>
+                                <CardHeader header={<Subtitle2>🏫 Aula {item.classroom.name}</Subtitle2>} />
+                                <Body1>{changeTime}</Body1>
+                            </Card>
+                        </PopoverTrigger>
+                        <PopoverSurface>
+                            {item.status.currentOrNextEvent ? <EventDetails event={item.status.currentOrNextEvent} title="custom" customTitle="Prossima lezione" linkToCalendar={true} hide={["classroom"]} /> : <Subtitle2>Nessuna lezione</Subtitle2>}
+                        </PopoverSurface>
+                    </Popover>
+                );
+            });
+        }
+    };
 
     return (
         <>
@@ -100,7 +114,7 @@ export function Home() {
                     }} />
                 </Card>
                 <div className={globalStyles.grid}>
-                    {events ? (renderEvents()) : (<Spinner size="huge" />)}
+                    {renderEvents()}
                 </div>
             </div>
 
@@ -113,7 +127,7 @@ export function Home() {
                     />
                 </Card>
                 <div className={globalStyles.grid}>
-                    {classrooms ? (renderClassrooms()) : (<Spinner size="huge" />)}
+                    {renderClassrooms()}
                 </div>
             </div>
         </>

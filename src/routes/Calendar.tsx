@@ -1,4 +1,4 @@
-import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Subtitle1, Subtitle2, Title3, Tooltip, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
+import { Badge, Button, Caption1, Caption2, Card, Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Drawer, DrawerBody, DrawerHeader, DrawerHeaderTitle, Skeleton, SkeletonItem, Subtitle1, Subtitle2, Title3, Tooltip, Tree, TreeItem, TreeItemLayout, makeStyles, mergeClasses, shorthands, tokens } from "@fluentui/react-components";
 import { ArrowExportRegular, BackpackFilled, BuildingFilled, CalendarMonthRegular, CalendarWeekNumbersRegular, DismissFilled, DismissRegular, EyeFilled, EyeOffFilled, PersonFilled, SettingsRegular, StarFilled, StarRegular } from "@fluentui/react-icons";
 import { ReactNode, useContext, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -228,6 +228,7 @@ export function Calendar() {
     const [now] = useState(new Date());
     const [dateTime, setDateTime] = useState(new Date(now));
 
+    const [isLoading, setLoading] = useState<boolean>(true);
     const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
     const [calendarTitle, setCalendarTitle] = useState<string>("");
     const [isDefault, setIsDefault] = useState<boolean>(false);
@@ -274,6 +275,8 @@ export function Calendar() {
      * The `from` and `to` parameters can be used to specify a custom range of dates to get events for.
      */
     async function getEvents(calendar: Calendar, from: Date = calendarView[0], to: Date = calendarView[calendarView.length - 1]) {
+        setLoading(true);
+
         let newEvents: EventDto[] = [];
 
         switch (calendar.selection.type) {
@@ -287,6 +290,8 @@ export function Calendar() {
                 newEvents = await requests.event.byTeacher(from, to, calendar.selection.id);
                 break;
         }
+
+        setLoading(false);
 
         // Return only the events that are NOT already in the events list
         return newEvents
@@ -499,6 +504,16 @@ export function Calendar() {
      * Furthermore, each card is clickable and opens a dialog with the detailed list of events for the day.
      */
     function renderCurrentCalendarView() {
+
+        function renderSkeletons() {
+            const count = Math.round(Math.random() * 3);
+            const elements = new Array(count).fill(null).map((_, index) => <SkeletonItem key={index} size={16} />);
+
+            return (
+                <Skeleton className={styles.eventContainer}>{elements}</Skeleton>
+            );
+        }
+
         /**
          * Renders a preview list of the events passed as parameter.
          * @param events The events to render
@@ -578,8 +593,7 @@ export function Calendar() {
                                 {isCurrentViewMonth && filteredEvents.length > 0 ? <div>{renderBadges(day, filteredCalendars, filteredEvents)}</div> : undefined}
                             </div>
                             <div className={styles.eventContainer} style={screenMediaQuery && !isCurrentViewMonth ? { overflowY: "auto" } : undefined}>
-                                {/* TODO Show skeletons when loading events */}
-                                {renderPreviewEvents(filteredEvents)}
+                                {isLoading && filteredEvents.length === 0 ? renderSkeletons() : renderPreviewEvents(filteredEvents)}
                             </div>
                         </Card>
                     </DialogTrigger>
