@@ -2,6 +2,8 @@ import { Body1, Button, Card, CardFooter, CardHeader, Dialog, DialogActions, Dia
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { DateSelector } from "../components/DateSelector";
 import EventDetails from "../components/EventDetails";
+import EventDetailsSkeleton from "../components/skeletons/EventDetailsSkeleton";
+import ClassroomDetailsSkeleton from "../components/skeletons/ClassroomDetailsSkeleton";
 import { ThemeContext } from "../context/ThemeContext";
 import { ClassroomDto } from "../dto/ClassroomDto";
 import { ClassroomStatus } from "../dto/ClassroomStatus";
@@ -98,56 +100,73 @@ export function Classroom() {
         }
     }, [filter, classrooms]);
 
-    const renderEvents = () => eventDialog && eventDialog.events && eventDialog.events.length > 0 ? eventDialog.events.map((event) => (
-        <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
-    )) : (<Subtitle2>Nessuna</Subtitle2>);
+    const renderEvents = () => {
+        if (!eventDialog || !eventDialog.events) {
+            return (
+                <>
+                    <EventDetailsSkeleton as="card" lines={3} />
+                    <EventDetailsSkeleton as="card" lines={3} />
+                </>
+            );
+        } else if (eventDialog.events.length === 0) {
+            return <Subtitle2>Nessuna</Subtitle2>;
+        } else {
+            return eventDialog.events.map((event) => (
+                <EventDetails as="card" linkToCalendar key={event.id} event={event} title="subject" hide={["classroom"]} />
+            ));
+        }
+    };
 
     const renderClassrooms = () => {
-        return filteredClassrooms.length === 0 ? [
-            <Card key={0} className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>
-        ] : filteredClassrooms.map((item) => {
+        if (!classrooms) {
+            return new Array(30).fill(null).map((_, index) => <ClassroomDetailsSkeleton key={index} lines={2} />);
+        } else if (filteredClassrooms.length === 0) {
+            return <Card className={globalStyles.card}>🚫 Nessuna aula {filter === "free" ? "libera" : "occupata"}</Card>;
+        } else {
+            return filteredClassrooms.map((item) => {
 
-            const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
-            let changeTime = "";
+                const status = item.status.isFree ? (<>🟢 <strong>Libera</strong></>) : <>🔴 <strong>Occupata</strong></>;
+                let changeTime = "";
 
-            if (!item.status.statusChangeAt)
-                changeTime = "Nessun evento programmato.";
-            else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
-                changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
-            else
-                changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+                if (!item.status.statusChangeAt)
+                    changeTime = "Nessun evento programmato.";
+                else if (item.status.statusChangeAt.getDate() == dateTime.getDate())
+                    changeTime = "Fino alle " + item.status.statusChangeAt.toLocaleTimeString([], { timeStyle: "short" });
+                else
+                    changeTime = item.status.statusChangeAt.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
 
-            return (
-                <Card key={item.classroom.id} className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)} onClick={() => {
-                    setEventDialog({
-                        classroom: item.classroom,
-                        events: null,
-                        open: true
-                    });
+                return (
+                    <Card key={item.classroom.id} className={mergeClasses(globalStyles.card, item.status.isFree ? themeStyles.cardFree : themeStyles.cardBusy)} onClick={() => {
+                        setEventDialog({
+                            classroom: item.classroom,
+                            events: null,
+                            open: true
+                        });
 
-                    const start = new Date(dateTime);
-                    start.setHours(0, 0, 0, 0);
-                    const end = new Date(start);
-                    end.setDate(end.getDate() + 1);
+                        const start = new Date(dateTime);
+                        start.setHours(0, 0, 0, 0);
+                        const end = new Date(start);
+                        end.setDate(end.getDate() + 1);
 
-                    requests.event.byClassroom(start, end, item.classroom.id)
-                        .then(events => setEventDialog(eventDialog => {
-                            if (!eventDialog) return null;
-                            return {
-                                ...eventDialog,
-                                events,
-                            };
-                        }));
-                }}>
-                    <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
-                    <div>
-                        <Body1>{status}</Body1>
-                        <br />
-                        <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
-                    </div>
-                </Card>
-            );
-        });
+                        requests.event.byClassroom(start, end, item.classroom.id)
+                            .then(events => setEventDialog(eventDialog => {
+                                if (!eventDialog) return null;
+                                return {
+                                    ...eventDialog,
+                                    events,
+                                };
+                            }));
+                    }}>
+                        <CardHeader header={<Subtitle2>🏫 {item.classroom.name}</Subtitle2>} />
+                        <div>
+                            <Body1>{status}</Body1>
+                            <br />
+                            <Body1>{getClockEmoji(item.status.statusChangeAt)} {changeTime}</Body1>
+                        </div>
+                    </Card>
+                );
+            });
+        }
     };
 
     function onFilterChange(_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) {
@@ -184,7 +203,7 @@ export function Classroom() {
             </Card>
 
             <div className={globalStyles.grid}>
-                {classrooms ? renderClassrooms() : <Spinner size="huge" />}
+                {renderClassrooms()}
             </div>
 
             {eventDialog && (
@@ -203,7 +222,7 @@ export function Classroom() {
                                 <Subtitle2>📅 {dateTime.toLocaleDateString([], { dateStyle: "medium" })}</Subtitle2>
                             </DialogTitle>
                             <DialogContent className={globalStyles.list}>
-                                {eventDialog.events === null ? <Spinner size="huge" /> : renderEvents()}
+                                {renderEvents()}
                             </DialogContent>
                             <DialogActions>
                                 <DialogTrigger>

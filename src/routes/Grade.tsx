@@ -1,12 +1,19 @@
-import { Card, CardHeader, DataGrid, DataGridBody, DataGridCell, DataGridHeader, DataGridHeaderCell, DataGridRow, Spinner, Subtitle2, Tab, TabList, Title2, createTableColumn } from "@fluentui/react-components";
+import { Card, CardHeader, DataGrid, DataGridBody, DataGridCell, DataGridHeader, DataGridHeaderCell, DataGridRow, Skeleton, SkeletonItem, Subtitle2, Tab, TabList, Title2, createTableColumn, makeStyles } from "@fluentui/react-components";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import { GradeDto, GradeGroupDto } from "../dto/GradeDto";
 import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
+const useStyles = makeStyles({
+    flexGrow: {
+        flexGrow: 1
+    }
+});
+
 export function Grade() {
     const requests = useRequests();
+    const styles = useStyles();
     const globalStyles = useGlobalStyles();
     const { data } = useContext(UserContext);
     const user = data?.user || { name: "", email: "", year: 0, isAdmin: false };
@@ -100,36 +107,28 @@ export function Grade() {
                 <div className={globalStyles.list}>
                     {(selectedGroup !== undefined || grades !== undefined) && (
                         <Card className={globalStyles.card}>
-                            {
-                                grades === undefined ? (
-                                    <Spinner size="huge" />
-                                ) : (
-                                    <DataGrid
-                                        items={grades}
-                                        columns={dataGridColumns}
-                                        sortable
-                                    >
-                                        <DataGridHeader>
-                                            <DataGridRow>
-                                                {({ renderHeaderCell }) => (
-                                                    <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
-                                                )}
-                                            </DataGridRow>
-                                        </DataGridHeader>
-                                        <DataGridBody<GradeDto>>
-                                            {({ item, rowId }) => (
-                                                <DataGridRow<GradeDto>
-                                                    key={rowId}
-                                                >
-                                                    {({ renderCell }) => (
-                                                        <DataGridCell>{renderCell(item)}</DataGridCell>
-                                                    )}
-                                                </DataGridRow>
-                                            )}
-                                        </DataGridBody>
-                                    </DataGrid>
-                                )
-                            }
+                            <DataGrid
+                                items={grades || new Array<GradeDto>(20).fill({ grade: null, module: { code: "", name: "" } })}
+                                columns={dataGridColumns}
+                                sortable
+                            >
+                                <DataGridHeader>
+                                    <DataGridRow>
+                                        {({ renderHeaderCell }) => (
+                                            <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>
+                                        )}
+                                    </DataGridRow>
+                                </DataGridHeader>
+                                <DataGridBody<GradeDto>>
+                                    {({ item, rowId }) => (
+                                        <DataGridRow<GradeDto>
+                                            key={rowId}
+                                        >
+                                            {({ renderCell }) => (<DataGridCell>{grades ? renderCell(item) : (<Skeleton className={styles.flexGrow}><SkeletonItem size={16} /></Skeleton>)}</DataGridCell>)}
+                                        </DataGridRow>
+                                    )}
+                                </DataGridBody>
+                            </DataGrid>
                         </Card>
                     )}
                 </div>
