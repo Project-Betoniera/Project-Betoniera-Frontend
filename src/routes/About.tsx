@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardHeader,
+  CompoundButton,
   Link,
   Skeleton,
   SkeletonItem,
@@ -11,6 +12,7 @@ import {
   Title2,
   makeStyles,
 } from "@fluentui/react-components";
+import { BranchRegular } from "@fluentui/react-icons";
 import { useGlobalStyles } from "../globalStyles";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -148,7 +150,7 @@ export function About() {
           </Body1>
         </Card>
         <Card className={globalStyles.card}>
-          <Subtitle1>Come posso contattarvi?</Subtitle1>
+          <Subtitle1>Come posso aiutarvi?</Subtitle1>
           <Body1>
             Se hai idee, suggerimenti, o hai riscontrato problemi con il sito,
             puoi contattarci tramite email all'indirizzo{" "}
@@ -156,7 +158,20 @@ export function About() {
               feedback@betoniera.org
             </Link>
           </Body1>
+          <Body1>
+            Se invece vuoi contribuire al progetto, puoi trovarlo su GitHub seguendo il link sottostante. Una mano in più è sempre gradita!
+          </Body1>
         </Card>
+
+        <CompoundButton
+          as="a"
+          href="https://github.com/Project-Betoniera/Project-Betoniera-Frontend"
+          target="_blank"
+          // TODO Use GitHub logo
+          icon={<BranchRegular />}
+        >
+          View on GitHub
+        </CompoundButton>
       </div>
       <div>
         <Card>
