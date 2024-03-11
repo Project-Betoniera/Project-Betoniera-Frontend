@@ -15,9 +15,9 @@ import {
 import { BranchRegular } from "@fluentui/react-icons";
 import { useGlobalStyles } from "../globalStyles";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import useRequests from "../libraries/requests/requests";
 
-type User = {
+export type GithubContributor = {
   id: number;
   login: string;
   avatar_url: string;
@@ -46,39 +46,21 @@ const useStyles = makeStyles({
 export function About() {
   const styles = useStyles();
   const globalStyles = useGlobalStyles();
+  const requests = useRequests();
 
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [contributors, setContributors] = useState<GithubContributor[] | null>(null);
 
   useEffect(() => {
-    const result: User[] = [];
+    const contributorsCache = sessionStorage.getItem("githubContributors");
 
-    axios({
-      method: "GET",
-      url: new URL(
-        "https://api.github.com/repos/Project-Betoniera/Project-Betoniera-Frontend/contributors"
-      ).toString(),
-      headers: {
-        // Only for testing, will be removed once the project is public
-        Authorization: __REPO_METADATA_API_KEY__,
-      },
-    })
-      .then((response) => {
-        response.data.forEach((contributor: any) => {
-          const user: User = {
-            id: contributor.id,
-            login: contributor.login,
-            avatar_url: contributor.avatar_url,
-            html_url: contributor.html_url,
-            contributions: contributor.contributions,
-          };
-
-          result.push(user);
-          setUsers(result);
-        });
-      })
-      .catch(() => {
-        if (!users) setUsers([]);
+    if (contributorsCache !== null) {
+      setContributors(JSON.parse(contributorsCache));
+    } else {
+      requests.github.contributors().then((result) => {
+        setContributors(result);
+        sessionStorage.setItem("githubContributors", JSON.stringify(result));
       });
+    }
   }, []);
 
   return (
@@ -178,23 +160,23 @@ export function About() {
           <Title2>{"\u{1F9D1}\u{200D}\u{1F4BB}"} I nostri collaboratori</Title2>
         </Card>
         <div className={globalStyles.grid}>
-          {users ? (
-            users.map((user) => (
-              <Button as="a" href={user.html_url} target="_blank" key={user.id}>
+          {contributors ? (
+            contributors.map((contributor) => (
+              <Button as="a" href={contributor.html_url} target="_blank" key={contributor.id}>
                 <div className={styles.profileCard}>
                   <Avatar
-                    name={user.login}
+                    name={contributor.login}
                     shape="square"
                     size={56}
                     image={{
-                      src: user.avatar_url,
-                      alt: `${user.login}'s profile picture`,
+                      src: contributor.avatar_url,
+                      alt: `${contributor.login}'s profile picture`,
                     }}
                   />
 
                   <div className={styles.profileDetails}>
-                    <Subtitle1>{user.login}</Subtitle1>
-                    <Body1>{user.contributions} contribuzioni</Body1>
+                    <Subtitle1>{contributor.login}</Subtitle1>
+                    <Body1>{contributor.contributions} contribuzioni</Body1>
                   </div>
                 </div>
               </Button>

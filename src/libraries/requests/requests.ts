@@ -8,6 +8,7 @@ import messageRequests from "./messageRequests";
 import teacherRequests from "./teacherRequests";
 import userRequests from "./userRequests";
 import { UserContext } from "../../context/UserContext";
+import githubRequests from "./githubRequests";
 
 export default function useRequests() {
     const { data, setErrorCode } = useContext(UserContext);
@@ -21,6 +22,7 @@ export default function useRequests() {
         grade: gradeRequests(token, setErrorCode),
         message: messageRequests(token, setErrorCode),
         administration: administrationRequests(token, setErrorCode),
-        user: userRequests(setErrorCode)
+        user: userRequests(setErrorCode),
+        github: githubRequests(),
     };
 }
