@@ -5,6 +5,7 @@ import {
   Card,
   CardHeader,
   CompoundButton,
+  Label,
   Link,
   Skeleton,
   SkeletonItem,
@@ -70,6 +71,7 @@ export function About() {
       <Card className={globalStyles.card}>
         <CardHeader
           header={<Title2>{"\u{1F9D0}"} Informazioni sul progetto</Title2>}
+          action={__COMMIT_SHA__ !== null ? <Label disabled>Commit: {__COMMIT_SHA__.slice(0,7)}</Label> : undefined}
         />
       </Card>
       <div className={globalStyles.list}>
