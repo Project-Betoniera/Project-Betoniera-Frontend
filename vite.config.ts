@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import react from "@vitejs/plugin-react";
+import { exec } from "node:child_process";
 import "dotenv/config";
 
 // https://vitejs.dev/config/
@@ -16,14 +17,32 @@ export default defineConfig(async () => {
   const plausibleScript = process.env.PLAUSIBLE_SCRIPT || "https://plausible.io/js/plausible.js";
   const isBetaBuild = process.env.IS_BETA_BUILD === "true";
   const repoMetadataApiKey = process.env.REPO_METADATA_API_KEY
-  const commitSha = process.env.COMMIT_SHA || null;
-  
+  const commitShaDisplay = await (new Promise((resolve, reject) => {
+    exec('git describe --always --abbrev=7 "--dirty=*" "--broken=!!" --exclude *', (err, stdout) => {
+      if (err) reject(err);
+      resolve(stdout.trim());
+    });
+  })).catch((err) => {
+    console.warn('Failed to get git information', err);
+    return null;
+  });
+  const commitSha = await (new Promise((resolve, reject) => {
+    exec('git describe --always --abbrev=0 --exclude *', (err, stdout) => {
+      if (err) reject(err);
+      resolve(stdout.trim());
+    });
+  })).catch((err) => {
+    console.warn('Failed to get git information', err);
+    return null;
+  });
+
   return {
     define: {
       __API_URL__: JSON.stringify(apiUrl),
       __PLAUSIBLE_DOMAIN__: JSON.stringify(plausibleDomain),
       __PLAUSIBLE_SCRIPT__: JSON.stringify(plausibleScript),
       __IS_BETA_BUILD__: isBetaBuild,
+      __COMMIT_SHA_DISPLAY__: JSON.stringify(commitShaDisplay),
       __COMMIT_SHA__: JSON.stringify(commitSha),
       __REPO_METADATA_API_KEY__: JSON.stringify(repoMetadataApiKey)
     },
