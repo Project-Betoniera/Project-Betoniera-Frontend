@@ -5,13 +5,13 @@ import {
   Card,
   CardHeader,
   CompoundButton,
-  Label,
   Link,
   Skeleton,
   SkeletonItem,
   Subtitle1,
   Title2,
   makeStyles,
+  tokens,
 } from "@fluentui/react-components";
 import { createFluentIcon } from "@fluentui/react-icons";
 import { useGlobalStyles } from "../globalStyles";
@@ -44,6 +44,10 @@ const useStyles = makeStyles({
     rowGap: "0.5rem",
     flexDirection: "column",
   },
+  commitText: {
+    textAlign: "right",
+    color: tokens.colorNeutralForegroundDisabled,
+  }
 });
 
 export function About() {
@@ -71,7 +75,15 @@ export function About() {
       <Card className={globalStyles.card}>
         <CardHeader
           header={<Title2>{"\u{1F9D0}"} Informazioni sul progetto</Title2>}
-          action={__COMMIT_SHA__ !== null ? <Label disabled>Commit: {__COMMIT_SHA__.slice(0,7)}</Label> : undefined}
+          action={__COMMIT_SHA_DISPLAY__ !== null && __COMMIT_SHA__ != null ? <Button
+            appearance='transparent'
+            href={`https://github.com/Project-Betoniera/Project-Betoniera-Frontend/tree/${__COMMIT_SHA__ ?? ''}`}
+            target="blank"
+            as="a"
+            className={styles.commitText}
+          >
+            Commit: {__COMMIT_SHA_DISPLAY__}
+          </Button> : undefined}
         />
       </Card>
       <div className={globalStyles.list}>
