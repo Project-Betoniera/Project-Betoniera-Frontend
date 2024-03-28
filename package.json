@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npx vite",
-    "build": "npm run clean && npm run gen-icons && tsc && vite build",
+    "build": "npm run clean && npm run generate-icons && npx tsc && npx vite build",
     "clean": "npm run clean-dist && npm run clean-icons",
     "clean-dist": "npx rimraf ./dist ./dev-dist",
     "generate-icons": "npx pwa-assets-generator",
