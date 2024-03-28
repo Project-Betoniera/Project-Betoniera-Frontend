@@ -8,6 +8,7 @@ import messageRequests from "./messageRequests";
 import teacherRequests from "./teacherRequests";
 import userRequests from "./userRequests";
 import { UserContext } from "../../context/UserContext";
+import licenseRequests from './licenseRequests';
 
 export default function useRequests() {
     const { data, setErrorCode } = useContext(UserContext);
@@ -19,6 +20,7 @@ export default function useRequests() {
         event: eventRequests(token, setErrorCode),
         teacher: teacherRequests(token, setErrorCode),
         grade: gradeRequests(token, setErrorCode),
+        license: licenseRequests(setErrorCode),
         message: messageRequests(token, setErrorCode),
         administration: administrationRequests(token, setErrorCode),
         user: userRequests(setErrorCode)
