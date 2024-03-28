@@ -1,7 +1,7 @@
-import { defineConfig, minimalPreset } from "@vite-pwa/assets-generator/config";
+import { defineConfig, minimal2023Preset } from "@vite-pwa/assets-generator/config";
 import "dotenv/config";
 
-const preset = minimalPreset;
+const preset = minimal2023Preset;
 
 export default defineConfig({
     preset: preset,
