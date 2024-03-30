@@ -6,12 +6,14 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "npx vite",
-    "build": "npm run clean && npm run generate-icons && npx tsc && npx vite build",
+    "build": "npm run clean && npm run generate-icons && npm run genetate-licenses && npx tsc && npx vite build",
     "clean": "npm run clean-dist && npm run clean-icons",
     "clean-dist": "npx rimraf ./dist ./dev-dist",
     "generate-icons": "npx pwa-assets-generator",
     "clean-icons": "npx rimraf -g ./public/icons/*.ico && npx rimraf -g ./public/icons/*.png",
-    "install": "npm run generate-icons"
+    "generate-licenses": "node generate-licenses.js",
+    "clean-licenses": "npx rimraf -g ./public/licenses ./public/licenses.*",
+    "install": "npm run generate-icons && npm run genetate-licenses"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.46.1",
@@ -37,6 +39,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "rimraf": "^5.0.5",
+    "spdx-expression-parse": "^4.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-pwa": "^0.17.5"

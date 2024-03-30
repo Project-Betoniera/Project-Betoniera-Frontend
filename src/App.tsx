@@ -29,6 +29,7 @@ import { LoginForm } from "./routes/LoginForm";
 import { NotFound } from "./routes/NotFound";
 import { UserContext } from "./context/UserContext";
 import { ClassroomViewer } from "./routes/ClassroomViewer";
+import { LicenseList } from './routes/LicenseList';
 
 const useStyles = makeStyles({
   root: {
@@ -72,8 +73,13 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
-    // Redirect to login if not logged in
-    if (!token && location.pathname !== "/login") navigate("/login");
+    // Redirect to login if not logged in and not viewing licenses
+    if (
+      !token && 
+      location.pathname !== "/login" &&
+      location.pathname !== "/licenses" &&
+      !location.pathname.startsWith("/licenses/")
+    ) navigate("/login");
     // Redirect to home if logged in
     if (token && location.pathname === "/login") navigate("/");
   }, [location, token]);
@@ -98,7 +104,7 @@ function App() {
           path="/viewer"
           element={<ClassroomViewer />}
         />
-        {token && <Route
+        {token ? <Route
           path="/"
           element={<Wrapper />}
         >
@@ -130,7 +136,18 @@ function App() {
             path="*"
             element={<NotFound />}
           />
-        </Route>}
+          <Route
+            path="/licenses"
+            element={<LicenseList showBackButton={false} />}
+          />
+        </Route> : (
+          <>
+            <Route
+              path="/licenses"
+              element={<LicenseList showBackButton={true} />}
+            />
+          </>
+        )}
       </Routes>
     </FluentProvider>
   );

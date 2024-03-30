@@ -30,3 +30,8 @@ dev-dist
 # Generated pwa icons
 public/icons/*
 !public/icons/logo*.svg
+
+# Generated license info
+public/licenses
+public/licenses.txt
+public/licenses.json
