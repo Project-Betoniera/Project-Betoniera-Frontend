@@ -13,7 +13,7 @@ export type UserContextType = {
   data: LoginResponse | null;
   errorCode: number | null;
   setErrorCode: (error: number | null) => void;
-  login(email: string, password: string, remember: boolean): Promise<void>;
+  login(email: string, password: string, remember: boolean): Promise<void | Error>;
   logout(): Promise<void>;
 };
 
@@ -97,15 +97,17 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
    * @param password - The password of the user.
    * @param remember- Whether to store the user data in the local storage (true) or the session storage (false).
   */
-  async function login(email: string, password: string, remember: boolean) {
+  async function login(email: string, password: string, remember: boolean): Promise<void | Error> {
     const storage = remember ? localStorage : sessionStorage;
 
-    requests.user
+    return requests.user
       .login(email, password)
       .then((response) => {
         setData(response);
         storage.setItem(STORAGE_KEY, JSON.stringify(response));
         setErrorCode(null);
+      }).catch((error) => {
+        throw error;
       });
   }
 
