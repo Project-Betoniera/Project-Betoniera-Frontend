@@ -100,7 +100,7 @@ export function LicenseList({ showBackButton }: { showBackButton: boolean }) {
               )}
             </DialogContent>
             <DialogActions>
-              {packageName && <RouterButton as="a" appearance="secondary" icon={<NpmIcon />} className={styles.redBackground} href={"https://www.npmjs.com/package/" + packageName.slice(0, packageName?.indexOf('@', 1))}>View on npmjs.com</RouterButton>}
+              {packageName && <RouterButton as="a" appearance="secondary" icon={<NpmIcon />} className={styles.redBackground} href={"https://www.npmjs.com/package/" + packageName.slice(0, packageName?.indexOf('@', 1))} target="_blank">View on npmjs.com</RouterButton>}
               <Button appearance="primary" onClick={() => setLicenseTextVisible(false)} disabled={licenseText === undefined}>Chiudi</Button>
             </DialogActions>
           </DialogBody>
