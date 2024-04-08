@@ -41,7 +41,6 @@ export default function userRequests(setErrorCode: (errorCode: number) => void) 
             }).then((response) => {
                 return parseLoginResponse(response.data);
             }).catch((error: AxiosError) => {
-                setErrorCode(error.response?.status || 0);
                 throw error;
             });
         },
