@@ -3,17 +3,21 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown"
+  },
   "scripts": {
-    "start": "npm run dev",
-    "dev": "npx vite",
-    "build": "npm run clean && npm run generate-icons && npm run generate-licenses && npx tsc && npx vite build",
+    "build": "npm run clean && npm run generate-icons && npm run generate-licenses && tsc && vite build",
     "clean": "npm run clean-dist && npm run clean-icons",
-    "clean-dist": "npx rimraf ./dist ./dev-dist",
-    "generate-icons": "npx pwa-assets-generator",
-    "clean-icons": "npx rimraf -g ./public/icons/*.ico && npx rimraf -g ./public/icons/*.png",
+    "clean-dist": "rimraf ./dist ./dev-dist",
+    "clean-licenses": "rimraf -g ./public/licenses ./public/licenses.*",
+    "clean-icons": "rimraf -g ./public/icons/*.ico && rimraf -g ./public/icons/*.png",
+    "dev": "vite",
+    "format": "prettier --write --ignore-unknown .",
+    "generate-icons": "pwa-assets-generator",
     "generate-licenses": "node scripts/generate-licenses.js",
-    "clean-licenses": "npx rimraf -g ./public/licenses ./public/licenses.*",
-    "install": "npm run generate-icons && npm run generate-licenses"
+    "install": "npm run generate-icons && npm run generate-licenses",
+    "start": "npm run dev"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.46.1",
@@ -38,6 +42,9 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "spdx-expression-parse": "^4.0.0",
     "typescript": "^5.3.3",

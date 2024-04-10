@@ -1,5 +1,19 @@
 import { OptionOnSelectData, SelectionEvents } from "@fluentui/react-combobox";
-import { Button, Combobox, Image, Label, Option, Popover, PopoverSurface, PopoverTrigger, Select, SelectOnChangeData, makeStyles, shorthands, tokens } from "@fluentui/react-components";
+import {
+  Button,
+  Combobox,
+  Image,
+  Label,
+  Option,
+  Popover,
+  PopoverSurface,
+  PopoverTrigger,
+  Select,
+  SelectOnChangeData,
+  makeStyles,
+  shorthands,
+  tokens,
+} from "@fluentui/react-components";
 import QRCode from "qrcode";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { apiUrl } from "../../config";
@@ -8,182 +22,224 @@ import { useGlobalStyles } from "../../globalStyles";
 import useRequests from "../../libraries/requests/requests";
 
 const useStyles = makeStyles({
-    qrCode: {
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge)
-    },
+  qrCode: {
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+  },
 });
 
 export function CalendarExporter() {
-    const globalStyles = useGlobalStyles();
-    const styles = useStyles();
+  const globalStyles = useGlobalStyles();
+  const styles = useStyles();
 
-    const { data } = useContext(UserContext);
-    if (!data) return null;
-    
-    const token = data.token;
-    const course = data.course;
+  const { data } = useContext(UserContext);
+  if (!data) return null;
 
-    const requests = useRequests();
+  const token = data.token;
+  const course = data.course;
 
-    // Items for the various selectors
-    const calendarTypes: { code: string, name: string; }[] = [
-        { code: "course", name: "Corso", },
-        { code: "classroom", name: "Aula" },
-        { code: "teacher", name: "Docente" },
-    ];
-    const calendarProviders: { code: string, name: string; }[] = [
-        { code: "raw", name: "Link diretto" },
-        { code: "google", name: "Google Calendar" },
-        { code: "outlook", name: "Outlook (Personale)" },
-        { code: "ms365", name: "Outlook (Account aziendale o scolastico)" },
-    ];
-    const [calendarSelectors, setCalendarSelectors] = useState<{ code: string, name: string; fullName: string; }[]>([]);
+  const requests = useRequests();
 
-    // Selected values
-    const [calendarType, setCalendarType] = useState<{ code: string, name: string; }>(calendarTypes[0]);
-    const [calendarSelector, setCalendarSelector] = useState<{ code: string, name: string; }>({ code: course.id.toString(), name: course.code });
-    const [calendarProvider, setCalendarProvider] = useState<{ code: string, name: string; }>(calendarProviders[3]);
+  // Items for the various selectors
+  const calendarTypes: { code: string; name: string }[] = [
+    { code: "course", name: "Corso" },
+    { code: "classroom", name: "Aula" },
+    { code: "teacher", name: "Docente" },
+  ];
+  const calendarProviders: { code: string; name: string }[] = [
+    { code: "raw", name: "Link diretto" },
+    { code: "google", name: "Google Calendar" },
+    { code: "outlook", name: "Outlook (Personale)" },
+    { code: "ms365", name: "Outlook (Account aziendale o scolastico)" },
+  ];
+  const [calendarSelectors, setCalendarSelectors] = useState<{ code: string; name: string; fullName: string }[]>([]);
 
-    // Generated values
-    const [calendarUrl, setCalendarUrl] = useState<string>("");
-    const [isUrlCopied, setIsUrlCopied] = useState<boolean>(false);
-    const [qrCode, setQrCode] = useState<string>("");
+  // Selected values
+  const [calendarType, setCalendarType] = useState<{ code: string; name: string }>(calendarTypes[0]);
+  const [calendarSelector, setCalendarSelector] = useState<{ code: string; name: string }>({
+    code: course.id.toString(),
+    name: course.code,
+  });
+  const [calendarProvider, setCalendarProvider] = useState<{ code: string; name: string }>(calendarProviders[3]);
 
-    // Get calendar selector list
-    useEffect(() => {
-        // Clear selectors, but only if the list is already populated (so always but the first time)
-        if (calendarSelectors.length > 0) {
-            setCalendarSelector({ code: "", name: "" });
-            setCalendarSelectors([]);
-        }
+  // Generated values
+  const [calendarUrl, setCalendarUrl] = useState<string>("");
+  const [isUrlCopied, setIsUrlCopied] = useState<boolean>(false);
+  const [qrCode, setQrCode] = useState<string>("");
 
-        switch (calendarType.code) {
-            case "course":
-                requests.course.all().then(courses => {
-                    setCalendarSelectors(courses.map(item => ({ code: item.id.toString(), name: item.code, fullName: `${item.code} - ${item.name}` })));
-                }).catch(() => {
-                });
-                break;
-            case "classroom":
-                requests.classroom.all().then(classrooms => {
-                    setCalendarSelectors(classrooms.map(item => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })));
-                }).catch(() => {
-                });
-                break;
-            case "teacher":
-                requests.teacher.all().then(teachers => {
-                    setCalendarSelectors(teachers.map(item => ({ code: item.name, name: item.name, fullName: item.name })));
-                }).catch(() => {
-                });
-                break;
-            default:
-                console.error("Invalid calendar selector");
-                break;
-        }
-    }, [calendarType, token]);
+  // Get calendar selector list
+  useEffect(() => {
+    // Clear selectors, but only if the list is already populated (so always but the first time)
+    if (calendarSelectors.length > 0) {
+      setCalendarSelector({ code: "", name: "" });
+      setCalendarSelectors([]);
+    }
 
-    // Update calendar URL
-    useEffect(() => {
-        if (calendarSelector.code === "") {
-            setCalendarUrl("");
-        }
-        else {
-            let result: URL;
+    switch (calendarType.code) {
+      case "course":
+        requests.course
+          .all()
+          .then((courses) => {
+            setCalendarSelectors(
+              courses.map((item) => ({
+                code: item.id.toString(),
+                name: item.code,
+                fullName: `${item.code} - ${item.name}`,
+              })),
+            );
+          })
+          .catch(() => {});
+        break;
+      case "classroom":
+        requests.classroom
+          .all()
+          .then((classrooms) => {
+            setCalendarSelectors(
+              classrooms.map((item) => ({ code: item.id.toString(), name: item.name, fullName: `Aula ${item.name}` })),
+            );
+          })
+          .catch(() => {});
+        break;
+      case "teacher":
+        requests.teacher
+          .all()
+          .then((teachers) => {
+            setCalendarSelectors(teachers.map((item) => ({ code: item.name, name: item.name, fullName: item.name })));
+          })
+          .catch(() => {});
+        break;
+      default:
+        console.error("Invalid calendar selector");
+        break;
+    }
+  }, [calendarType, token]);
 
-            const type = calendarType.code === "course" ? "" : `/${encodeURIComponent(calendarType.code)}`;
+  // Update calendar URL
+  useEffect(() => {
+    if (calendarSelector.code === "") {
+      setCalendarUrl("");
+    } else {
+      let result: URL;
 
-            const url = new URL(`event${type}/${encodeURIComponent(calendarSelector.code)}/ics`, apiUrl);
-            url.protocol = "webcal";
-            url.searchParams.append("authorization", `Bearer ${token}`);
+      const type = calendarType.code === "course" ? "" : `/${encodeURIComponent(calendarType.code)}`;
 
-            switch (calendarProvider.code) {
-                case "google":
-                    result = new URL("https://www.google.com/calendar/render");
-                    result.searchParams.append("cid", url.toString());
-                    break;
-                case "outlook":
-                    result = new URL("https://outlook.live.com/calendar/addcalendar");
-                    result.searchParams.append("url", url.toString());
-                    result.searchParams.append("name", `JAC ${calendarSelector.name}`);
-                    break;
-                case "ms365":
-                    result = new URL("https://outlook.office.com/calendar/addcalendar");
-                    result.searchParams.append("url", url.toString());
-                    result.searchParams.append("name", `JAC ${calendarSelector.name}`);
-                    break;
-                case "raw":
-                    result = url;
-                    break;
-                default:
-                    setCalendarUrl("");
-                    return;
-            }
+      const url = new URL(`event${type}/${encodeURIComponent(calendarSelector.code)}/ics`, apiUrl);
+      url.protocol = "webcal";
+      url.searchParams.append("authorization", `Bearer ${token}`);
 
-            setCalendarUrl(result.toString());
-        }
+      switch (calendarProvider.code) {
+        case "google":
+          result = new URL("https://www.google.com/calendar/render");
+          result.searchParams.append("cid", url.toString());
+          break;
+        case "outlook":
+          result = new URL("https://outlook.live.com/calendar/addcalendar");
+          result.searchParams.append("url", url.toString());
+          result.searchParams.append("name", `JAC ${calendarSelector.name}`);
+          break;
+        case "ms365":
+          result = new URL("https://outlook.office.com/calendar/addcalendar");
+          result.searchParams.append("url", url.toString());
+          result.searchParams.append("name", `JAC ${calendarSelector.name}`);
+          break;
+        case "raw":
+          result = url;
+          break;
+        default:
+          setCalendarUrl("");
+          return;
+      }
 
-    }, [calendarType, calendarSelector, calendarProvider]);
+      setCalendarUrl(result.toString());
+    }
+  }, [calendarType, calendarSelector, calendarProvider]);
 
-    // Update QR code
-    useEffect(() => {
-        if (calendarUrl === "") {
-            setQrCode("");
-            return;
-        }
+  // Update QR code
+  useEffect(() => {
+    if (calendarUrl === "") {
+      setQrCode("");
+      return;
+    }
 
-        QRCode.toDataURL(calendarUrl, (_error, url) => { setQrCode(url); });
-    }, [calendarUrl]);
+    QRCode.toDataURL(calendarUrl, (_error, url) => {
+      setQrCode(url);
+    });
+  }, [calendarUrl]);
 
-    const onCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCalendarType(calendarTypes.find(item => item.code === data.value) || calendarTypes[0]);
-        setIsUrlCopied(false);
-    };
+  const onCalendarTypeChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
+    setCalendarType(calendarTypes.find((item) => item.code === data.value) || calendarTypes[0]);
+    setIsUrlCopied(false);
+  };
 
-    const onCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
-        setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
-        setIsUrlCopied(false);
-    };
+  const onCalendarSelectorChange = (_event: SelectionEvents, data: OptionOnSelectData) => {
+    setCalendarSelector({ code: data.selectedOptions[0] || "", name: data.optionText || "" });
+    setIsUrlCopied(false);
+  };
 
-    const onCalendarProviderChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
-        setCalendarProvider(calendarProviders.find(item => item.code === data.value) || calendarProviders[0]);
-        setIsUrlCopied(false);
-    };
+  const onCalendarProviderChange = (_event: ChangeEvent<HTMLSelectElement>, data: SelectOnChangeData) => {
+    setCalendarProvider(calendarProviders.find((item) => item.code === data.value) || calendarProviders[0]);
+    setIsUrlCopied(false);
+  };
 
-    return (
-        <>
-            <div className={globalStyles.horizontalList}>
-                <Label>Calendario per</Label>
-                <Select value={calendarType.code} onChange={onCalendarTypeChange}>
-                    {calendarTypes.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
-                </Select>
-            </div>
+  return (
+    <>
+      <div className={globalStyles.horizontalList}>
+        <Label>Calendario per</Label>
+        <Select value={calendarType.code} onChange={onCalendarTypeChange}>
+          {calendarTypes.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
+          ))}
+        </Select>
+      </div>
 
-            <div className={globalStyles.horizontalList}>
-                <Label className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Label>
-                <Combobox placeholder={`Cerca ${calendarType.name.toLowerCase()}`} defaultValue={calendarSelector.name} defaultSelectedOptions={[calendarSelector.code]} onOptionSelect={onCalendarSelectorChange}>
-                    {calendarSelectors.map(item => <Option key={item.code} value={item.code} text={item.name}>{item.fullName}</Option>)}
-                </Combobox>
-            </div>
+      <div className={globalStyles.horizontalList}>
+        <Label className={globalStyles.horizontalList}>Scegli {calendarType.name.toLowerCase()}</Label>
+        <Combobox
+          placeholder={`Cerca ${calendarType.name.toLowerCase()}`}
+          defaultValue={calendarSelector.name}
+          defaultSelectedOptions={[calendarSelector.code]}
+          onOptionSelect={onCalendarSelectorChange}>
+          {calendarSelectors.map((item) => (
+            <Option key={item.code} value={item.code} text={item.name}>
+              {item.fullName}
+            </Option>
+          ))}
+        </Combobox>
+      </div>
 
-            <div className={globalStyles.horizontalList}>
-                <Label>Aggiungi a</Label>
-                <Select value={calendarProvider.code} onChange={onCalendarProviderChange}>
-                    {calendarProviders.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}
-                </Select>
-            </div>
+      <div className={globalStyles.horizontalList}>
+        <Label>Aggiungi a</Label>
+        <Select value={calendarProvider.code} onChange={onCalendarProviderChange}>
+          {calendarProviders.map((item) => (
+            <option key={item.code} value={item.code}>
+              {item.name}
+            </option>
+          ))}
+        </Select>
+      </div>
 
-            <div className={globalStyles.horizontalList}>
-                <Button disabled={calendarSelector.code == ""} as="a" href={calendarUrl} target="_blank">Aggiungi tramite link</Button>
-                <Button disabled={calendarSelector.code == ""} onClick={() => { navigator.clipboard.writeText(calendarUrl); setIsUrlCopied(true); }}>{isUrlCopied ? "✅ Link copiato!" : "Copia link"}</Button>
-                <Popover>
-                    <PopoverTrigger>
-                        <Button disabled={calendarSelector.code == ""}>Mostra codice QR</Button>
-                    </PopoverTrigger>
-                    <PopoverSurface>
-                        <Image src={qrCode} className={styles.qrCode} />
-                    </PopoverSurface>
-                </Popover>
-            </div>
-        </>
-    );
+      <div className={globalStyles.horizontalList}>
+        <Button disabled={calendarSelector.code == ""} as="a" href={calendarUrl} target="_blank">
+          Aggiungi tramite link
+        </Button>
+        <Button
+          disabled={calendarSelector.code == ""}
+          onClick={() => {
+            navigator.clipboard.writeText(calendarUrl);
+            setIsUrlCopied(true);
+          }}>
+          {isUrlCopied ? "✅ Link copiato!" : "Copia link"}
+        </Button>
+        <Popover>
+          <PopoverTrigger>
+            <Button disabled={calendarSelector.code == ""}>Mostra codice QR</Button>
+          </PopoverTrigger>
+          <PopoverSurface>
+            <Image src={qrCode} className={styles.qrCode} />
+          </PopoverSurface>
+        </Popover>
+      </div>
+    </>
+  );
 }

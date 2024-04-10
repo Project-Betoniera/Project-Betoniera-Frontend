@@ -29,7 +29,7 @@ import { LoginForm } from "./routes/LoginForm";
 import { NotFound } from "./routes/NotFound";
 import { UserContext } from "./context/UserContext";
 import { ClassroomViewer } from "./routes/ClassroomViewer";
-import { LicenseList } from './routes/LicenseList';
+import { LicenseList } from "./routes/LicenseList";
 
 const useStyles = makeStyles({
   root: {
@@ -75,20 +75,18 @@ function App() {
   useEffect(() => {
     // Redirect to login if not logged in and not viewing licenses
     if (
-      !token && 
+      !token &&
       location.pathname !== "/login" &&
       location.pathname !== "/licenses" &&
       !location.pathname.startsWith("/licenses/")
-    ) navigate("/login");
+    )
+      navigate("/login");
     // Redirect to home if logged in
     if (token && location.pathname === "/login") navigate("/");
   }, [location, token]);
 
   return (
-    <FluentProvider
-      className={style.root}
-      theme={themeValue}
-    >
+    <FluentProvider className={style.root} theme={themeValue}>
       <Toaster toasterId={toasterId} />
       <PrivacyAlert />
       <OfflineDialog />
@@ -96,58 +94,23 @@ function App() {
       {token && <NetworkErrorDialog />}
       <ProtocolHandler />
       <Routes>
-        <Route
-          path="/login"
-          element={<LoginForm />}
-        />
-        <Route
-          path="/viewer"
-          element={<ClassroomViewer />}
-        />
-        {token ? <Route
-          path="/"
-          element={<Wrapper />}
-        >
-          <Route
-            path="/"
-            element={<Home />}
-          />
-          <Route
-            path="/classroom"
-            element={<Classroom />}
-          />
-          <Route
-            path="/calendar"
-            element={<Calendar />}
-          />
-          <Route
-            path="/calendar-sync"
-            element={<CalendarExport />}
-          />
-          <Route
-            path="/grade"
-            element={<Grade />}
-          />
-          <Route
-            path="/about"
-            element={<About />}
-          />
-          <Route
-            path="*"
-            element={<NotFound />}
-          />
-          <Route
-            path="/licenses"
-            element={<LicenseList showBackButton={false} />}
-          />
-        </Route> : (
-          <>
-            <Route
-              path="/licenses"
-              element={<LicenseList showBackButton={true} />}
-            />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/viewer" element={<ClassroomViewer />} />
+        {token ?
+          <Route path="/" element={<Wrapper />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/classroom" element={<Classroom />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/calendar-sync" element={<CalendarExport />} />
+            <Route path="/grade" element={<Grade />} />
+            <Route path="/about" element={<About />} />
+            <Route path="*" element={<NotFound />} />
+            <Route path="/licenses" element={<LicenseList showBackButton={false} />} />
+          </Route>
+        : <>
+            <Route path="/licenses" element={<LicenseList showBackButton={true} />} />
           </>
-        )}
+        }
       </Routes>
     </FluentProvider>
   );

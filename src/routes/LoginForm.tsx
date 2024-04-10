@@ -26,7 +26,7 @@ import { FormEvent, useContext, useState } from "react";
 import { isBetaBuild } from "../config";
 import { UserContext } from "../context/UserContext";
 import { useGlobalStyles } from "../globalStyles";
-import { RouterLink } from '../components/router/RouterLink';
+import { RouterLink } from "../components/router/RouterLink";
 
 const useStyles = makeStyles({
   infoCard: {
@@ -127,10 +127,7 @@ export function LoginForm() {
             Calendar Exporter{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}
           </LargeTitle>
           <Card className={styles.loginForm}>
-            <form
-              onSubmit={(event) => onSubmit(event)}
-              className={styles.loginForm}
-            >
+            <form onSubmit={(event) => onSubmit(event)} className={styles.loginForm}>
               <h2>🚀 Login</h2>
               <Field validationState={loginError ? "error" : "none"}>
                 <Input
@@ -155,23 +152,15 @@ export function LoginForm() {
                 />
               </Field>
               <Label>
-                <Checkbox
-                  disabled={isLoading}
-                  checked={remember}
-                  onChange={() => setRemember(!remember)}
-                />
+                <Checkbox disabled={isLoading} checked={remember} onChange={() => setRemember(!remember)} />
                 Ricordami
               </Label>
-              {isLoading ? (
+              {isLoading ?
                 <Spinner size="huge" />
-              ) : (
-                <Button
-                  appearance="primary"
-                  type="submit"
-                >
+              : <Button appearance="primary" type="submit">
                   Login
                 </Button>
-              )}
+              }
             </form>
           </Card>
           <Card className={styles.infoCard}>
@@ -180,10 +169,7 @@ export function LoginForm() {
               description={
                 <Body1>
                   Esegui il login con le stesse credenziali che utilizzi per accedere al{" "}
-                  <Link
-                    href="https://gestionale.fondazionejobsacademy.org"
-                    target="_blank"
-                  >
+                  <Link href="https://gestionale.fondazionejobsacademy.org" target="_blank">
                     Gestionale JAC
                   </Link>
                   .
@@ -200,7 +186,10 @@ export function LoginForm() {
       </main>
       <footer>
         <Card className={styles.footer}>
-          <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy. <RouterLink href="/licenses">Licenze open source</RouterLink></Body1>
+          <Body1>
+            Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.{" "}
+            <RouterLink href="/licenses">Licenze open source</RouterLink>
+          </Body1>
         </Card>
       </footer>
     </>
