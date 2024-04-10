@@ -16,7 +16,6 @@ export default defineConfig(async () => {
   const plausibleDomain = process.env.PLAUSIBLE_DOMAIN || null;
   const plausibleScript = process.env.PLAUSIBLE_SCRIPT || "https://plausible.io/js/plausible.js";
   const isBetaBuild = process.env.IS_BETA_BUILD === "true";
-  const repoMetadataApiKey = process.env.REPO_METADATA_API_KEY
   const commitShaDisplay = await (new Promise((resolve, reject) => {
     exec('git describe --always --abbrev=7 "--dirty=*" "--broken=!!" --exclude *', (err, stdout) => {
       if (err) reject(err);
@@ -44,7 +43,6 @@ export default defineConfig(async () => {
       __IS_BETA_BUILD__: isBetaBuild,
       __COMMIT_SHA_DISPLAY__: JSON.stringify(commitShaDisplay),
       __COMMIT_SHA__: JSON.stringify(commitSha),
-      __REPO_METADATA_API_KEY__: JSON.stringify(repoMetadataApiKey)
     },
     plugins: [react(), VitePWA({
       registerType: "prompt", devOptions: { enabled: true }, manifest: {

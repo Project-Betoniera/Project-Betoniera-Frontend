@@ -28,10 +28,6 @@ export default function githubRequests() {
                 url: new URL(
                     "https://api.github.com/repos/Project-Betoniera/Project-Betoniera-Frontend/contributors"
                 ).toString(),
-                headers: {
-                    // TODO Revert commit that implements __REPO_METADATA_API_KEY__ once the project is public
-                    Authorization: __REPO_METADATA_API_KEY__,
-                },
             }).then((response) => {
                 return parseGithubContributors(response.data);
             }).catch(() => {
