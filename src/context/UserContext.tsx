@@ -58,10 +58,8 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
       .loginWithToken(data.token)
       .then((response) => {
         setData(response);
-        setErrorCode(null);
       }).catch((error) => {
         if (error.response?.status === 401) setErrorCode(401);
-        else setErrorCode(null);
       });
   }, []);
 
@@ -100,7 +98,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
   async function login(email: string, password: string, remember: boolean) {
     const storage = remember ? localStorage : sessionStorage;
 
-    requests.user
+    return requests.user
       .login(email, password)
       .then((response) => {
         setData(response);

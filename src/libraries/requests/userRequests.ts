@@ -1,11 +1,11 @@
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { apiUrl } from "../../config";
 import { encode as toBase64 } from "base-64";
 import { LoginResponse } from "../../context/UserContext";
 import { CourseDto } from "../../dto/CourseDto";
 import UserDto from "../../dto/UserDto";
 
-export default function userRequests(setErrorCode: (errorCode: number) => void) {
+export default function userRequests() {
     function parseLoginResponse(rawData: any) {
         const user: UserDto = {
             name: rawData.user.name,
@@ -40,9 +40,6 @@ export default function userRequests(setErrorCode: (errorCode: number) => void) 
                 }
             }).then((response) => {
                 return parseLoginResponse(response.data);
-            }).catch((error: AxiosError) => {
-                setErrorCode(error.response?.status || 0);
-                throw error;
             });
         },
         loginWithToken: async (token: string) => {
@@ -54,9 +51,6 @@ export default function userRequests(setErrorCode: (errorCode: number) => void) 
                 }
             }).then((response) => {
                 return parseLoginResponse(response.data);
-            }).catch((error: AxiosError) => {
-                setErrorCode(error.response?.status || 0);
-                throw error;
             });
         },
     };

@@ -24,7 +24,7 @@ export default function useRequests() {
         license: licenseRequests(setErrorCode),
         message: messageRequests(token, setErrorCode),
         administration: administrationRequests(token, setErrorCode),
-        user: userRequests(setErrorCode),
+        user: userRequests(),
         github: githubRequests(),
     };
 }
