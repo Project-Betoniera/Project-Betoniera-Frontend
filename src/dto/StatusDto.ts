@@ -1,5 +1,5 @@
 export type Status = {
-    lastRefresh: Date,
-    lastRefreshError: boolean,
-    isUpdating: boolean,
+  lastRefresh: Date;
+  lastRefreshError: boolean;
+  isUpdating: boolean;
 };

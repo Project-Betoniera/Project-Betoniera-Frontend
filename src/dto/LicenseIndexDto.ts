@@ -1,3 +1,3 @@
 export type LicenseIndexDto = {
-  [packageName: string]: string
+  [packageName: string]: string;
 };
