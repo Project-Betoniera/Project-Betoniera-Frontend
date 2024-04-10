@@ -58,10 +58,8 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
       .loginWithToken(data.token)
       .then((response) => {
         setData(response);
-        setErrorCode(null);
       }).catch((error) => {
         if (error.response?.status === 401) setErrorCode(401);
-        else setErrorCode(null);
       });
   }, []);
 
