@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "start": "npm run dev",
-    "dev": "npm run gen-icons && vite --host",
-    "build": "npm run clean && npm run gen-icons && tsc && vite build",
+    "dev": "npx vite",
+    "build": "npm run clean && npm run generate-icons && npm run generate-licenses && npx tsc && npx vite build",
     "clean": "npm run clean-dist && npm run clean-icons",
-    "clean-dist": "rm -rf ./dist",
-    "gen-icons": "pwa-assets-generator",
-    "clean-icons": "rm -rf ./public/icons/*.ico && rm -rf ./public/icons/*.png"
+    "clean-dist": "npx rimraf ./dist ./dev-dist",
+    "generate-icons": "npx pwa-assets-generator",
+    "clean-icons": "npx rimraf -g ./public/icons/*.ico && npx rimraf -g ./public/icons/*.png",
+    "generate-licenses": "node generate-licenses.js",
+    "clean-licenses": "npx rimraf -g ./public/licenses ./public/licenses.*",
+    "install": "npm run generate-icons && npm run generate-licenses"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.46.1",
@@ -35,6 +38,8 @@
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
+    "rimraf": "^5.0.5",
+    "spdx-expression-parse": "^4.0.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
     "vite-plugin-pwa": "^0.17.5"

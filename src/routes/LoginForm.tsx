@@ -26,6 +26,7 @@ import { FormEvent, useContext, useState } from "react";
 import { isBetaBuild } from "../config";
 import { UserContext } from "../context/UserContext";
 import { useGlobalStyles } from "../globalStyles";
+import { RouterLink } from '../components/router/RouterLink';
 
 const useStyles = makeStyles({
   infoCard: {
@@ -199,7 +200,7 @@ export function LoginForm() {
       </main>
       <footer>
         <Card className={styles.footer}>
-          <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy</Body1>
+          <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy. <RouterLink href="/licenses">Licenze open source</RouterLink></Body1>
         </Card>
       </footer>
     </>

@@ -7,6 +7,7 @@ import { isBetaBuild } from "./config";
 import { MessagesContext } from "./context/MessagesContext";
 import { PwaContext } from "./context/PwaContext";
 import { useGlobalStyles } from "./globalStyles";
+import { RouterLink } from './components/router/RouterLink';
 
 const useStyles = makeStyles({
     header: {
@@ -133,7 +134,7 @@ export function Wrapper() {
             </main>
             <footer>
                 <Card className={styles.footer}>
-                    <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy.</Body1>
+                    <Body1>Questo progetto non è sponsorizzato e/o approvato da Fondazione JobsAcademy. <RouterLink href="/licenses">Licenze open source</RouterLink>.</Body1>
                     {(!pwa.isInstalled && !pwa.isPwa) && <Button className={styles.installButton} as="a" href={`web+betoniera://${window.location.href.substring(window.location.origin.length)}`} appearance="primary" icon={<ArrowDownloadFilled />} onClick={promptPwaInstall}>Installa App</Button>}
                 </Card>
             </footer>
