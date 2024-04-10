@@ -11,7 +11,7 @@
     "clean-dist": "npx rimraf ./dist ./dev-dist",
     "generate-icons": "npx pwa-assets-generator",
     "clean-icons": "npx rimraf -g ./public/icons/*.ico && npx rimraf -g ./public/icons/*.png",
-    "generate-licenses": "node generate-licenses.js",
+    "generate-licenses": "node scripts/generate-licenses.js",
     "clean-licenses": "npx rimraf -g ./public/licenses ./public/licenses.*",
     "install": "npm run generate-icons && npm run generate-licenses"
   },
