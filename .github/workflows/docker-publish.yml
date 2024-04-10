@@ -64,6 +64,7 @@ jobs:
             API_URL=${{ vars.API_URL }}
             PLAUSIBLE_DOMAIN=${{ vars.PLAUSIBLE_DOMAIN }}
             IS_BETA_BUILD=${{ vars.IS_BETA_BUILD }}
+            COMMIT_SHA=${{ github.sha }}
   
   deploy_to_server:
 
