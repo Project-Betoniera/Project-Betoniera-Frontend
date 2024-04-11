@@ -20,35 +20,35 @@
     "start": "npm run dev"
   },
   "dependencies": {
-    "@fluentui/react-components": "^9.46.1",
-    "axios": "^1.6.7",
+    "@fluentui/react-components": "^9.47.5",
+    "axios": "^1.6.8",
     "base-64": "^1.0.0",
     "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.21.3",
-    "react-router-dom": "^6.21.3"
+    "react-router-dom": "^6.22.3"
   },
   "devDependencies": {
     "@types/base-64": "^1.0.2",
     "@types/qrcode": "^1.5.5",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^6.19.1",
-    "@typescript-eslint/parser": "^6.19.1",
+    "@types/react": "^18.2.75",
+    "@types/react-dom": "^18.2.24",
+    "@typescript-eslint/eslint-plugin": "^7.6.0",
+    "@typescript-eslint/parser": "^7.6.0",
     "@vite-pwa/assets-generator": "^0.2.3",
     "@vitejs/plugin-react": "^4.2.1",
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
+    "eslint-plugin-react-refresh": "^0.4.6",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "spdx-expression-parse": "^4.0.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.12",
-    "vite-plugin-pwa": "^0.17.5"
+    "typescript": "^5.4.5",
+    "vite": "^5.2.8",
+    "vite-plugin-pwa": "^0.19.8"
   }
 }
