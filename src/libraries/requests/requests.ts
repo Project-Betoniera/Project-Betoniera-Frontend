@@ -8,19 +8,23 @@ import messageRequests from "./messageRequests";
 import teacherRequests from "./teacherRequests";
 import userRequests from "./userRequests";
 import { UserContext } from "../../context/UserContext";
+import githubRequests from "./githubRequests";
+import licenseRequests from "./licenseRequests";
 
 export default function useRequests() {
-    const { data, setErrorCode } = useContext(UserContext);
-    const token = data?.token || "";
+  const { data, setErrorCode } = useContext(UserContext);
+  const token = data?.token || "";
 
-    return {
-        classroom: classroomRequests(token, setErrorCode),
-        course: courseRequests(token, setErrorCode),
-        event: eventRequests(token, setErrorCode),
-        teacher: teacherRequests(token, setErrorCode),
-        grade: gradeRequests(token, setErrorCode),
-        message: messageRequests(token, setErrorCode),
-        administration: administrationRequests(token, setErrorCode),
-        user: userRequests(setErrorCode)
-    };
+  return {
+    classroom: classroomRequests(token, setErrorCode),
+    course: courseRequests(token, setErrorCode),
+    event: eventRequests(token, setErrorCode),
+    teacher: teacherRequests(token, setErrorCode),
+    grade: gradeRequests(token, setErrorCode),
+    license: licenseRequests(setErrorCode),
+    message: messageRequests(token, setErrorCode),
+    administration: administrationRequests(token, setErrorCode),
+    user: userRequests(),
+    github: githubRequests(),
+  };
 }

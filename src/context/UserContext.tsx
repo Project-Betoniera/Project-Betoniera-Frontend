@@ -25,9 +25,9 @@ const STORAGE_KEY = "session";
 export const UserContext = createContext<UserContextType>({
   data: null,
   errorCode: null,
-  setErrorCode: (_a) => { },
-  login: async (_a, _b, _c) => { },
-  logout: async () => { },
+  setErrorCode: (_a) => {},
+  login: async (_a, _b, _c) => {},
+  logout: async () => {},
 });
 
 function getUserDataFromStorage(): LoginResponse | null {
@@ -36,13 +36,12 @@ function getUserDataFromStorage(): LoginResponse | null {
 
   try {
     return JSON.parse(rawData);
-  }
-  catch {
+  } catch {
     return null;
   }
 }
 
-export function UserContextProvider({ children }: { children: JSX.Element; }) {
+export function UserContextProvider({ children }: { children: JSX.Element }) {
   const requests = useRequests();
 
   const [data, setData] = useState<LoginResponse | null>(getUserDataFromStorage());
@@ -58,10 +57,9 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
       .loginWithToken(data.token)
       .then((response) => {
         setData(response);
-        setErrorCode(null);
-      }).catch((error) => {
+      })
+      .catch((error) => {
         if (error.response?.status === 401) setErrorCode(401);
-        else setErrorCode(null);
       });
   }, []);
 
@@ -70,7 +68,8 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
 
     try {
       // Check after setting data to avoid showing directly the login page
-      if (typeof data.token === undefined ||
+      if (
+        typeof data.token === undefined ||
         typeof data.user === undefined ||
         typeof data.user.name === undefined ||
         typeof data.user.email === undefined ||
@@ -81,7 +80,8 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
         typeof data.course.code === undefined ||
         typeof data.course.name === undefined ||
         typeof data.course.startYear === undefined ||
-        typeof data.course.endYear === undefined) {
+        typeof data.course.endYear === undefined
+      ) {
         console.error("Invalid user data");
         throw new Error("Invalid user data");
       }
@@ -96,17 +96,15 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
    * @param email - The email of the user.
    * @param password - The password of the user.
    * @param remember- Whether to store the user data in the local storage (true) or the session storage (false).
-  */
+   */
   async function login(email: string, password: string, remember: boolean) {
     const storage = remember ? localStorage : sessionStorage;
 
-    requests.user
-      .login(email, password)
-      .then((response) => {
-        setData(response);
-        storage.setItem(STORAGE_KEY, JSON.stringify(response));
-        setErrorCode(null);
-      });
+    return requests.user.login(email, password).then((response) => {
+      setData(response);
+      storage.setItem(STORAGE_KEY, JSON.stringify(response));
+      setErrorCode(null);
+    });
   }
 
   /**
@@ -127,8 +125,7 @@ export function UserContextProvider({ children }: { children: JSX.Element; }) {
         setErrorCode: setErrorCode,
         login,
         logout,
-      }}
-    >
+      }}>
       {children}
     </UserContext.Provider>
   );
