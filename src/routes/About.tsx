@@ -15,6 +15,7 @@ import {
 } from "@fluentui/react-components";
 import { createFluentIcon } from "@fluentui/react-icons";
 import { useEffect, useState } from "react";
+import EasterEgg from "../components/EasterEgg";
 import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
@@ -196,6 +197,7 @@ export function About() {
           }
         </div>
       </div>
+      <EasterEgg />
     </div>
   );
 }
