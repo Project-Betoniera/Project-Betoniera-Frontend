@@ -40,6 +40,7 @@ const useStyles = makeStyles({
     position: "sticky",
     top: 0,
     zIndex: 1,
+    backdropFilter: "blur(10px)",
     "@media screen and (max-width: 578px)": {
       position: "fixed",
       top: "unset",
