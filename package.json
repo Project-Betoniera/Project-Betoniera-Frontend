@@ -17,6 +17,7 @@
     "generate-icons": "pwa-assets-generator",
     "generate-licenses": "node scripts/generate-licenses.js",
     "install": "npm run generate-icons && npm run generate-licenses",
+    "prepare": "npx husky",
     "start": "npm run dev"
   },
   "dependencies": {

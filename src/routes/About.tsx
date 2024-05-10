@@ -14,8 +14,8 @@ import {
   tokens,
 } from "@fluentui/react-components";
 import { createFluentIcon } from "@fluentui/react-icons";
-import { useGlobalStyles } from "../globalStyles";
 import { useEffect, useState } from "react";
+import { useGlobalStyles } from "../globalStyles";
 import useRequests from "../libraries/requests/requests";
 
 export type GithubContributor = {
@@ -153,7 +153,7 @@ export function About() {
           href="https://github.com/Project-Betoniera/Project-Betoniera-Frontend"
           target="_blank"
           icon={<GithubIcon />}>
-          View on GitHub
+          Visualizza su GitHub
         </CompoundButton>
       </div>
       <div>
