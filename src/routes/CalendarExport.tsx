@@ -68,7 +68,11 @@ export function CalendarExport() {
               <strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong>
             </Body1>
           </Card>
-          <Body1>In alternativa, puoi visualizzare il calendario qui.</Body1>
+          <Body1>
+            È fortemente consigliato utilizzare la sincronizzazione del calendario.
+            <br />
+            Nonostante ciò, puoi visualizzare il calendario senza sincronizzarlo.
+          </Body1>
           <RouterButton as="a" appearance="primary" href="/calendar">
             Visualizza calendario su {window.location.hostname}
           </RouterButton>
