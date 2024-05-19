@@ -11,6 +11,7 @@ import {
 } from "@fluentui/react-components";
 import { CalendarExporter } from "../components/calendar/CalendarExporter";
 import { useGlobalStyles } from "../globalStyles";
+import { RouterButton } from "../components/router/RouterButton.tsx";
 
 const useStyles = makeStyles({
   warning: {
@@ -67,6 +68,10 @@ export function CalendarExport() {
               <strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong>
             </Body1>
           </Card>
+          <Body1>In alternativa, puoi visualizzare il calendario qui.</Body1>
+          <RouterButton as="a" appearance="primary" href="/calendar">
+            Visualizza calendario su {window.location.hostname}
+          </RouterButton>
         </div>
       </div>
     </>
