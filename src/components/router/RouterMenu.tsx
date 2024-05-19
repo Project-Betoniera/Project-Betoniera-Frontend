@@ -64,7 +64,7 @@ const menuItems = [
   },
   {
     displayName: "Calendario",
-    path: "/calendar",
+    path: "/calendar-sync",
     isSelected: (p: string) => /^\/calendar.*/g.test(p),
     icon: <CalendarFilled />,
   },
