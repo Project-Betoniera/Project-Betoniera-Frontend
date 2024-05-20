@@ -33,6 +33,13 @@ export function CalendarExport() {
           />
         </Card>
         <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+          <Body1>
+            Consigliamo di sincronizzare il calendario sull'app Calendario del tuo telefono. Cerchi il calendario in
+            app? Puoi trovarlo qui:
+          </Body1>
+          <RouterButton as="a" appearance="primary" href="/calendar">
+            Visualizza calendario su {window.location.hostname}
+          </RouterButton>
           <Card className={mergeClasses(globalStyles.card, styles.warning)}>
             <Subtitle2>⚠️ Attenzione!</Subtitle2>
             <Body1>
@@ -68,14 +75,6 @@ export function CalendarExport() {
               <strong>I link generati contengono informazioni personali. Non condividerli con nessuno.</strong>
             </Body1>
           </Card>
-          <Body1>
-            È fortemente consigliato utilizzare la sincronizzazione del calendario.
-            <br />
-            Nonostante ciò, puoi visualizzare il calendario senza sincronizzarlo.
-          </Body1>
-          <RouterButton as="a" appearance="primary" href="/calendar">
-            Visualizza calendario su {window.location.hostname}
-          </RouterButton>
         </div>
       </div>
     </>
