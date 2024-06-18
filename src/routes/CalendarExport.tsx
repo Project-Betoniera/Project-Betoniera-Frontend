@@ -11,6 +11,7 @@ import {
 } from "@fluentui/react-components";
 import { CalendarExporter } from "../components/calendar/CalendarExporter";
 import { useGlobalStyles } from "../globalStyles";
+import { RouterButton } from "../components/router/RouterButton.tsx";
 
 const useStyles = makeStyles({
   warning: {
@@ -32,6 +33,13 @@ export function CalendarExport() {
           />
         </Card>
         <div className={mergeClasses(globalStyles.container, globalStyles.list)}>
+          <Body1>
+            Consigliamo di sincronizzare il calendario sull'app Calendario del tuo telefono. Cerchi il calendario in
+            app? Puoi trovarlo qui:
+          </Body1>
+          <RouterButton as="a" appearance="primary" href="/calendar">
+            Visualizza calendario su {window.location.hostname}
+          </RouterButton>
           <Card className={mergeClasses(globalStyles.card, styles.warning)}>
             <Subtitle2>⚠️ Attenzione!</Subtitle2>
             <Body1>

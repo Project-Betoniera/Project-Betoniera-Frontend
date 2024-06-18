@@ -64,7 +64,8 @@ const menuItems = [
   },
   {
     displayName: "Calendario",
-    path: "/calendar",
+    path: "/calendar-sync",
+    isSelected: (p: string) => /^\/calendar.*/g.test(p),
     icon: <CalendarFilled />,
   },
   {
@@ -78,10 +79,10 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
   const styles = useStyles();
   const { logout } = useContext(UserContext);
 
-  useLocation();
-  const currentUrl = new URL(window.location.href);
-  const path = currentUrl.pathname;
+  const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  const selected = menuItems.find((i) => (i.isSelected ? i.isSelected(pathname) : i.path === pathname));
 
   const [isUserDrawerOpen, setIsUserDrawerOpen] = useState(false);
 
@@ -96,14 +97,14 @@ const RouterMenu: FunctionComponent<TabListProps> = (props, iconsOnly: boolean) 
 
           const url = new URL(data.value, window.location.href);
           if (url.origin === window.location.origin) {
-            if (currentUrl.pathname !== url.pathname) {
+            if (location.pathname !== url.pathname) {
               navigate(url.href.substring(url.origin.length));
             }
           } else {
             window.open(url);
           }
         }}
-        selectedValue={path}>
+        selectedValue={selected?.path}>
         {menuItems.map((item, i) => {
           return (
             <Tab key={i} value={item.path} icon={item.icon} aria-description={item.displayName}>
