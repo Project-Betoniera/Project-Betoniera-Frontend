@@ -23,10 +23,10 @@ import {
   useToastController,
 } from "@fluentui/react-components";
 import { FormEvent, useContext, useState } from "react";
+import { RouterLink } from "../components/router/RouterLink";
 import { isBetaBuild } from "../config";
 import { UserContext } from "../context/UserContext";
 import { useGlobalStyles } from "../globalStyles";
-import { RouterLink } from "../components/router/RouterLink";
 
 const useStyles = makeStyles({
   infoCard: {
@@ -124,7 +124,7 @@ export function LoginForm() {
       <main className={styles.loginMain}>
         <div className={styles.loginContainer}>
           <LargeTitle className={styles.title}>
-            Calendar Exporter{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}
+            Project Betoniera{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}
           </LargeTitle>
           <Card className={styles.loginForm}>
             <form onSubmit={(event) => onSubmit(event)} className={styles.loginForm}>

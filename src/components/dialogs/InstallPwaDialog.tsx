@@ -155,7 +155,7 @@ export default function InstallPwaDialog() {
                 </li>
                 <li>
                   <Body1>
-                    Seleziona <b>Installa Calendar Exporter</b>
+                    Seleziona <b>Installa Project Betoniera</b>
                   </Body1>
                 </li>
                 <li>
@@ -247,7 +247,7 @@ export default function InstallPwaDialog() {
                 </li>
                 <li>
                   <Body1>
-                    Seleziona <b>Installa Calendar Exporter</b> nel popup
+                    Seleziona <b>Installa Project Betoniera</b> nel popup
                   </Body1>
                 </li>
               </ol>
