@@ -1,8 +1,8 @@
+import react from "@vitejs/plugin-react";
+import "dotenv/config";
+import { exec } from "node:child_process";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
-import react from "@vitejs/plugin-react";
-import { exec } from "node:child_process";
-import "dotenv/config";
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
@@ -51,9 +51,9 @@ export default defineConfig(async () => {
         devOptions: { enabled: true },
         manifest: {
           prefer_related_applications: true,
-          name: "Calendar Exporter",
-          short_name: "Calendar Exporter",
-          description: "Calendar Exporter",
+          name: "Project Betoniera",
+          short_name: "Project Betoniera",
+          description: "Project Betoniera",
           theme_color: "#0F6CBD",
           start_url: "/?utm_source=pwa&utm_medium=start_url",
           id: "/",

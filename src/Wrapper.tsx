@@ -17,12 +17,12 @@ import {
 import { AlertOffRegular, ArrowDownloadFilled, DismissRegular } from "@fluentui/react-icons";
 import { useContext, useEffect, useState } from "react";
 import { Outlet } from "react-router";
+import { RouterLink } from "./components/router/RouterLink";
 import RouterMenu from "./components/router/RouterMenu";
 import { isBetaBuild } from "./config";
 import { MessagesContext } from "./context/MessagesContext";
 import { PwaContext } from "./context/PwaContext";
 import { useGlobalStyles } from "./globalStyles";
-import { RouterLink } from "./components/router/RouterLink";
 
 const useStyles = makeStyles({
   header: {
@@ -125,7 +125,7 @@ export function Wrapper() {
         <Card className={styles.header}>
           <nav className={styles.nav}>
             <Title1 className={styles.title}>
-              Calendar Exporter{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}
+              Project Betoniera{isBetaBuild && <Subtitle1 className={globalStyles.betaBadge}>BETA</Subtitle1>}
             </Title1>
             {RouterMenu({ className: styles.routerMenu }, iconsOnly)}
           </nav>
