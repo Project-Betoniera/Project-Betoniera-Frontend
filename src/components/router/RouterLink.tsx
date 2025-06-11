@@ -1,15 +1,21 @@
 import { Link as FluentLink, LinkProps } from "@fluentui/react-components";
-import { FunctionComponent, RefAttributes } from "react";
+import { ComponentPropsWithRef, forwardRef, MouseEvent } from "react";
 import { useNavigate } from "react-router";
 
-export const RouterLink: FunctionComponent<LinkProps & RefAttributes<HTMLAnchorElement> & { as?: "a" }> = (props) => {
+type RouterLinkProps = Omit<LinkProps, "as" | "href"> &
+  ComponentPropsWithRef<"a"> & {
+    href?: string;
+  };
+
+export const RouterLink = forwardRef<HTMLAnchorElement, RouterLinkProps>((props, ref) => {
   const navigate = useNavigate();
 
   return (
     <FluentLink
       {...props}
       as="a"
-      onClick={(e) => {
+      ref={ref}
+      onClick={(e: MouseEvent<HTMLAnchorElement>) => {
         if (props.target) return;
 
         const url = new URL(props.href || "", window.location.href);
@@ -20,4 +26,4 @@ export const RouterLink: FunctionComponent<LinkProps & RefAttributes<HTMLAnchorE
       }}
     />
   );
-};
+});

@@ -142,7 +142,7 @@ const EventDetails: FunctionComponent<EventDetailsProps> = (props: EventDetailsP
         {props.title !== "subject" && !props.hide?.includes("subject") && <Body1>{subject}</Body1>}
         {props.title !== "course" && !props.hide?.includes("course") ?
           props.linkToCalendar ?
-            <RouterLink as="a" className={styles.removeLinkStyle} href={"/calendar?course=" + props.event.course.id}>
+            <RouterLink className={styles.removeLinkStyle} href={"/calendar?course=" + props.event.course.id}>
               {course}
             </RouterLink>
           : <Body1>{course}</Body1>
